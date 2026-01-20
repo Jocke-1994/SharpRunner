@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Labyrintspel – prototyp</title>
+
     <style>
         html, body {
             margin: 0;
@@ -16,6 +17,7 @@
             display: block;
             width: 100vw;
             height: 100vh;
+            background: #fff;
         }
 
         .hud {
@@ -30,8 +32,9 @@
 
         .pill {
             display: inline-block;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.08);
+            background: #111111;
+            color: #ffffff;
+            border: none;
             padding: 6px 10px;
             border-radius: 999px;
             font-size: 13px;
@@ -47,24 +50,27 @@
         }
 
         .card {
-            background: rgba(0,0,0,.55);
-            border: 1px solid rgba(255,255,255,.12);
+            background: #ffffff;
+            color: #111111;
+            border: 1px solid rgba(0,0,0,.12);
             border-radius: 14px;
             padding: 16px 18px;
             min-width: 260px;
-            backdrop-filter: blur(6px);
+            box-shadow: 0 12px 30px rgba(0,0,0,.25);
             pointer-events: auto;
         }
 
             .card h2 {
                 margin: 0 0 8px 0;
                 font-size: 16px;
+                color: #000;
             }
 
             .card p {
                 margin: 6px 0;
                 font-size: 13px;
-                opacity: .9;
+                color: #333;
+                opacity: .95;
             }
 
         .btn {
@@ -80,6 +86,7 @@
         }
     </style>
 </head>
+
 <body>
     <canvas id="c"></canvas>
 
@@ -106,12 +113,12 @@
         </div>
     </div>
 
-
     <script>
         (() => {
             // ---------- Canvas setup ----------
             const canvas = document.getElementById("c");
             const ctx = canvas.getContext("2d");
+
             function resize() {
                 const dpr = Math.max(1, window.devicePixelRatio || 1);
                 canvas.width = Math.floor(innerWidth * dpr);
@@ -132,27 +139,37 @@
             const startOverlay = document.getElementById("startOverlay");
             const startBtn = document.getElementById("startBtn");
 
-            // ---------- World design ----------
-            const corridorHalfWidth = 28;
-            const speed = 220;
-            const timingWindow = 0.22;
-            const metersPerPixel = 0.03;
+            // ---------- World / Tuning ----------
+            const corridorHalfWidth = 28; // bredare = enklare
+            const speed = 220;            // px/sec
+            const timingWindow = 0.22;    // sekunder (± runt hörnet, approx)
+            const metersPerPixel = 0.03;  // fake conversion för score
 
+            // Maze-look
+            const wallThickness = 18;     // väggtjocklek (12–24)
+            const gridEnabled = true;     // true/false
+
+            // ---------- Build spiral centerline ----------
             function buildSpiralPoints() {
                 const pts = [];
                 let x = 0, y = 0;
                 pts.push({ x, y });
+
                 const step = 120;
                 const turnsCount = 10;
                 let len = step * 2;
                 let dir = 0; // 0=right,1=up,2=left,3=down
+
                 for (let i = 0; i < turnsCount; i++) {
                     const dx = (dir === 0) ? 1 : (dir === 2 ? -1 : 0);
                     const dy = (dir === 1) ? -1 : (dir === 3 ? 1 : 0);
+
                     x += dx * len;
                     y += dy * len;
+
                     pts.push({ x, y });
-                    if (i % 2 === 1) len += step;
+
+                    if (i % 2 === 1) len += step; // grow spiral every 2 segments
                     dir = (dir + 1) % 4;
                 }
                 return pts;
@@ -160,6 +177,7 @@
 
             const pathPts = buildSpiralPoints();
 
+            // Segments for collision + desired directions
             const segments = [];
             for (let i = 0; i < pathPts.length - 1; i++) {
                 const a = pathPts[i], b = pathPts[i + 1];
@@ -172,6 +190,7 @@
                 });
             }
 
+            // Turn points (every interior point)
             const turns = [];
             for (let i = 1; i < pathPts.length - 1; i++) {
                 turns.push({ x: pathPts[i].x, y: pathPts[i].y, index: i });
@@ -268,8 +287,8 @@
                 const distToTurn = Math.hypot(turn.x - player.x, turn.y - player.y);
                 const distThreshold = speed * timingWindow;
 
-                if (distToTurn > distThreshold) { crash(); return; }
-                if (hasPassedTurn(turn)) { crash(); return; }
+                if (distToTurn > distThreshold) { crash(); return; } // too early
+                if (hasPassedTurn(turn)) { crash(); return; }        // too late
 
                 if (!player.desiredDir) {
                     player.desiredDir = desiredDirectionAtTurn(player.segIndex);
@@ -281,7 +300,6 @@
                 player.nextTurn += 1;
             }
 
-            // Start-knappen startar också (utan att kräva “precision-klick” senare kan du lägga pointerdown också)
             startBtn.addEventListener("click", () => {
                 if (!alive) return;
                 if (!started) {
@@ -327,57 +345,60 @@
                 cam.y = player.y + player.dir.dy * lookAhead;
             }
 
+            // ---------- Drawing ----------
             function draw() {
-                ctx.clearRect(0, 0, innerWidth, innerHeight);
+                // White background (world)
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, innerWidth, innerHeight);
 
                 updateCamera();
 
+                // Convert world->screen
                 const cx = innerWidth / 2;
                 const cy = innerHeight / 2 + camOffsetY;
 
                 function wx(x) { return (x - cam.x) * zoom + cx; }
                 function wy(y) { return (y - cam.y) * zoom + cy; }
 
-                // grid
-                ctx.globalAlpha = 0.12;
-                ctx.strokeStyle = "#9aa7ff";
-                ctx.lineWidth = 1;
-                const grid = 80;
-                const leftW = cam.x - cx;
-                const topW = cam.y - cy;
-                const rightW = cam.x + cx;
-                const bottomW = cam.y + cy;
-                const gx0 = Math.floor(leftW / grid) * grid;
-                const gy0 = Math.floor(topW / grid) * grid;
-                for (let x = gx0; x < rightW + grid; x += grid) {
-                    ctx.beginPath();
-                    ctx.moveTo(wx(x), wy(topW));
-                    ctx.lineTo(wx(x), wy(bottomW));
-                    ctx.stroke();
-                }
-                for (let y = gy0; y < bottomW + grid; y += grid) {
-                    ctx.beginPath();
-                    ctx.moveTo(wx(leftW), wy(y));
-                    ctx.lineTo(wx(rightW), wy(y));
-                    ctx.stroke();
-                }
-                ctx.globalAlpha = 1;
+                // Optional subtle grid
+                if (gridEnabled) {
+                    ctx.globalAlpha = 0.06;
+                    ctx.strokeStyle = "#000";
+                    ctx.lineWidth = 1;
 
-                // corridor
-                ctx.fillStyle = "rgba(255,255,255,0.06)";
-                for (const s of segments) {
-                    if (s.horiz) {
-                        const w = (s.maxX - s.minX);
-                        ctx.fillRect(wx(s.minX), wy(s.a.y) - corridorHalfWidth, w, corridorHalfWidth * 2);
-                    } else {
-                        const h = (s.maxY - s.minY);
-                        ctx.fillRect(wx(s.a.x) - corridorHalfWidth, wy(s.minY), corridorHalfWidth * 2, h);
+                    const grid = 80;
+                    const leftW = cam.x - cx;
+                    const topW = cam.y - cy;
+                    const rightW = cam.x + cx;
+                    const bottomW = cam.y + cy;
+
+                    const gx0 = Math.floor(leftW / grid) * grid;
+                    const gy0 = Math.floor(topW / grid) * grid;
+
+                    for (let x = gx0; x < rightW + grid; x += grid) {
+                        ctx.beginPath();
+                        ctx.moveTo(wx(x), wy(topW));
+                        ctx.lineTo(wx(x), wy(bottomW));
+                        ctx.stroke();
                     }
+                    for (let y = gy0; y < bottomW + grid; y += grid) {
+                        ctx.beginPath();
+                        ctx.moveTo(wx(leftW), wy(y));
+                        ctx.lineTo(wx(rightW), wy(y));
+                        ctx.stroke();
+                    }
+                    ctx.globalAlpha = 1;
                 }
 
-                // guideline
-                ctx.strokeStyle = "rgba(80,140,255,0.9)";
-                ctx.lineWidth = 4;
+                // Maze look: "double stroke" -> black walls + white corridor
+                const corridorWidth = corridorHalfWidth * 2;
+
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+
+                // 1) Walls
+                ctx.strokeStyle = "#000";
+                ctx.lineWidth = corridorWidth + wallThickness * 2;
                 ctx.beginPath();
                 ctx.moveTo(wx(pathPts[0].x), wy(pathPts[0].y));
                 for (let i = 1; i < pathPts.length; i++) {
@@ -385,16 +406,36 @@
                 }
                 ctx.stroke();
 
-                // player
-                ctx.fillStyle = alive ? "white" : "rgba(255,255,255,0.5)";
+                // 2) Corridor
+                ctx.strokeStyle = "#fff";
+                ctx.lineWidth = corridorWidth;
+                ctx.beginPath();
+                ctx.moveTo(wx(pathPts[0].x), wy(pathPts[0].y));
+                for (let i = 1; i < pathPts.length; i++) {
+                    ctx.lineTo(wx(pathPts[i].x), wy(pathPts[i].y));
+                }
+                ctx.stroke();
+
+                // Guideline (centerline)
+                ctx.strokeStyle = "rgba(30,90,255,0.85)";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(wx(pathPts[0].x), wy(pathPts[0].y));
+                for (let i = 1; i < pathPts.length; i++) {
+                    ctx.lineTo(wx(pathPts[i].x), wy(pathPts[i].y));
+                }
+                ctx.stroke();
+
+                // Player
+                ctx.fillStyle = alive ? "#111" : "rgba(0,0,0,0.35)";
                 ctx.beginPath();
                 ctx.arc(wx(player.x), wy(player.y), 10, 0, Math.PI * 2);
                 ctx.fill();
 
-                // next turn marker
+                // Next turn marker (subtle)
                 const t = turns[player.nextTurn];
                 if (t && alive) {
-                    ctx.strokeStyle = "rgba(255,255,255,0.45)";
+                    ctx.strokeStyle = "rgba(0,0,0,0.25)";
                     ctx.lineWidth = 2;
                     ctx.beginPath();
                     ctx.arc(wx(t.x), wy(t.y), 18, 0, Math.PI * 2);
@@ -424,6 +465,7 @@
                     }
                 }
 
+                // Always draw (even before start)
                 updateHUD();
                 draw();
                 requestAnimationFrame(tick);
@@ -435,6 +477,5 @@
             requestAnimationFrame(tick);
         })();
     </script>
-
 </body>
 </html>
