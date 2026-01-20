@@ -98,349 +98,343 @@
         </div>
     </div>
 
+    <div class="center" id="startOverlay">
+        <div class="card">
+            <h2>Redo?</h2>
+            <p>Tryck för att starta.</p>
+            <button class="btn" id="startBtn">Starta</button>
+        </div>
+    </div>
+
+
     <script>
-(() => {
-  // ---------- Canvas setup ----------
-  const canvas = document.getElementById("c");
-  const ctx = canvas.getContext("2d");
-  function resize(){
-    const dpr = Math.max(1, window.devicePixelRatio || 1);
-    canvas.width = Math.floor(innerWidth * dpr);
-    canvas.height = Math.floor(innerHeight * dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-  addEventListener("resize", resize);
-  resize();
+        (() => {
+            // ---------- Canvas setup ----------
+            const canvas = document.getElementById("c");
+            const ctx = canvas.getContext("2d");
+            function resize() {
+                const dpr = Math.max(1, window.devicePixelRatio || 1);
+                canvas.width = Math.floor(innerWidth * dpr);
+                canvas.height = Math.floor(innerHeight * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+            addEventListener("resize", resize);
+            resize();
 
-  // ---------- HUD ----------
-  const distEl = document.getElementById("dist");
-  const pbEl = document.getElementById("pb");
-  const overlay = document.getElementById("overlay");
-  const resDist = document.getElementById("resDist");
-  const resPb = document.getElementById("resPb");
-  const retryBtn = document.getElementById("retryBtn");
+            // ---------- HUD / Overlays ----------
+            const distEl = document.getElementById("dist");
+            const pbEl = document.getElementById("pb");
+            const overlay = document.getElementById("overlay");
+            const resDist = document.getElementById("resDist");
+            const resPb = document.getElementById("resPb");
+            const retryBtn = document.getElementById("retryBtn");
 
-  // ---------- World design ----------
-  // We build a simple rectangular "spiral corridor" from axis-aligned segments.
-  // The player moves along the centerline; corridor has width. If player deviates (early/late turn),
-  // they leave the corridor -> crash.
+            const startOverlay = document.getElementById("startOverlay");
+            const startBtn = document.getElementById("startBtn");
 
-  const corridorHalfWidth = 28;   // visual + difficulty (bigger = easier)
-  const speed = 220;              // px/sec
-  const timingWindow = 0.22;      // seconds allowed around each turn center (Easy-ish)
-  const metersPerPixel = 0.03;    // fake conversion to meters for score
+            // ---------- World design ----------
+            const corridorHalfWidth = 28;
+            const speed = 220;
+            const timingWindow = 0.22;
+            const metersPerPixel = 0.03;
 
-  // Spiral path points (centerline) - tweakable.
-  // Start at center, go right, up, left, down, right... with increasing lengths.
-  function buildSpiralPoints(){
-    const pts = [];
-    let x = 0, y = 0;
-    pts.push({x, y});
-    const step = 120;
-    const turns = 10; // number of segments
-    let len = step * 2;
-    let dir = 0; // 0=right,1=up,2=left,3=down
-    for (let i=0;i<turns;i++){
-      const dx = (dir===0) ? 1 : (dir===2 ? -1 : 0);
-      const dy = (dir===1) ? -1 : (dir===3 ? 1 : 0);
-      x += dx * len;
-      y += dy * len;
-      pts.push({x, y});
-      // every two segments, extend length (spiral growth)
-      if (i % 2 === 1) len += step;
-      dir = (dir + 1) % 4;
-    }
-    return pts;
-  }
+            function buildSpiralPoints() {
+                const pts = [];
+                let x = 0, y = 0;
+                pts.push({ x, y });
+                const step = 120;
+                const turnsCount = 10;
+                let len = step * 2;
+                let dir = 0; // 0=right,1=up,2=left,3=down
+                for (let i = 0; i < turnsCount; i++) {
+                    const dx = (dir === 0) ? 1 : (dir === 2 ? -1 : 0);
+                    const dy = (dir === 1) ? -1 : (dir === 3 ? 1 : 0);
+                    x += dx * len;
+                    y += dy * len;
+                    pts.push({ x, y });
+                    if (i % 2 === 1) len += step;
+                    dir = (dir + 1) % 4;
+                }
+                return pts;
+            }
 
-  const pathPts = buildSpiralPoints();
+            const pathPts = buildSpiralPoints();
 
-  // Precompute segments + turn points (corner at each interior point)
-  const segments = [];
-  for (let i=0;i<pathPts.length-1;i++){
-    const a = pathPts[i], b = pathPts[i+1];
-    const horiz = (a.y === b.y);
-    segments.push({
-      a, b,
-      horiz,
-      minX: Math.min(a.x,b.x), maxX: Math.max(a.x,b.x),
-      minY: Math.min(a.y,b.y), maxY: Math.max(a.y,b.y)
-    });
-  }
+            const segments = [];
+            for (let i = 0; i < pathPts.length - 1; i++) {
+                const a = pathPts[i], b = pathPts[i + 1];
+                const horiz = (a.y === b.y);
+                segments.push({
+                    a, b,
+                    horiz,
+                    minX: Math.min(a.x, b.x), maxX: Math.max(a.x, b.x),
+                    minY: Math.min(a.y, b.y), maxY: Math.max(a.y, b.y)
+                });
+            }
 
-  const turns = [];
-  for (let i=1;i<pathPts.length-1;i++){
-    // turn center at pathPts[i]
-    turns.push({ x:pathPts[i].x, y:pathPts[i].y, index:i });
-  }
+            const turns = [];
+            for (let i = 1; i < pathPts.length - 1; i++) {
+                turns.push({ x: pathPts[i].x, y: pathPts[i].y, index: i });
+            }
 
-  // ---------- Game state ----------
-  let player, alive, distPx, pbMeters;
+            // ---------- Game state ----------
+            let player, alive, distPx, pbMeters;
+            let started; // startspärr
 
-  function loadPB(){
-    const v = localStorage.getItem("maze_pb_m") || "0";
-    pbMeters = Math.max(0, parseFloat(v) || 0);
-  }
-  function savePB(){
-    localStorage.setItem("maze_pb_m", pbMeters.toFixed(1));
-  }
+            function loadPB() {
+                const v = localStorage.getItem("maze_pb_m") || "0";
+                pbMeters = Math.max(0, parseFloat(v) || 0);
+            }
+            function savePB() {
+                localStorage.setItem("maze_pb_m", pbMeters.toFixed(1));
+            }
 
-  function reset(){
-    overlay.style.display = "none";
-    alive = true;
-    distPx = 0;
+            function directionFromTo(a, b) {
+                if (b.x > a.x) return { dx: 1, dy: 0 };
+                if (b.x < a.x) return { dx: -1, dy: 0 };
+                if (b.y > a.y) return { dx: 0, dy: 1 };
+                return { dx: 0, dy: -1 };
+            }
 
-    // Start on first segment moving toward second point
-    const start = pathPts[0];
-    const next = pathPts[1];
-    const dir = directionFromTo(start, next);
+            function reset() {
+                overlay.style.display = "none";
+                alive = true;
+                distPx = 0;
 
-    player = {
-      x: start.x,
-      y: start.y,
-      dir,               // {dx,dy} unit axis-aligned
-      segIndex: 0,        // current target segment index
-      nextTurn: 0,        // turns array index
-      // for timing validation
-      approachingTurn: true,
-      turnCenterTime: null,
-      // "desired" next direction at next corner
-      desiredDir: null
-    };
+                started = false;
+                startOverlay.style.display = "flex";
 
-    updateHUD();
-  }
+                const start = pathPts[0];
+                const next = pathPts[1];
+                const dir = directionFromTo(start, next);
 
-  function directionFromTo(a,b){
-    if (b.x > a.x) return {dx:1, dy:0};
-    if (b.x < a.x) return {dx:-1, dy:0};
-    if (b.y > a.y) return {dx:0, dy:1};
-    return {dx:0, dy:-1};
-  }
+                player = {
+                    x: start.x,
+                    y: start.y,
+                    dir,
+                    segIndex: 0,
+                    nextTurn: 0,
+                    desiredDir: null
+                };
 
-  function crash(){
-    alive = false;
-    const meters = distPx * metersPerPixel;
-    if (meters > pbMeters){
-      pbMeters = meters;
-      savePB();
-    }
-    resDist.textContent = `Distans: ${meters.toFixed(1)} m`;
-    resPb.textContent = `Personbästa: ${pbMeters.toFixed(1)} m`;
-    overlay.style.display = "flex";
-    updateHUD();
-  }
+                updateHUD();
+            }
 
-  retryBtn.addEventListener("click", reset);
+            function crash() {
+                if (!alive) return; // skyddar mot dubbelkrasch
+                alive = false;
 
-  // Input: press to turn (only valid near turn center and only to the correct next direction)
-  function onPress(){
-    if (!alive) return;
+                const meters = distPx * metersPerPixel;
+                if (meters > pbMeters) {
+                    pbMeters = meters;
+                    savePB();
+                }
 
-    const turn = turns[player.nextTurn];
-    if (!turn) return; // finished path => you could loop/end
+                resDist.textContent = `Distans: ${meters.toFixed(1)} m`;
+                resPb.textContent = `Personbästa: ${pbMeters.toFixed(1)} m`;
+                overlay.style.display = "flex";
+                startOverlay.style.display = "none";
+                updateHUD();
+            }
 
-    // Determine if we're near enough in time: we approximate time window via distance to turn
-    // Convert timingWindow seconds to distance threshold
-    const distToTurn = Math.hypot(turn.x - player.x, turn.y - player.y);
-    const distThreshold = speed * timingWindow;
+            retryBtn.addEventListener("click", reset);
 
-    if (distToTurn > distThreshold){
-      // Too early
-      crash();
-      return;
-    }
+            function desiredDirectionAtTurn(currentSegIndex) {
+                const nextSeg = segments[currentSegIndex + 1];
+                if (!nextSeg) return player.dir;
+                return directionFromTo(nextSeg.a, nextSeg.b);
+            }
 
-    // Must also not be too late: if we've passed the turn point
-    // For axis-aligned movement, "passed" check by comparing along movement axis.
-    if (hasPassedTurn(turn)){
-      crash();
-      return;
-    }
+            function hasPassedTurn(turn) {
+                if (player.dir.dx === 1) return player.x > turn.x;
+                if (player.dir.dx === -1) return player.x < turn.x;
+                if (player.dir.dy === 1) return player.y > turn.y;
+                return player.y < turn.y;
+            }
 
-    // Apply correct direction change
-    if (!player.desiredDir){
-      player.desiredDir = desiredDirectionAtTurn(player.segIndex);
-    }
-    player.dir = player.desiredDir;
-    player.desiredDir = null;
+            function onPress() {
+                if (!alive) return;
 
-    // Advance to next segment + turn
-    player.segIndex += 1; // we are now heading into next segment
-    player.nextTurn += 1;
-  }
+                // Startspärr: första trycket startar
+                if (!started) {
+                    started = true;
+                    startOverlay.style.display = "none";
+                    return;
+                }
 
-  function desiredDirectionAtTurn(currentSegIndex){
-    // at end of current segment, next segment defines direction
-    const nextSeg = segments[currentSegIndex+1];
-    if (!nextSeg) return player.dir;
-    return directionFromTo(nextSeg.a, nextSeg.b);
-  }
+                const turn = turns[player.nextTurn];
+                if (!turn) return;
 
-  function hasPassedTurn(turn){
-    // If moving right, passed when x > turn.x; left: x < turn.x; down: y > turn.y; up: y < turn.y
-    if (player.dir.dx === 1) return player.x > turn.x;
-    if (player.dir.dx === -1) return player.x < turn.x;
-    if (player.dir.dy === 1) return player.y > turn.y;
-    return player.y < turn.y;
-  }
+                const distToTurn = Math.hypot(turn.x - player.x, turn.y - player.y);
+                const distThreshold = speed * timingWindow;
 
-  addEventListener("keydown", (e) => {
-    if (e.code === "Space") { e.preventDefault(); onPress(); }
-    if (!alive && (e.code === "Enter" || e.code === "Space")) { reset(); }
-  }, { passive:false });
+                if (distToTurn > distThreshold) { crash(); return; }
+                if (hasPassedTurn(turn)) { crash(); return; }
 
-  canvas.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    if (!alive) { reset(); return; }
-    onPress();
-  }, { passive:false });
+                if (!player.desiredDir) {
+                    player.desiredDir = desiredDirectionAtTurn(player.segIndex);
+                }
+                player.dir = player.desiredDir;
+                player.desiredDir = null;
 
-  // ---------- Corridor collision ----------
-  function insideCorridor(x,y){
-    // Check whether point is within corridor half width of the current segment centerline.
-    // IMPORTANT: This is what makes early/late turn cause a crash: you leave the corridor.
-    const seg = segments[player.segIndex];
-    if (!seg) return false;
+                player.segIndex += 1;
+                player.nextTurn += 1;
+            }
 
-    if (seg.horiz){
-      // within y band, and within x range extended a bit
-      const withinY = Math.abs(y - seg.a.y) <= corridorHalfWidth;
-      const withinX = (x >= seg.minX - corridorHalfWidth) && (x <= seg.maxX + corridorHalfWidth);
-      return withinX && withinY;
-    } else {
-      const withinX = Math.abs(x - seg.a.x) <= corridorHalfWidth;
-      const withinY = (y >= seg.minY - corridorHalfWidth) && (y <= seg.maxY + corridorHalfWidth);
-      return withinX && withinY;
-    }
-  }
+            // Start-knappen startar också (utan att kräva “precision-klick” senare kan du lägga pointerdown också)
+            startBtn.addEventListener("click", () => {
+                if (!alive) return;
+                if (!started) {
+                    started = true;
+                    startOverlay.style.display = "none";
+                }
+            });
 
-  // ---------- Camera ----------
-  const cam = { x:0, y:0 };
-  const zoom = 1.0; // canvas scale multiplier (we'll map world units to pixels directly)
-  const lookAhead = 90; // px ahead (maps-style, no rotation)
-  const camOffsetY = 60; // keep player slightly below center
+            addEventListener("keydown", (e) => {
+                if (e.code === "Space") { e.preventDefault(); onPress(); }
+                if (!alive && (e.code === "Enter" || e.code === "Space")) { reset(); }
+            }, { passive: false });
 
-  function updateCamera(){
-    // no rotation; offset ahead in movement direction
-    cam.x = player.x + player.dir.dx * lookAhead;
-    cam.y = player.y + player.dir.dy * lookAhead;
-  }
+            canvas.addEventListener("pointerdown", (e) => {
+                e.preventDefault();
+                if (!alive) { reset(); return; }
+                onPress();
+            }, { passive: false });
 
-  // ---------- Drawing ----------
-  function draw(){
-    ctx.clearRect(0,0,innerWidth,innerHeight);
+            function insideCorridor(x, y) {
+                const seg = segments[player.segIndex];
+                if (!seg) return false;
 
-    updateCamera();
+                if (seg.horiz) {
+                    const withinY = Math.abs(y - seg.a.y) <= corridorHalfWidth;
+                    const withinX = (x >= seg.minX - corridorHalfWidth) && (x <= seg.maxX + corridorHalfWidth);
+                    return withinX && withinY;
+                } else {
+                    const withinX = Math.abs(x - seg.a.x) <= corridorHalfWidth;
+                    const withinY = (y >= seg.minY - corridorHalfWidth) && (y <= seg.maxY + corridorHalfWidth);
+                    return withinX && withinY;
+                }
+            }
 
-    // Convert world->screen
-    const cx = innerWidth/2;
-    const cy = innerHeight/2 + camOffsetY;
+            // ---------- Camera ----------
+            const cam = { x: 0, y: 0 };
+            const zoom = 1.0;
+            const lookAhead = 90;
+            const camOffsetY = 60;
 
-    function wx(x){ return (x - cam.x) * zoom + cx; }
-    function wy(y){ return (y - cam.y) * zoom + cy; }
+            function updateCamera() {
+                cam.x = player.x + player.dir.dx * lookAhead;
+                cam.y = player.y + player.dir.dy * lookAhead;
+            }
 
-    // Background grid (subtle)
-    ctx.globalAlpha = 0.12;
-    ctx.strokeStyle = "#9aa7ff";
-    ctx.lineWidth = 1;
-    const grid = 80;
-    const leftW = cam.x - cx;
-    const topW = cam.y - cy;
-    const rightW = cam.x + cx;
-    const bottomW = cam.y + cy;
-    const gx0 = Math.floor(leftW / grid) * grid;
-    const gy0 = Math.floor(topW / grid) * grid;
-    for (let x=gx0; x<rightW+grid; x+=grid){
-      ctx.beginPath();
-      ctx.moveTo(wx(x), wy(topW));
-      ctx.lineTo(wx(x), wy(bottomW));
-      ctx.stroke();
-    }
-    for (let y=gy0; y<bottomW+grid; y+=grid){
-      ctx.beginPath();
-      ctx.moveTo(wx(leftW), wy(y));
-      ctx.lineTo(wx(rightW), wy(y));
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
+            function draw() {
+                ctx.clearRect(0, 0, innerWidth, innerHeight);
 
-    // Corridor fill (dark)
-    ctx.fillStyle = "rgba(255,255,255,0.06)";
-    for (const s of segments){
-      if (s.horiz){
-        const x = wx(s.minX), y = wy(s.a.y) - corridorHalfWidth;
-        const w = (s.maxX - s.minX);
-        ctx.fillRect(wx(s.minX), wy(s.a.y) - corridorHalfWidth, w, corridorHalfWidth*2);
-      } else {
-        const y0 = s.minY, y1 = s.maxY;
-        ctx.fillRect(wx(s.a.x) - corridorHalfWidth, wy(y0), corridorHalfWidth*2, (y1 - y0));
-      }
-    }
+                updateCamera();
 
-    // Guideline (centerline)
-    ctx.strokeStyle = "rgba(80,140,255,0.9)";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(wx(pathPts[0].x), wy(pathPts[0].y));
-    for (let i=1;i<pathPts.length;i++){
-      ctx.lineTo(wx(pathPts[i].x), wy(pathPts[i].y));
-    }
-    ctx.stroke();
+                const cx = innerWidth / 2;
+                const cy = innerHeight / 2 + camOffsetY;
 
-    // Player
-    ctx.fillStyle = alive ? "white" : "rgba(255,255,255,0.5)";
-    ctx.beginPath();
-    ctx.arc(wx(player.x), wy(player.y), 10, 0, Math.PI*2);
-    ctx.fill();
+                function wx(x) { return (x - cam.x) * zoom + cx; }
+                function wy(y) { return (y - cam.y) * zoom + cy; }
 
-    // Next turn marker (subtle)
-    const t = turns[player.nextTurn];
-    if (t && alive){
-      ctx.strokeStyle = "rgba(255,255,255,0.45)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(wx(t.x), wy(t.y), 18, 0, Math.PI*2);
-      ctx.stroke();
-    }
-  }
+                // grid
+                ctx.globalAlpha = 0.12;
+                ctx.strokeStyle = "#9aa7ff";
+                ctx.lineWidth = 1;
+                const grid = 80;
+                const leftW = cam.x - cx;
+                const topW = cam.y - cy;
+                const rightW = cam.x + cx;
+                const bottomW = cam.y + cy;
+                const gx0 = Math.floor(leftW / grid) * grid;
+                const gy0 = Math.floor(topW / grid) * grid;
+                for (let x = gx0; x < rightW + grid; x += grid) {
+                    ctx.beginPath();
+                    ctx.moveTo(wx(x), wy(topW));
+                    ctx.lineTo(wx(x), wy(bottomW));
+                    ctx.stroke();
+                }
+                for (let y = gy0; y < bottomW + grid; y += grid) {
+                    ctx.beginPath();
+                    ctx.moveTo(wx(leftW), wy(y));
+                    ctx.lineTo(wx(rightW), wy(y));
+                    ctx.stroke();
+                }
+                ctx.globalAlpha = 1;
 
-  function updateHUD(){
-    const meters = distPx * metersPerPixel;
-    distEl.textContent = `Distans: ${meters.toFixed(1)} m`;
-    pbEl.textContent = `PB: ${pbMeters.toFixed(1)} m`;
-  }
+                // corridor
+                ctx.fillStyle = "rgba(255,255,255,0.06)";
+                for (const s of segments) {
+                    if (s.horiz) {
+                        const w = (s.maxX - s.minX);
+                        ctx.fillRect(wx(s.minX), wy(s.a.y) - corridorHalfWidth, w, corridorHalfWidth * 2);
+                    } else {
+                        const h = (s.maxY - s.minY);
+                        ctx.fillRect(wx(s.a.x) - corridorHalfWidth, wy(s.minY), corridorHalfWidth * 2, h);
+                    }
+                }
 
-  // ---------- Loop ----------
-  let last = performance.now();
-  function tick(now){
-    const dt = Math.min(0.033, (now - last) / 1000);
-    last = now;
+                // guideline
+                ctx.strokeStyle = "rgba(80,140,255,0.9)";
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(wx(pathPts[0].x), wy(pathPts[0].y));
+                for (let i = 1; i < pathPts.length; i++) {
+                    ctx.lineTo(wx(pathPts[i].x), wy(pathPts[i].y));
+                }
+                ctx.stroke();
 
-    if (alive){
-      // move
-      player.x += player.dir.dx * speed * dt;
-      player.y += player.dir.dy * speed * dt;
-      distPx += speed * dt;
+                // player
+                ctx.fillStyle = alive ? "white" : "rgba(255,255,255,0.5)";
+                ctx.beginPath();
+                ctx.arc(wx(player.x), wy(player.y), 10, 0, Math.PI * 2);
+                ctx.fill();
 
-      // collision
-      if (!insideCorridor(player.x, player.y)){
-        crash();
-      }
+                // next turn marker
+                const t = turns[player.nextTurn];
+                if (t && alive) {
+                    ctx.strokeStyle = "rgba(255,255,255,0.45)";
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(wx(t.x), wy(t.y), 18, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
 
-      // if we reached end of current segment without turning, we'll eventually leave corridor at corner -> crash (as intended)
-    }
+            function updateHUD() {
+                const meters = distPx * metersPerPixel;
+                distEl.textContent = `Distans: ${meters.toFixed(1)} m`;
+                pbEl.textContent = `PB: ${pbMeters.toFixed(1)} m`;
+            }
 
-    updateHUD();
-    draw();
-    requestAnimationFrame(tick);
-  }
+            // ---------- Loop ----------
+            let last = performance.now();
+            function tick(now) {
+                const dt = Math.min(0.033, (now - last) / 1000);
+                last = now;
 
-  // ---------- Init ----------
-  loadPB();
-  reset();
-  requestAnimationFrame(tick);
-})();
+                if (alive && started) {
+                    player.x += player.dir.dx * speed * dt;
+                    player.y += player.dir.dy * speed * dt;
+                    distPx += speed * dt;
+
+                    if (!insideCorridor(player.x, player.y)) {
+                        crash();
+                    }
+                }
+
+                updateHUD();
+                draw();
+                requestAnimationFrame(tick);
+            }
+
+            // ---------- Init ----------
+            loadPB();
+            reset();
+            requestAnimationFrame(tick);
+        })();
     </script>
+
 </body>
 </html>
