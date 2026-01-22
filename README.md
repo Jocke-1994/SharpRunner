@@ -4,8 +4,8 @@ Buggfix
 -------------------------------
 Patch notes 1.1.0
 Feature:
--Lagt till möjligheten att se ens framsteg i realtid medans man spelar en bana. / Added the function to see the progress in real time while playing a track.
--Lagt till en framstegs indikator som visuellt visar hur långt man kommit på banan. / Added a progressbar to visually display the progress on the track.
+- Lagt till möjligheten att se ens framsteg i realtid medans man spelar en bana. / Added the function to see the progress in real time while playing a track.
+- Lagt till en framstegs indikator som visuellt visar hur långt man kommit på banan. / Added a progressbar to visually display the progress on the track.
 
 -------------------------------
 Patch notes 1.2.0
