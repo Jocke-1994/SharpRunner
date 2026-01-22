@@ -591,6 +591,81 @@
         .instr-list b {
             color: #fff;
         }
+
+        /* --- SETTINGS SCREEN STYLES --- */
+        .skin-grid {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0 40px 0;
+        }
+
+        .skin-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+            .skin-option:hover {
+                transform: scale(1.1);
+            }
+
+            .skin-option.selected {
+                border-color: #fff;
+                transform: scale(1.2);
+                box-shadow: 0 0 20px #fff;
+            }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--panel);
+            padding: 15px 30px;
+            border-radius: 15px;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .toggle-label {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .toggle-btn {
+            width: 60px;
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+            .toggle-btn.active {
+                background: var(--success);
+            }
+
+        .toggle-knob {
+            width: 24px;
+            height: 24px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: left 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .toggle-btn.active .toggle-knob {
+            left: 33px;
+        }
     </style>
 </head>
 <body>
@@ -644,7 +719,25 @@
         <button class="btn" onclick="showScreen('levelSelect')" data-t="startBtn">Starta Spelet</button>
         <button class="btn btn-tut" onclick="startTutorial()" data-t="tutBtn">Tutorial</button>
         <button class="btn btn-secondary" onclick="showScreen('statsScreen')" data-t="statsBtn">Statistik</button>
+        <button class="btn btn-secondary" onclick="showScreen('settingsScreen')" data-t="settingsBtn">Inställningar</button>
         <button class="btn btn-secondary" onclick="showScreen('aboutScreen')" data-t="aboutBtn">Om Oss</button>
+    </div>
+
+    <div id="settingsScreen" class="screen hidden">
+        <h1 data-t="settingsBtn">INSTÄLLNINGAR</h1>
+
+        <h2 data-t="skinTitle">VÄLJ FÄRG</h2>
+        <div class="skin-grid" id="skinGrid"></div>
+
+        <h2 data-t="optionsTitle">ALTERNATIV</h2>
+        <div class="toggle-container" onclick="toggleFog()">
+            <div class="toggle-label" data-t="fogLabel">DIMMA (SVÅRT)</div>
+            <div class="toggle-btn" id="fogToggle">
+                <div class="toggle-knob"></div>
+            </div>
+        </div>
+
+        <button class="btn btn-secondary" style="margin-top: 25px;" onclick="showScreen('mainMenu')" data-t="back">Tillbaka</button>
     </div>
 
     <div id="levelSelect" class="screen hidden">
@@ -726,42 +819,48 @@
 
         const i18n = {
             sv: {
-                title: "LABYRINT", startBtn: "Starta Spelet", statsBtn: "Statistik", aboutBtn: "Om Oss",
+                title: "LABYRINT", startBtn: "Starta Spelet", statsBtn: "Statistik", aboutBtn: "Om Oss", settingsBtn: "Inställningar",
                 backMenu: "← MENY", diffEasy: "LÄTT", diffMed: "MEDEL", diffDyn: "DYNAMIC", diffHard: "SVÅR", diffBrut: "BRUTAL",
                 pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
                 back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
                 aboutText: `
-                            <div class="founder-section">
-                                <div class="founder-title">Grundarna</div>
-                                <div class="founder-grid">
-                                    <div class="founder-card">
-                                        <span class="founder-name">Bozhidar Ivanov</span>
-                                        <span class="founder-role">Lead Developer</span>
-                                        <div class="social-row">
-                                            <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                            <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                    <div class="founder-section">
+                                        <div class="founder-title">Grundarna</div>
+                                        <div class="founder-grid">
+                                            <div class="founder-card">
+                                                <span class="founder-name">Bozhidar Ivanov</span>
+                                                <span class="founder-role">Lead Developer</span>
+                                                <div class="social-row">
+                                                    <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                    <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                </div>
+                                            </div>
+                                            <div class="founder-card">
+                                                <span class="founder-name">Joakim Rehn</span>
+                                                <span class="founder-role">Lead Designer</span>
+                                                <div class="social-row">
+                                                    <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                    <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="wish-box" style="border-left-color: var(--dynamic); background: rgba(217, 70, 239, 0.05);">
+                                            <span class="wish-label" style="color: var(--dynamic)">Skins & Dimma</span>
+                                            <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
+                                               Nu kan du anpassa din spelare i <b>Inställningar</b>! Välj din favoritfärg eller aktivera <b>Dimma</b> för en brutal utmaning.
+                                            </div>
+                                        </div>
+                                        <div class="wish-box">
+                                            <span class="wish-label">En önskan från oss:</span>
+                                            <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
                                         </div>
                                     </div>
-                                    <div class="founder-card">
-                                        <span class="founder-name">Joakim Rehn</span>
-                                        <span class="founder-role">Lead Designer</span>
-                                        <div class="social-row">
-                                            <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                            <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="wish-box">
-                                    <span class="wish-label">En önskan från oss:</span>
-                                    <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
-                                </div>
-                            </div>
-                            <div class="instr-list">
-                                <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
-                                <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
-                                <p>På SVÅR och BRUTAL syns inga cirklar.</p>
-                                <p>Tryck på <b>P</b> för att pausa.</p>
-                            </div>`,
+                                    <div class="instr-list">
+                                        <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
+                                        <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
+                                        <p>På SVÅR och BRUTAL syns inga cirklar.</p>
+                                        <p>Tryck på <b>P</b> för att pausa.</p>
+                                    </div>`,
                 clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
                 skipHint: "KLICKA FÖR ATT HOPPA ÖVER",
                 crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
@@ -775,45 +874,52 @@
                 tutFailLate: "ÄR DU INTE TILLRÄCKLIGT SNABB ÅKER DU IN I VÄGGEN.",
                 tutRealTry: "NU KÖR VI PÅ RIKTIGT! KLARA 3 SVÄNGAR.",
                 tutWin: "GRATTIS! DU HAR KLARAT TUTORIALEN.",
-                tutNextStep: "GÅ VIDARE", tutTryReal: "FÖRSÖK IGEN"
+                tutNextStep: "GÅ VIDARE", tutTryReal: "FÖRSÖK IGEN",
+                skinTitle: "VÄLJ FÄRG", optionsTitle: "ALTERNATIV", fogLabel: "DIMMA (SVÅRT)"
             },
             en: {
-                title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us",
+                title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us", settingsBtn: "Settings",
                 backMenu: "← MENU", diffEasy: "EASY", diffMed: "MEDIUM", diffDyn: "DYNAMIC", diffHard: "HARD", diffBrut: "BRUTAL",
                 pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
                 back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
                 aboutText: `
-                            <div class="founder-section">
-                                <div class="founder-title">The Founders</div>
-                                <div class="founder-grid">
-                                    <div class="founder-card">
-                                        <span class="founder-name">Bozhidar Ivanov</span>
-                                        <span class="founder-role">Lead Developer</span>
-                                        <div class="social-row">
-                                            <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                            <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                    <div class="founder-section">
+                                        <div class="founder-title">The Founders</div>
+                                        <div class="founder-grid">
+                                            <div class="founder-card">
+                                                <span class="founder-name">Bozhidar Ivanov</span>
+                                                <span class="founder-role">Lead Developer</span>
+                                                <div class="social-row">
+                                                    <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                    <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                </div>
+                                            </div>
+                                            <div class="founder-card">
+                                                <span class="founder-name">Joakim Rehn</span>
+                                                <span class="founder-role">Lead Designer</span>
+                                                <div class="social-row">
+                                                    <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                    <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                         <div class="wish-box" style="border-left-color: var(--dynamic); background: rgba(217, 70, 239, 0.05);">
+                                            <span class="wish-label" style="color: var(--dynamic)">New: Skins & Fog</span>
+                                            <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
+                                               You can now customize your player in <b>Settings</b>! Choose your favorite color or enable <b>Fog of War</b> for a brutal challenge.
+                                            </div>
+                                        </div>
+                                        <div class="wish-box">
+                                            <span class="wish-label">A wish from us:</span>
+                                            <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
                                         </div>
                                     </div>
-                                    <div class="founder-card">
-                                        <span class="founder-name">Joakim Rehn</span>
-                                        <span class="founder-role">Lead Designer</span>
-                                        <div class="social-row">
-                                            <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                            <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="wish-box">
-                                    <span class="wish-label">A wish from us:</span>
-                                    <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
-                                </div>
-                            </div>
-                            <div class="instr-list">
-                                <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
-                                <p>Tip: Click/Space during scouting to skip directly to the start.</p>
-                                <p>On HARD and BRUTAL, no circles are shown.</p>
-                                <p>Press <b>P</b> to pause.</p>
-                            </div>`,
+                                    <div class="instr-list">
+                                        <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
+                                        <p>Tip: Click/Space during scouting to skip directly to the start.</p>
+                                        <p>On HARD and BRUTAL, no circles are shown.</p>
+                                        <p>Press <b>P</b> to pause.</p>
+                                    </div>`,
                 clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...",
                 skipHint: "CLICK TO SKIP",
                 crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN (SPACE)",
@@ -827,11 +933,55 @@
                 tutFailLate: "TOO SLOW MEANS HITTING THE WALL.",
                 tutRealTry: "LET'S DO THIS! CLEAR 3 TURNS.",
                 tutWin: "CONGRATS! TUTORIAL COMPLETED.",
-                tutNextStep: "NEXT STEP", tutTryReal: "TRY AGAIN"
+                tutNextStep: "NEXT STEP", tutTryReal: "TRY AGAIN",
+                skinTitle: "CHOOSE COLOR", optionsTitle: "OPTIONS", fogLabel: "FOG OF WAR (HARD)"
             }
         };
 
         let currentLang = localStorage.getItem('maze_lang') || 'sv';
+
+        // --- NEW SETTINGS LOGIC ---
+        const skins = [
+            "#1d2bff", // Blue (Default)
+            "#ff0044", // Brutal Red
+            "#00c853", // Green
+            "#fecc00", // Gold
+            "#d946ef", // Dynamic Pink
+            "#ffffff", // White
+            "#00d2ff"  // Cyan
+        ];
+
+        let gameSettings = JSON.parse(localStorage.getItem('maze_settings') || '{"skin": "#1d2bff", "fog": false}');
+
+        function saveSettings() {
+            localStorage.setItem('maze_settings', JSON.stringify(gameSettings));
+        }
+
+        function renderSettings() {
+            const grid = document.getElementById('skinGrid');
+            grid.innerHTML = '';
+            skins.forEach(color => {
+                const d = document.createElement('div');
+                d.className = `skin-option ${gameSettings.skin === color ? 'selected' : ''}`;
+                d.style.backgroundColor = color;
+                d.onclick = () => {
+                    gameSettings.skin = color;
+                    saveSettings();
+                    renderSettings();
+                };
+                grid.appendChild(d);
+            });
+
+            const fogBtn = document.getElementById('fogToggle');
+            if (gameSettings.fog) fogBtn.classList.add('active');
+            else fogBtn.classList.remove('active');
+        }
+
+        function toggleFog() {
+            gameSettings.fog = !gameSettings.fog;
+            saveSettings();
+            renderSettings();
+        }
 
         function updateTexts() {
             const t = i18n[currentLang];
@@ -859,7 +1009,6 @@
         const diffSettings = [
             { id: 'easy', count: 15, baseSpeed: 180, speedInc: 15, baseWidth: 55, widthDec: 1.5, timing: 0.52 },
             { id: 'medium', count: 15, baseSpeed: 400, speedInc: 12, baseWidth: 32, widthDec: 1.0, timing: 0.40 },
-            // NEW DYNAMIC DIFFICULTY
             { id: 'dynamic', count: 10, baseSpeed: 450, speedInc: 15, baseWidth: 28, widthDec: 0.8, timing: 0.35 },
             { id: 'hard', count: 10, baseSpeed: 580, speedInc: 15, baseWidth: 22, widthDec: 0.8, timing: 0.25 },
             { id: 'brutal', count: 10, baseSpeed: 750, speedInc: 20, baseWidth: 14, widthDec: 0.5, timing: 0.15 }
@@ -892,7 +1041,6 @@
             }
         });
 
-        // Original grid-based generator
         function generateComplexPath(num, diff) {
             const pts = [{ x: 0, y: 0 }];
             let curX = 0, curY = 0;
@@ -909,33 +1057,75 @@
             return pts;
         }
 
-        // New angle-based generator for "Dynamic" levels
         function generateDynamicPath(num) {
             const pts = [{ x: 0, y: 0 }];
             let curX = 0, curY = 0;
-            let currentAngle = 0; // Start moving East
+            let currentAngle = 0;
             let segments = 12 + Math.floor(num * 1.2);
 
             for (let j = 0; j < segments; j++) {
-                // Length of segment
                 const len = 350 + (Math.random() * 300) + (num * 10);
-
-                // Turn Logic: 10 to 170 degrees difference from current angle
-                // We convert degrees to radians
                 let turnDegrees = 10 + Math.random() * 160;
                 let deviation = turnDegrees * (Math.PI / 180);
-
-                // Randomly turn Left or Right relative to current heading
                 if (Math.random() < 0.5) deviation = -deviation;
-
                 currentAngle += deviation;
-
                 curX += Math.cos(currentAngle) * len;
                 curY += Math.sin(currentAngle) * len;
-
                 pts.push({ x: Math.round(curX), y: Math.round(curY) });
             }
             return pts;
+        }
+
+        // --- CONFETTI SYSTEM ---
+        let particles = [];
+
+        function startConfetti() {
+            particles = [];
+            for (let i = 0; i < 150; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height, // Start above screen
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: Math.random() * 10 + 5,
+                    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                    size: Math.random() * 8 + 4,
+                    rotation: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+        }
+
+        function updateConfetti() {
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.rotation += p.rotSpeed;
+                p.vy += 0.1; // Gravity
+
+                // If particle falls below screen, recycle it for a continuous effect (optional)
+                // Or just let it fall. Let's let it fall and stop updating when empty
+                if (p.y > canvas.height + 20) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        function drawConfetti(ctx) {
+            ctx.save();
+            // Confetti is drawn in screen space, so we reset transform
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+            particles.forEach(p => {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                ctx.restore();
+            });
+            ctx.restore();
         }
 
         // --- GAME STATE ---
@@ -946,7 +1136,6 @@
         let isPreviewing = false, previewTargetIdx = 0;
         let shake = 0;
 
-        // --- TUTORIAL STATE ---
         let isTutorial = false;
         let tutorialPhase = 0;
         let tutorialPause = false;
@@ -959,6 +1148,7 @@
             document.getElementById('langSwitcher').classList.toggle('hidden', id !== 'mainMenu');
             if (id === 'levelSelect') renderGrids();
             if (id === 'statsScreen') renderStats();
+            if (id === 'settingsScreen') renderSettings();
         }
 
         function renderGrids() {
@@ -995,13 +1185,11 @@
             });
         }
 
-        // --- TUTORIAL LOGIC ---
         function startTutorial() {
             isTutorial = true;
             tutorialPhase = 0;
             const t = i18n[currentLang];
 
-            // Simple zigzag track
             const tutTrack = {
                 id: 'TUT', difficulty: 'easy', speed: 200, width: 60, timing: 0.5,
                 pts: [
@@ -1011,7 +1199,7 @@
 
             document.getElementById('skipTutBtn').classList.remove('hidden');
             startTrack(tutTrack);
-            document.getElementById('scoutingHint').classList.add('hidden'); // No scouting in tutorial
+            document.getElementById('scoutingHint').classList.add('hidden');
             isPreviewing = false;
             targetZoom = 1.0;
             document.getElementById('hudTrackVal').textContent = "TUT";
@@ -1039,6 +1227,7 @@
         function startTrack(t) {
             currentTrack = t; attempts = 1; paused = false; currentProg = 0;
             tutorialPause = false;
+            particles = []; // clear confetti
 
             if (!isTutorial) {
                 isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4;
@@ -1091,34 +1280,26 @@
 
             if (!alive || paused) return;
 
-            // --- TUTORIAL INPUT LOGIC ---
             if (isTutorial) {
                 const t = i18n[currentLang];
-                // Phase 0: Start
                 if (!started) {
                     started = true;
                     if (tutorialPhase === 0) tutorialPhase = 1;
-                    else if (tutorialPhase === 3) { /* Stay 3 for late demo */ }
-                    else if (tutorialPhase === 5) { /* Real try */ }
                     showTutorialText(null);
                     return;
                 }
 
-                // Phase 2: User clicks too early (frozen state)
                 if (tutorialPhase === 2) {
-                    tutorialPause = false; // Unfreeze
-                    // Force crash logic
-                    player.vx = 0; player.vy = 1; // Arbitrary wrong direction
+                    tutorialPause = false;
+                    player.vx = 0; player.vy = 1;
                     fail();
                     return;
                 }
 
-                // Phase 3/4: Late demo - IGNORE INPUT
                 if (tutorialPhase === 3 || tutorialPhase === 4) {
                     return;
                 }
             }
-            // ----------------------------
 
             if (isPreviewing) {
                 isPreviewing = false;
@@ -1135,7 +1316,6 @@
                 return;
             }
 
-            // Normal turning logic
             let next = currentTrack.pts[player.segIdx + 1];
             if (!next) return;
             let isFinalSegment = (player.segIdx + 1 >= currentTrack.pts.length - 1);
@@ -1146,7 +1326,6 @@
                 updateVelocity();
                 AudioSfx.play('turn');
 
-                // Tutorial Success Check
                 if (isTutorial && tutorialPhase === 5 && player.segIdx >= 3) {
                     win();
                 }
@@ -1182,13 +1361,11 @@
 
             const t = i18n[currentLang];
 
-            // Tutorial Fail Handling
             if (isTutorial) {
                 document.getElementById('overlayExitBtn').classList.add('hidden');
                 document.getElementById('progressInfo').innerHTML = "";
 
                 if (tutorialPhase === 2) {
-                    // Early fail
                     document.getElementById('msgTitle').textContent = t.tutFailEarly;
                     document.getElementById('msgBody').textContent = "";
                     document.getElementById('overlayMainBtn').textContent = t.tutNextStep;
@@ -1197,11 +1374,9 @@
                         attempts = 1;
                         initGame();
                         showTutorialText(null);
-                        // Auto start for late demo
                         setTimeout(() => handleInput(), 500);
                     };
                 } else if (tutorialPhase === 3 || tutorialPhase === 4) {
-                    // Late fail
                     document.getElementById('msgTitle').textContent = t.tutFailLate;
                     document.getElementById('msgBody').textContent = "";
                     document.getElementById('overlayMainBtn').textContent = t.tutTryReal;
@@ -1212,7 +1387,6 @@
                         showTutorialText(t.tutRealTry);
                     };
                 } else {
-                    // Real fail in tutorial
                     document.getElementById('msgTitle').textContent = t.crash;
                     document.getElementById('msgBody').textContent = t.tryAgain;
                     document.getElementById('overlayMainBtn').textContent = t.tryAgainBtn;
@@ -1244,6 +1418,7 @@
         function win() {
             alive = false;
             AudioSfx.play('win');
+            startConfetti(); // Trigger confetti
             const t = i18n[currentLang];
 
             if (isTutorial) {
@@ -1304,14 +1479,12 @@
                 pState.prevX = pState.x; pState.prevY = pState.y;
                 cam.prevX = cam.x; cam.prevY = cam.y;
 
-                // Tutorial Phase 1 -> 2 Transition (Approaching first turn)
                 if (isTutorial && tutorialPhase === 1) {
-                    // Check distance to first turn
                     let turnPt = currentTrack.pts[1];
                     let dist = Math.hypot(turnPt.x - pState.x, turnPt.y - pState.y);
-                    if (dist < 100) { // Close to turn
+                    if (dist < 100) {
                         tutorialPause = true;
-                        tutorialPhase = 2; // Wait for click
+                        tutorialPhase = 2;
                         showTutorialText(i18n[currentLang].tutTurnNow);
                         return;
                     }
@@ -1337,9 +1510,8 @@
 
                 let cx = p1.x + Math.max(0, Math.min(1, progressT)) * dx, cy = p1.y + Math.max(0, Math.min(1, progressT)) * dy;
                 if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) {
-                    // Tutorial Phase 3 -> 4 (Late Crash)
                     if (isTutorial && tutorialPhase === 3) {
-                        tutorialPhase = 4; // Register as late crash
+                        tutorialPhase = 4;
                         fail();
                         return;
                     }
@@ -1354,6 +1526,13 @@
 
         function draw(alpha) {
             ctx.fillStyle = "#050608"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Confetti (Overlay)
+            if (particles.length > 0) {
+                updateConfetti();
+                drawConfetti(ctx);
+            }
+
             if (currentTrack) {
                 const lerpX = pState.prevX + (pState.x - pState.prevX) * alpha;
                 const lerpY = pState.prevY + (pState.y - pState.prevY) * alpha;
@@ -1368,9 +1547,8 @@
                 ctx.scale(lerpZoom, lerpZoom);
                 ctx.translate(-lerpCamX, -lerpCamY);
 
-                // Determine track color based on difficulty
                 if (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ctx.strokeStyle = "#ff0044";
-                else if (currentTrack.difficulty === 'dynamic') ctx.strokeStyle = "#d946ef"; // Dynamic Color
+                else if (currentTrack.difficulty === 'dynamic') ctx.strokeStyle = "#d946ef";
                 else ctx.strokeStyle = "#fff";
 
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
@@ -1391,11 +1569,25 @@
                 else if (currentTrack.difficulty === 'dynamic') ctx.shadowColor = "#d946ef";
                 else ctx.shadowColor = "#1d2bff";
 
-                // FORCE BLUE BALL COLOR regardless of shadow color
-                ctx.fillStyle = alive ? "#1d2bff" : "#555";
+                // --- MODIFIED PLAYER COLOR ---
+                ctx.fillStyle = alive ? gameSettings.skin : "#555";
 
                 ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
                 ctx.shadowBlur = 0;
+
+                // --- FOG IMPLEMENTATION ---
+                if (gameSettings.fog && alive) {
+                    const gradient = ctx.createRadialGradient(lerpX, lerpY, 150, lerpX, lerpY, 700);
+                    gradient.addColorStop(0, "transparent");
+                    gradient.addColorStop(0.3, "rgba(5,6,8, 0.8)");
+                    gradient.addColorStop(1, "rgba(5,6,8, 1)");
+
+                    ctx.save();
+                    ctx.fillStyle = gradient;
+                    // Draw a giant rect covering everything visible
+                    ctx.fillRect(lerpX - 2000, lerpY - 2000, 4000, 4000);
+                    ctx.restore();
+                }
 
                 if (!started && !isPreviewing && alive) {
                     ctx.fillStyle = "white"; ctx.font = "bold 40px 'Segoe UI'"; ctx.textAlign = "center";
