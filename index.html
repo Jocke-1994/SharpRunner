@@ -3,12 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Labyrint Master: BRUTAL EDITION</title>
+    <title>Labyrint Master: DYNAMIC EDITION</title>
     <style>
         :root {
             --bg: #050608;
             --primary: #1d2bff;
             --brutal: #ff0044;
+            --dynamic: #d946ef;
             --text: #cfd7ff;
             --panel: #12141d;
             --success: #00c853;
@@ -284,7 +285,7 @@
                 background: #eee;
             }
 
-        /* --- NEW LANGUAGE SELECTOR STYLES --- */
+        /* --- LANGUAGE SELECTOR --- */
         .lang-switcher {
             position: fixed;
             top: 25px;
@@ -401,6 +402,10 @@
 
         .brutal {
             background: var(--brutal);
+        }
+
+        .dynamic {
+            background: var(--dynamic);
         }
 
         .overlay {
@@ -644,8 +649,12 @@
 
     <div id="levelSelect" class="screen hidden">
         <button class="btn btn-secondary" style="align-self: flex-start; min-width: 120px;" onclick="showScreen('mainMenu')" data-t="backMenu">← MENY</button>
+
         <h2 data-t="diffEasy">LÄTT</h2><div class="menu-grid" id="grid-easy"></div>
         <h2 data-t="diffMed">MEDEL</h2><div class="menu-grid" id="grid-medium"></div>
+
+        <h2 style="color:var(--dynamic); border-color:var(--dynamic);" data-t="diffDyn">DYNAMIC</h2><div class="menu-grid" id="grid-dynamic"></div>
+
         <h2 data-t="diffHard">SVÅR</h2><div class="menu-grid" id="grid-hard"></div>
         <h2 style="color:var(--brutal); border-color:var(--brutal);" data-t="diffBrut">BRUTAL</h2><div class="menu-grid" id="grid-brutal"></div>
     </div>
@@ -718,41 +727,41 @@
         const i18n = {
             sv: {
                 title: "LABYRINT", startBtn: "Starta Spelet", statsBtn: "Statistik", aboutBtn: "Om Oss",
-                backMenu: "← MENY", diffEasy: "LÄTT", diffMed: "MEDEL", diffHard: "SVÅR", diffBrut: "BRUTAL",
+                backMenu: "← MENY", diffEasy: "LÄTT", diffMed: "MEDEL", diffDyn: "DYNAMIC", diffHard: "SVÅR", diffBrut: "BRUTAL",
                 pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
                 back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
                 aboutText: `
-                        <div class="founder-section">
-                            <div class="founder-title">Grundarna</div>
-                            <div class="founder-grid">
-                                <div class="founder-card">
-                                    <span class="founder-name">Bozhidar Ivanov</span>
-                                    <span class="founder-role">Lead Developer</span>
-                                    <div class="social-row">
-                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                            <div class="founder-section">
+                                <div class="founder-title">Grundarna</div>
+                                <div class="founder-grid">
+                                    <div class="founder-card">
+                                        <span class="founder-name">Bozhidar Ivanov</span>
+                                        <span class="founder-role">Lead Developer</span>
+                                        <div class="social-row">
+                                            <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                            <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                        </div>
+                                    </div>
+                                    <div class="founder-card">
+                                        <span class="founder-name">Joakim Rehn</span>
+                                        <span class="founder-role">Lead Designer</span>
+                                        <div class="social-row">
+                                            <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                            <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="founder-card">
-                                    <span class="founder-name">Joakim Rehn</span>
-                                    <span class="founder-role">Lead Designer</span>
-                                    <div class="social-row">
-                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
-                                    </div>
+                                <div class="wish-box">
+                                    <span class="wish-label">En önskan från oss:</span>
+                                    <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
                                 </div>
                             </div>
-                            <div class="wish-box">
-                                <span class="wish-label">En önskan från oss:</span>
-                                <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
-                            </div>
-                        </div>
-                        <div class="instr-list">
-                            <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
-                            <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
-                            <p>På SVÅR och BRUTAL syns inga cirklar.</p>
-                            <p>Tryck på <b>P</b> för att pausa.</p>
-                        </div>`,
+                            <div class="instr-list">
+                                <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
+                                <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
+                                <p>På SVÅR och BRUTAL syns inga cirklar.</p>
+                                <p>Tryck på <b>P</b> för att pausa.</p>
+                            </div>`,
                 clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
                 skipHint: "KLICKA FÖR ATT HOPPA ÖVER",
                 crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
@@ -770,41 +779,41 @@
             },
             en: {
                 title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us",
-                backMenu: "← MENU", diffEasy: "EASY", diffMed: "MEDIUM", diffHard: "HARD", diffBrut: "BRUTAL",
+                backMenu: "← MENU", diffEasy: "EASY", diffMed: "MEDIUM", diffDyn: "DYNAMIC", diffHard: "HARD", diffBrut: "BRUTAL",
                 pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
                 back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
                 aboutText: `
-                        <div class="founder-section">
-                            <div class="founder-title">The Founders</div>
-                            <div class="founder-grid">
-                                <div class="founder-card">
-                                    <span class="founder-name">Bozhidar Ivanov</span>
-                                    <span class="founder-role">Lead Developer</span>
-                                    <div class="social-row">
-                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                            <div class="founder-section">
+                                <div class="founder-title">The Founders</div>
+                                <div class="founder-grid">
+                                    <div class="founder-card">
+                                        <span class="founder-name">Bozhidar Ivanov</span>
+                                        <span class="founder-role">Lead Developer</span>
+                                        <div class="social-row">
+                                            <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                            <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                        </div>
+                                    </div>
+                                    <div class="founder-card">
+                                        <span class="founder-name">Joakim Rehn</span>
+                                        <span class="founder-role">Lead Designer</span>
+                                        <div class="social-row">
+                                            <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                            <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="founder-card">
-                                    <span class="founder-name">Joakim Rehn</span>
-                                    <span class="founder-role">Lead Designer</span>
-                                    <div class="social-row">
-                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
-                                    </div>
+                                <div class="wish-box">
+                                    <span class="wish-label">A wish from us:</span>
+                                    <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
                                 </div>
                             </div>
-                            <div class="wish-box">
-                                <span class="wish-label">A wish from us:</span>
-                                <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
-                            </div>
-                        </div>
-                        <div class="instr-list">
-                            <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
-                            <p>Tip: Click/Space during scouting to skip directly to the start.</p>
-                            <p>On HARD and BRUTAL, no circles are shown.</p>
-                            <p>Press <b>P</b> to pause.</p>
-                        </div>`,
+                            <div class="instr-list">
+                                <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
+                                <p>Tip: Click/Space during scouting to skip directly to the start.</p>
+                                <p>On HARD and BRUTAL, no circles are shown.</p>
+                                <p>Press <b>P</b> to pause.</p>
+                            </div>`,
                 clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...",
                 skipHint: "CLICK TO SKIP",
                 crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN (SPACE)",
@@ -850,6 +859,8 @@
         const diffSettings = [
             { id: 'easy', count: 15, baseSpeed: 180, speedInc: 15, baseWidth: 55, widthDec: 1.5, timing: 0.52 },
             { id: 'medium', count: 15, baseSpeed: 400, speedInc: 12, baseWidth: 32, widthDec: 1.0, timing: 0.40 },
+            // NEW DYNAMIC DIFFICULTY
+            { id: 'dynamic', count: 10, baseSpeed: 450, speedInc: 15, baseWidth: 28, widthDec: 0.8, timing: 0.35 },
             { id: 'hard', count: 10, baseSpeed: 580, speedInc: 15, baseWidth: 22, widthDec: 0.8, timing: 0.25 },
             { id: 'brutal', count: 10, baseSpeed: 750, speedInc: 20, baseWidth: 14, widthDec: 0.5, timing: 0.15 }
         ];
@@ -861,6 +872,13 @@
                 let width = Math.max(5, setting.baseWidth - (i * setting.widthDec));
                 let timing = setting.timing - (i * 0.005);
 
+                let pathPoints;
+                if (setting.id === 'dynamic') {
+                    pathPoints = generateDynamicPath(globalIndex);
+                } else {
+                    pathPoints = generateComplexPath(globalIndex, setting.id);
+                }
+
                 tracks.push({
                     id: globalIndex.toString().padStart(3, '0'),
                     num: globalIndex,
@@ -868,12 +886,13 @@
                     speed: speed,
                     width: width,
                     timing: timing,
-                    pts: generateComplexPath(globalIndex, setting.id)
+                    pts: pathPoints
                 });
                 globalIndex++;
             }
         });
 
+        // Original grid-based generator
         function generateComplexPath(num, diff) {
             const pts = [{ x: 0, y: 0 }];
             let curX = 0, curY = 0;
@@ -890,6 +909,35 @@
             return pts;
         }
 
+        // New angle-based generator for "Dynamic" levels
+        function generateDynamicPath(num) {
+            const pts = [{ x: 0, y: 0 }];
+            let curX = 0, curY = 0;
+            let currentAngle = 0; // Start moving East
+            let segments = 12 + Math.floor(num * 1.2);
+
+            for (let j = 0; j < segments; j++) {
+                // Length of segment
+                const len = 350 + (Math.random() * 300) + (num * 10);
+
+                // Turn Logic: 10 to 170 degrees difference from current angle
+                // We convert degrees to radians
+                let turnDegrees = 10 + Math.random() * 160;
+                let deviation = turnDegrees * (Math.PI / 180);
+
+                // Randomly turn Left or Right relative to current heading
+                if (Math.random() < 0.5) deviation = -deviation;
+
+                currentAngle += deviation;
+
+                curX += Math.cos(currentAngle) * len;
+                curY += Math.sin(currentAngle) * len;
+
+                pts.push({ x: Math.round(curX), y: Math.round(curY) });
+            }
+            return pts;
+        }
+
         // --- GAME STATE ---
         let currentTrack = null, pState = { x: 0, y: 0, prevX: 0, prevY: 0 }, player = { vx: 0, vy: 0, segIdx: 0 };
         let cam = { x: 0, y: 0, prevX: 0, prevY: 0 }, alive = false, started = false, paused = false, attempts = 1;
@@ -901,14 +949,7 @@
         // --- TUTORIAL STATE ---
         let isTutorial = false;
         let tutorialPhase = 0;
-        /* 0: Start (wait for click)
-           1: Moving Early Demo (Wait for approach)
-           2: Frozen at turn (Wait for click) -> Forces crash
-           3: Reset, Moving Late Demo (Disable input)
-           4: Crash Late
-           5: Real Try
-        */
-        let tutorialPause = false; // Freeze physics but not render loop
+        let tutorialPause = false;
 
         const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
 
@@ -922,8 +963,9 @@
 
         function renderGrids() {
             const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
-            ['easy', 'medium', 'hard', 'brutal'].forEach(diff => {
+            ['easy', 'medium', 'dynamic', 'hard', 'brutal'].forEach(diff => {
                 const grid = document.getElementById('grid-' + diff);
+                if (!grid) return;
                 grid.innerHTML = '';
                 tracks.filter(t => t.difficulty === diff).forEach(t => {
                     const d = document.createElement('div');
@@ -1066,7 +1108,6 @@
                 if (tutorialPhase === 2) {
                     tutorialPause = false; // Unfreeze
                     // Force crash logic
-                    // Turn straight into wall visually
                     player.vx = 0; player.vy = 1; // Arbitrary wrong direction
                     fail();
                     return;
@@ -1327,13 +1368,17 @@
                 ctx.scale(lerpZoom, lerpZoom);
                 ctx.translate(-lerpCamX, -lerpCamY);
 
-                ctx.strokeStyle = (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ? "#ff0044" : "#fff";
+                // Determine track color based on difficulty
+                if (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ctx.strokeStyle = "#ff0044";
+                else if (currentTrack.difficulty === 'dynamic') ctx.strokeStyle = "#d946ef"; // Dynamic Color
+                else ctx.strokeStyle = "#fff";
+
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
                 currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
 
-                if (currentTrack.difficulty === 'easy' || currentTrack.difficulty === 'medium') {
-                    ctx.fillStyle = "rgba(29, 43, 255, 0.25)";
+                if (currentTrack.difficulty === 'easy' || currentTrack.difficulty === 'medium' || currentTrack.difficulty === 'dynamic') {
+                    ctx.fillStyle = currentTrack.difficulty === 'dynamic' ? "rgba(217, 70, 239, 0.25)" : "rgba(29, 43, 255, 0.25)";
                     currentTrack.pts.forEach((p, idx) => {
                         if (idx > 0 && idx < currentTrack.pts.length - 1) {
                             ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill();
@@ -1341,8 +1386,14 @@
                     });
                 }
 
-                ctx.shadowBlur = 15; ctx.shadowColor = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
-                ctx.fillStyle = alive ? ctx.shadowColor : "#555";
+                ctx.shadowBlur = 15;
+                if (currentTrack.difficulty === 'brutal') ctx.shadowColor = "#ff0044";
+                else if (currentTrack.difficulty === 'dynamic') ctx.shadowColor = "#d946ef";
+                else ctx.shadowColor = "#1d2bff";
+
+                // FORCE BLUE BALL COLOR regardless of shadow color
+                ctx.fillStyle = alive ? "#1d2bff" : "#555";
+
                 ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
                 ctx.shadowBlur = 0;
 
@@ -1352,7 +1403,10 @@
                     ctx.fillText(txt, lerpX, lerpY - 60);
                 }
                 if (isPreviewing) {
-                    ctx.fillStyle = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
+                    if (currentTrack.difficulty === 'brutal') ctx.fillStyle = "#ff0044";
+                    else if (currentTrack.difficulty === 'dynamic') ctx.fillStyle = "#d946ef";
+                    else ctx.fillStyle = "#1d2bff";
+
                     ctx.font = "bold 50px 'Segoe UI'"; ctx.textAlign = "center";
                     ctx.fillText(i18n[currentLang].scouting, cam.x, cam.y - 120);
                 }
@@ -1368,7 +1422,7 @@
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
         window.onresize();
         updateTexts();
-        updateLangUI(); // Initialize language UI state
+        updateLangUI();
 
         requestAnimationFrame(loop);
         function loop(timestamp) {
