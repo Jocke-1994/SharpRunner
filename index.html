@@ -47,7 +47,6 @@
             display: none !important;
         }
 
-        /* HUD & Paus-knapp */
         .hud {
             position: fixed;
             top: 25px;
@@ -91,7 +90,6 @@
             pointer-events: auto;
         }
 
-        /* Menyer */
         h1 {
             font-size: 4rem;
             margin-bottom: 1.5rem;
@@ -169,7 +167,6 @@
             border: 2px solid var(--success) !important;
         }
 
-        /* Statistik */
         .stats-list {
             width: 100%;
             max-width: 550px;
@@ -214,7 +211,6 @@
             background: var(--brutal);
         }
 
-        /* Popups */
         .overlay {
             position: fixed;
             inset: 0;
@@ -283,6 +279,7 @@
         <h1>OM SPELET</h1>
         <div style="max-width: 500px; text-align: center; background: var(--panel); padding: 40px; border-radius: 25px; border: 1px solid #333;">
             <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
+            <p>Du behöver inte klicka vid sista cirkeln - kör bara i mål!</p>
             <p>Tryck på <b>P</b> för att pausa.</p>
         </div>
         <button class="btn btn-secondary" style="margin-top: 20px;" onclick="showScreen('mainMenu')">OK</button>
@@ -400,14 +397,23 @@
         function handleInput() {
             if (!alive || paused) return;
             if (!started) { started = true; return; }
+
             let next = currentTrack.pts[player.segIdx + 1];
             if (!next) return;
+
+            // Kolla om detta är sista svängen innan mål
+            let isFinalSegment = (player.segIdx + 1 >= currentTrack.pts.length - 1);
             let d = Math.hypot(next.x - pState.x, next.y - pState.y);
-            if (d < currentTrack.speed * currentTrack.timing) {
+
+            // Om vi inte är på målsträckan, tillåt sväng
+            if (!isFinalSegment && d < currentTrack.speed * currentTrack.timing) {
                 player.segIdx++;
-                if (player.segIdx >= currentTrack.pts.length - 1) win();
-                else { pState.x = next.x; pState.y = next.y; updateVelocity(); }
-            } else fail();
+                pState.x = next.x;
+                pState.y = next.y;
+                updateVelocity();
+            } else if (!isFinalSegment) {
+                fail();
+            }
         }
 
         function togglePause() {
@@ -457,9 +463,18 @@
                 pState.y += player.vy * currentTrack.speed * dt;
                 cam.x += (pState.x - cam.x) * (dt * 12);
                 cam.y += (pState.y - cam.y) * (dt * 12);
+
                 let p1 = currentTrack.pts[player.segIdx], p2 = currentTrack.pts[player.segIdx + 1];
                 let dx = p2.x - p1.x, dy = p2.y - p1.y;
-                let t = ((pState.x - p1.x) * dx + (pState.y - p1.y) * dy) / (dx * dx + dy * dy);
+                let segmentLenSq = dx * dx + dy * dy;
+                let t = ((pState.x - p1.x) * dx + (pState.y - p1.y) * dy) / segmentLenSq;
+
+                // AUTOMATISK VINST vid sista punkten
+                if (player.segIdx === currentTrack.pts.length - 2 && t >= 1) {
+                    win();
+                    return;
+                }
+
                 let cx = p1.x + Math.max(0, Math.min(1, t)) * dx, cy = p1.y + Math.max(0, Math.min(1, t)) * dy;
                 if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) fail();
             }
@@ -482,16 +497,28 @@
                 const lerpY = pState.prevY + (pState.y - pState.prevY) * alpha;
                 const lerpCamX = cam.prevX + (cam.x - cam.prevX) * alpha;
                 const lerpCamY = cam.prevY + (cam.y - cam.prevY) * alpha;
+
                 ctx.save();
                 ctx.translate(canvas.width / 2 - lerpCamX, canvas.height / 2 - lerpCamY);
+
+                // Rita banan
                 ctx.strokeStyle = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#fff";
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
                 currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
+
+                // Rita sväng-cirklar (men inte vid sista punkten/målet)
                 ctx.fillStyle = currentTrack.difficulty === 'brutal' ? "rgba(255,0,68,0.15)" : "rgba(29, 43, 255, 0.25)";
-                currentTrack.pts.forEach((p, idx) => { if (idx > 0 && idx < currentTrack.pts.length - 1) { ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill(); } });
+                currentTrack.pts.forEach((p, idx) => {
+                    if (idx > 0 && idx < currentTrack.pts.length - 1) {
+                        ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill();
+                    }
+                });
+
+                // Rita spelaren
                 ctx.shadowBlur = 15; ctx.shadowColor = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
                 ctx.fillStyle = ctx.shadowColor; ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
+
                 ctx.restore();
             }
         }
