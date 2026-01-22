@@ -342,6 +342,36 @@
     <canvas id="c"></canvas>
 
     <script>
+        // --- AUDIO ENGINE ---
+        const AudioSfx = {
+            ctx: null,
+            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+            play(type) {
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+
+                const now = this.ctx.currentTime;
+                if (type === 'turn') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+                    gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.1);
+                    osc.start(); osc.stop(now + 0.1);
+                } else if (type === 'fail') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, now);
+                    osc.frequency.linearRampToValueAtTime(40, now + 0.3);
+                    gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                    osc.start(); osc.stop(now + 0.3);
+                } else if (type === 'win') {
+                    osc.type = 'square'; osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.2);
+                    gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                    osc.start(); osc.stop(now + 0.4);
+                }
+            }
+        };
+
         // --- LOCALIZATION ---
         const i18n = {
             sv: {
@@ -350,13 +380,13 @@
                 pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
                 back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
                 aboutText: `<p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
+                                <p>Du kan även använda <b>Space</b> för att starta banan eller starta om direkt efter en krasch.</p>
                                 <p>På SVÅR och BRUTAL syns inga cirklar - lita på din tajming!</p>
-                                <p>Du behöver inte klicka vid sista punkten - kör bara i mål!</p>
                                 <p>Tryck på <b>P</b> för att pausa.</p>`,
-                clickStart: "KLICKA FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
-                crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN",
+                clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
+                crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
                 pb: "NYTT PERSONBÄSTA!", oldPb: "Gammalt", winTitle: "KLAR!", winBody: "Bana {id} avklarad!",
-                winStats: "Klarade på {n} försök.", nextBtn: "NÄSTA BANA", statsCleared: "KLARADE: {c} / {t}",
+                winStats: "Klarade på {n} försök.", nextBtn: "NÄSTA BANA (SPACE)", statsCleared: "KLARADE: {c} / {t}",
                 statsBest: "PB: {p}% | {a} försök"
             },
             en: {
@@ -365,13 +395,13 @@
                 pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
                 back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
                 aboutText: `<p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
+                                <p>You can also use <b>Space</b> to start the level or restart quickly after a crash.</p>
                                 <p>On HARD and BRUTAL, no circles are shown - trust your timing!</p>
-                                <p>No need to click at the final point - just reach the goal!</p>
                                 <p>Press <b>P</b> to pause.</p>`,
-                clickStart: "CLICK TO START", scouting: "SCOUTING TRACK...",
-                crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN",
+                clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...",
+                crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN (SPACE)",
                 pb: "NEW PERSONAL BEST!", oldPb: "Previous", winTitle: "CLEAR!", winBody: "Level {id} cleared!",
-                winStats: "Cleared in {n} attempts.", nextBtn: "NEXT LEVEL", statsCleared: "CLEARED: {c} / {t}",
+                winStats: "Cleared in {n} attempts.", nextBtn: "NEXT LEVEL (SPACE)", statsCleared: "CLEARED: {c} / {t}",
                 statsBest: "PB: {p}% | {a} attempts"
             }
         };
@@ -386,16 +416,13 @@
             });
             document.getElementById('aboutContent').innerHTML = t.aboutText;
             document.getElementById('langBtn').textContent = currentLang === 'sv' ? 'EN' : 'SV';
-            if (currentTrack) {
-                document.getElementById('hudTrackVal').textContent = currentTrack.id;
-            }
         }
 
         function toggleLanguage() {
             currentLang = currentLang === 'sv' ? 'en' : 'sv';
             localStorage.setItem('maze_lang', currentLang);
             updateTexts();
-            if (document.getElementById('statsScreen').classList.contains('hidden') === false) renderStats();
+            if (!document.getElementById('statsScreen').classList.contains('hidden')) renderStats();
         }
 
         // --- DATA ---
@@ -435,9 +462,9 @@
         let currentTrack = null, pState = { x: 0, y: 0, prevX: 0, prevY: 0 }, player = { vx: 0, vy: 0, segIdx: 0 };
         let cam = { x: 0, y: 0, prevX: 0, prevY: 0 }, alive = false, started = false, paused = false, attempts = 1;
         let lastTime = 0, accumulator = 0, dt = 1 / 144, currentProg = 0;
-
         let zoom = 1, targetZoom = 1, prevZoom = 1;
         let isPreviewing = false, previewTargetIdx = 0;
+        let shake = 0; // Screen shake intensity
 
         const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
 
@@ -446,8 +473,7 @@
             document.getElementById(id).classList.remove('hidden');
             if (id === 'levelSelect') renderGrids();
             if (id === 'statsScreen') renderStats();
-            if (id === 'mainMenu') document.getElementById('langBtn').classList.remove('hidden');
-            else document.getElementById('langBtn').classList.add('hidden');
+            document.getElementById('langBtn').classList.toggle('hidden', id !== 'mainMenu');
         }
 
         function renderGrids() {
@@ -496,7 +522,7 @@
         }
 
         function initGame() {
-            alive = true; started = false; player.segIdx = 0; currentProg = 0;
+            alive = true; started = false; player.segIdx = 0; currentProg = 0; shake = 0;
             pState.x = pState.prevX = currentTrack.pts[0].x;
             pState.y = pState.prevY = currentTrack.pts[0].y;
             if (isPreviewing) { cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y; }
@@ -515,14 +541,24 @@
         }
 
         function handleInput() {
+            // Om död/vinst och overlay syns -> Space klickar på huvudknappen
+            if (!document.getElementById('gameOverlay').classList.contains('hidden')) {
+                document.getElementById('overlayMainBtn').click();
+                return;
+            }
+
             if (!alive || paused || isPreviewing) return;
             if (!started) { started = true; targetZoom = 1.0; return; }
+
             let next = currentTrack.pts[player.segIdx + 1];
             if (!next) return;
             let isFinalSegment = (player.segIdx + 1 >= currentTrack.pts.length - 1);
             let d = Math.hypot(next.x - pState.x, next.y - pState.y);
+
             if (!isFinalSegment && d < currentTrack.speed * currentTrack.timing) {
-                player.segIdx++; pState.x = next.x; pState.y = next.y; updateVelocity();
+                player.segIdx++; pState.x = next.x; pState.y = next.y;
+                updateVelocity();
+                AudioSfx.play('turn');
             } else if (!isFinalSegment) fail();
         }
 
@@ -543,7 +579,9 @@
         }
 
         function fail() {
-            alive = false;
+            if (!alive) return;
+            alive = false; shake = 25;
+            AudioSfx.play('fail');
             const t = i18n[currentLang];
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             if (!history[currentTrack.id]) history[currentTrack.id] = { attempts: 0, bestProg: 0, cleared: false };
@@ -565,6 +603,7 @@
 
         function win() {
             alive = false;
+            AudioSfx.play('win');
             const t = i18n[currentLang];
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             if (!history[currentTrack.id]) {
@@ -586,9 +625,14 @@
         }
 
         function updatePhysics() {
-            if (!alive || paused) return;
+            if (paused) return;
+
+            // Zoom smoothing
             prevZoom = zoom;
             zoom += (targetZoom - zoom) * 0.05;
+
+            // Shake decay
+            if (shake > 0) shake *= 0.9;
 
             if (isPreviewing) {
                 let target = currentTrack.pts[previewTargetIdx];
@@ -603,7 +647,7 @@
                 return;
             }
 
-            if (started) {
+            if (alive && started) {
                 pState.prevX = pState.x; pState.prevY = pState.y;
                 cam.prevX = cam.x; cam.prevY = cam.y;
                 pState.x += player.vx * currentTrack.speed * dt;
@@ -627,7 +671,7 @@
 
                 let cx = p1.x + Math.max(0, Math.min(1, progressT)) * dx, cy = p1.y + Math.max(0, Math.min(1, progressT)) * dy;
                 if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) fail();
-            } else {
+            } else if (!isPreviewing) {
                 cam.prevX = cam.x; cam.prevY = cam.y;
                 cam.x += (pState.x - cam.x) * 0.1; cam.y += (pState.y - cam.y) * 0.1;
             }
@@ -643,15 +687,22 @@
                 const lerpZoom = prevZoom + (zoom - prevZoom) * alpha;
 
                 ctx.save();
-                ctx.translate(canvas.width / 2, canvas.height / 2);
+
+                // Camera offset + Shake
+                let offsetX = (Math.random() - 0.5) * shake;
+                let offsetY = (Math.random() - 0.5) * shake;
+
+                ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY);
                 ctx.scale(lerpZoom, lerpZoom);
                 ctx.translate(-lerpCamX, -lerpCamY);
 
+                // Draw Path
                 ctx.strokeStyle = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#fff";
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
                 currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
 
+                // Draw Turn Zones (Easy/Medium only)
                 if (currentTrack.difficulty === 'easy' || currentTrack.difficulty === 'medium') {
                     ctx.fillStyle = "rgba(29, 43, 255, 0.25)";
                     currentTrack.pts.forEach((p, idx) => {
@@ -661,9 +712,12 @@
                     });
                 }
 
+                // Draw Player
                 ctx.shadowBlur = 15; ctx.shadowColor = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
-                ctx.fillStyle = ctx.shadowColor; ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = alive ? ctx.shadowColor : "#555";
+                ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
 
+                // Text Hints
                 ctx.shadowBlur = 0;
                 if (!started && !isPreviewing && alive) {
                     ctx.fillStyle = "white"; ctx.font = "bold 40px 'Segoe UI'"; ctx.textAlign = "center";
@@ -682,10 +736,9 @@
             if (e.code === "Space") { e.preventDefault(); handleInput(); }
             if (e.code === "KeyP") togglePause();
         });
-        canvas.addEventListener("pointerdown", e => { e.preventDefault(); handleInput(); });
+        canvas.addEventListener("pointerdown", e => { e.preventDefault(); AudioSfx.init(); handleInput(); });
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
 
-        // Init
         window.onresize();
         updateTexts();
         requestAnimationFrame(loop);
