@@ -310,7 +310,8 @@
         <h1>OM SPELET</h1>
         <div style="max-width: 500px; text-align: center; background: var(--panel); padding: 40px; border-radius: 25px; border: 1px solid #333;">
             <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
-            <p>Du behöver inte klicka vid sista cirkeln - kör bara i mål!</p>
+            <p>På SVÅR och BRUTAL syns inga cirklar - lita på din tajming!</p>
+            <p>Du behöver inte klicka vid sista punkten - kör bara i mål!</p>
             <p>Tryck på <b>P</b> för att pausa.</p>
         </div>
         <button class="btn btn-secondary" style="margin-top: 20px;" onclick="showScreen('mainMenu')">OK</button>
@@ -367,7 +368,6 @@
         let cam = { x: 0, y: 0, prevX: 0, prevY: 0 }, alive = false, started = false, paused = false, attempts = 1;
         let lastTime = 0, accumulator = 0, dt = 1 / 144, currentProg = 0;
 
-        // ZOOM VARIABLER
         let zoom = 1, targetZoom = 1, prevZoom = 1;
         let isPreviewing = false, previewTargetIdx = 0;
 
@@ -413,7 +413,7 @@
 
         function startTrack(t) {
             currentTrack = t; attempts = 1; paused = false; currentProg = 0;
-            isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4; // Zooma ut för preview
+            isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4;
 
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('gameHud').classList.remove('hidden');
@@ -535,7 +535,7 @@
                     previewTargetIdx++;
                     if (previewTargetIdx >= currentTrack.pts.length) {
                         isPreviewing = false;
-                        targetZoom = 0.8; // Zooma in lite innan start
+                        targetZoom = 0.8;
                     }
                 }
                 return;
@@ -602,19 +602,23 @@
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
                 currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
 
-                // Sväng-cirklar
-                ctx.fillStyle = currentTrack.difficulty === 'brutal' ? "rgba(255,0,68,0.15)" : "rgba(29, 43, 255, 0.25)";
-                currentTrack.pts.forEach((p, idx) => {
-                    if (idx > 0 && idx < currentTrack.pts.length - 1) {
-                        ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill();
-                    }
-                });
+                // SVÄNG-CIRKLAR: Visas endast på 'easy' och 'medium'
+                if (currentTrack.difficulty === 'easy' || currentTrack.difficulty === 'medium') {
+                    ctx.fillStyle = "rgba(29, 43, 255, 0.25)";
+                    currentTrack.pts.forEach((p, idx) => {
+                        if (idx > 0 && idx < currentTrack.pts.length - 1) {
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    });
+                }
 
                 // Spelare
                 ctx.shadowBlur = 15; ctx.shadowColor = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
                 ctx.fillStyle = ctx.shadowColor; ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
 
-                // TEXT OVERLAYS I VÄRLDEN
+                // Text overlays
                 if (!started && !isPreviewing && alive) {
                     ctx.fillStyle = "white";
                     ctx.font = "bold 40px 'Segoe UI'";
