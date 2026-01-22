@@ -20,6 +20,8 @@
             background: var(--bg);
             overflow: hidden;
             font-family: 'Segoe UI', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         canvas {
@@ -35,7 +37,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Ändrad för att tillåta scroll */
+            justify-content: flex-start;
             background: var(--bg);
             color: var(--text);
             z-index: 10;
@@ -93,6 +95,44 @@
             animation: pulseHint 2s infinite ease-in-out;
             pointer-events: none;
             backdrop-filter: blur(8px);
+        }
+
+        /* Tutorial Instructions Overlay */
+        #tutorialInstr {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            z-index: 15;
+            pointer-events: none;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .tut-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            background: rgba(0,0,0,0.6);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .input-icons {
@@ -161,10 +201,9 @@
             box-shadow: 0 0 15px var(--primary);
         }
 
-        .pause-trigger {
+        .top-btn {
             position: fixed;
             top: 25px;
-            right: 25px;
             z-index: 5;
             background: rgba(18, 20, 29, 0.95);
             color: #fff;
@@ -175,6 +214,21 @@
             font-weight: bold;
             pointer-events: auto;
         }
+
+        #pauseBtn {
+            right: 25px;
+        }
+
+        #skipTutBtn {
+            right: 120px;
+            border-color: var(--brutal);
+            color: var(--brutal);
+        }
+
+            #skipTutBtn:hover {
+                background: var(--brutal);
+                color: white;
+            }
 
         h1 {
             font-size: 4rem;
@@ -219,6 +273,16 @@
             background: #222;
             box-shadow: 0 4px 0px #000;
         }
+
+        .btn-tut {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 4px 0 #999;
+        }
+
+            .btn-tut:hover {
+                background: #eee;
+            }
 
         .btn-lang {
             position: fixed;
@@ -357,6 +421,10 @@
         <div class="pill"><span data-t="hudDone">KLART</span> <b id="hudProgress">0%</b></div>
     </div>
 
+    <div id="tutorialInstr" class="hidden">
+        <div id="tutText" class="tut-text"></div>
+    </div>
+
     <div id="scoutingHint" class="hidden">
         <div class="input-icons">
             <div class="key-cap">SPACE</div>
@@ -369,11 +437,13 @@
         <div id="progressBarFill"></div>
     </div>
 
-    <button id="pauseBtn" class="pause-trigger hidden" onclick="togglePause()" data-t="pause">PAUS</button>
+    <button id="skipTutBtn" class="top-btn hidden" onclick="endTutorial()" data-t="skipTut">SKIPPA TUTORIAL</button>
+    <button id="pauseBtn" class="top-btn hidden" onclick="togglePause()" data-t="pause">PAUS</button>
 
     <div id="mainMenu" class="screen">
         <h1 data-t="title">LABYRINT</h1>
         <button class="btn" onclick="showScreen('levelSelect')" data-t="startBtn">Starta Spelet</button>
+        <button class="btn btn-tut" onclick="startTutorial()" data-t="tutBtn">Tutorial</button>
         <button class="btn btn-secondary" onclick="showScreen('statsScreen')" data-t="statsBtn">Statistik</button>
         <button class="btn btn-secondary" onclick="showScreen('aboutScreen')" data-t="aboutBtn">Om Spelet</button>
     </div>
@@ -412,7 +482,7 @@
             <div id="progressInfo"></div>
             <p id="msgBody"></p>
             <button id="overlayMainBtn" class="btn">NÄSTA</button>
-            <button class="btn btn-secondary" onclick="exitToMenu()" data-t="backMenu">MENY</button>
+            <button id="overlayExitBtn" class="btn btn-secondary" onclick="exitToMenu()" data-t="backMenu">MENY</button>
         </div>
     </div>
 
@@ -454,16 +524,24 @@
                 pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
                 back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
                 aboutText: `<p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
-                                <p>Du kan även använda <b>Space</b> för att starta banan eller starta om direkt efter en krasch.</p>
-                                <p>Tips: Klicka/Space under rekognoscering för att hoppa direkt till start.</p>
-                                <p>På SVÅR och BRUTAL syns inga cirklar - lita på din tajming!</p>
-                                <p>Tryck på <b>P</b> för att pausa.</p>`,
+                                    <p>Du kan även använda <b>Space</b> för att starta banan eller starta om direkt efter en krasch.</p>
+                                    <p>Tips: Klicka/Space under rekognoscering för att hoppa direkt till start.</p>
+                                    <p>På SVÅR och BRUTAL syns inga cirklar - lita på din tajming!</p>
+                                    <p>Tryck på <b>P</b> för att pausa.</p>`,
                 clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
                 skipHint: "KLICKA FÖR ATT HOPPA ÖVER",
                 crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
                 pb: "NYTT PERSONBÄSTA!", oldPb: "Gammalt", winTitle: "KLAR!", winBody: "Bana {id} avklarad!",
                 winStats: "Klarade på {n} försök.", nextBtn: "NÄSTA BANA (SPACE)", statsCleared: "KLARADE: {c} / {t}",
-                statsBest: "PB: {p}% | {a} försök"
+                statsBest: "PB: {p}% | {a} försök",
+                tutBtn: "TUTORIAL", skipTut: "SKIPPA",
+                tutStart: "TRYCK FÖR ATT STARTA",
+                tutTurnNow: "TRYCK FÖR ATT SVÄNGA NU!",
+                tutFailEarly: "TRYCKER DU FÖR TIDIGT SÅ KRASCHAR DU.",
+                tutFailLate: "ÄR DU INTE TILLRÄCKLIGT SNABB ÅKER DU IN I VÄGGEN.",
+                tutRealTry: "NU KÖR VI PÅ RIKTIGT! KLARA 3 SVÄNGAR.",
+                tutWin: "GRATTIS! DU HAR KLARAT TUTORIALEN.",
+                tutNextStep: "GÅ VIDARE", tutTryReal: "FÖRSÖK IGEN"
             },
             en: {
                 title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About",
@@ -471,16 +549,24 @@
                 pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
                 back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
                 aboutText: `<p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
-                                <p>You can also use <b>Space</b> to start the level or restart quickly after a crash.</p>
-                                <p>Tip: Click/Space during scouting to skip directly to the start.</p>
-                                <p>On HARD and BRUTAL, no circles are shown - trust your timing!</p>
-                                <p>Press <b>P</b> to pause.</p>`,
+                                    <p>You can also use <b>Space</b> to start the level or restart quickly after a crash.</p>
+                                    <p>Tip: Click/Space during scouting to skip directly to the start.</p>
+                                    <p>On HARD and BRUTAL, no circles are shown - trust your timing!</p>
+                                    <p>Press <b>P</b> to pause.</p>`,
                 clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...",
                 skipHint: "CLICK TO SKIP",
                 crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN (SPACE)",
                 pb: "NEW PERSONAL BEST!", oldPb: "Previous", winTitle: "CLEAR!", winBody: "Level {id} cleared!",
                 winStats: "Cleared in {n} attempts.", nextBtn: "NEXT LEVEL (SPACE)", statsCleared: "CLEARED: {c} / {t}",
-                statsBest: "PB: {p}% | {a} attempts"
+                statsBest: "PB: {p}% | {a} attempts",
+                tutBtn: "TUTORIAL", skipTut: "SKIP",
+                tutStart: "TAP TO START",
+                tutTurnNow: "TAP TO TURN NOW!",
+                tutFailEarly: "PRESSING TOO EARLY CAUSES A CRASH.",
+                tutFailLate: "TOO SLOW MEANS HITTING THE WALL.",
+                tutRealTry: "LET'S DO THIS! CLEAR 3 TURNS.",
+                tutWin: "CONGRATS! TUTORIAL COMPLETED.",
+                tutNextStep: "NEXT STEP", tutTryReal: "TRY AGAIN"
             }
         };
 
@@ -503,7 +589,6 @@
             if (!document.getElementById('statsScreen').classList.contains('hidden')) renderStats();
         }
 
-        // --- BAN-GENERERING (UPPDATERAD TILL 50 BANOR) ---
         const tracks = [];
         const diffSettings = [
             { id: 'easy', count: 15, baseSpeed: 180, speedInc: 15, baseWidth: 55, widthDec: 1.5, timing: 0.52 },
@@ -536,12 +621,10 @@
             const pts = [{ x: 0, y: 0 }];
             let curX = 0, curY = 0;
             let segments = 10 + Math.floor(num * 1.5);
-
             for (let j = 0; j < segments; j++) {
                 const len = 300 + (Math.random() * 400) + (num * 5);
-                if (j % 2 === 0) {
-                    curX += len;
-                } else {
+                if (j % 2 === 0) curX += len;
+                else {
                     let yMult = (diff === 'brutal' || diff === 'hard') ? 1.5 : 0.8;
                     curY += (len * yMult) * (Math.random() > 0.5 ? 1 : -1);
                 }
@@ -550,12 +633,25 @@
             return pts;
         }
 
+        // --- GAME STATE ---
         let currentTrack = null, pState = { x: 0, y: 0, prevX: 0, prevY: 0 }, player = { vx: 0, vy: 0, segIdx: 0 };
         let cam = { x: 0, y: 0, prevX: 0, prevY: 0 }, alive = false, started = false, paused = false, attempts = 1;
         let lastTime = 0, accumulator = 0, dt = 1 / 144, currentProg = 0;
         let zoom = 1, targetZoom = 1, prevZoom = 1;
         let isPreviewing = false, previewTargetIdx = 0;
         let shake = 0;
+
+        // --- TUTORIAL STATE ---
+        let isTutorial = false;
+        let tutorialPhase = 0;
+        /* 0: Start (wait for click)
+           1: Moving Early Demo (Wait for approach)
+           2: Frozen at turn (Wait for click) -> Forces crash
+           3: Reset, Moving Late Demo (Disable input)
+           4: Crash Late
+           5: Real Try
+        */
+        let tutorialPause = false; // Freeze physics but not render loop
 
         const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
 
@@ -600,15 +696,64 @@
             });
         }
 
+        // --- TUTORIAL LOGIC ---
+        function startTutorial() {
+            isTutorial = true;
+            tutorialPhase = 0;
+            const t = i18n[currentLang];
+
+            // Simple zigzag track
+            const tutTrack = {
+                id: 'TUT', difficulty: 'easy', speed: 200, width: 60, timing: 0.5,
+                pts: [
+                    { x: 0, y: 0 }, { x: 500, y: 0 }, { x: 500, y: 400 }, { x: 0, y: 400 }, { x: 0, y: 800 }
+                ]
+            };
+
+            document.getElementById('skipTutBtn').classList.remove('hidden');
+            startTrack(tutTrack);
+            document.getElementById('scoutingHint').classList.add('hidden'); // No scouting in tutorial
+            isPreviewing = false;
+            targetZoom = 1.0;
+            document.getElementById('hudTrackVal').textContent = "TUT";
+            showTutorialText(t.tutStart);
+        }
+
+        function endTutorial() {
+            isTutorial = false;
+            document.getElementById('skipTutBtn').classList.add('hidden');
+            document.getElementById('tutorialInstr').classList.add('hidden');
+            exitToMenu();
+        }
+
+        function showTutorialText(txt) {
+            const el = document.getElementById('tutorialInstr');
+            const txtEl = document.getElementById('tutText');
+            if (!txt) {
+                el.classList.add('hidden');
+            } else {
+                txtEl.textContent = txt;
+                el.classList.remove('hidden');
+            }
+        }
+
         function startTrack(t) {
             currentTrack = t; attempts = 1; paused = false; currentProg = 0;
-            isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4;
+            tutorialPause = false;
+
+            if (!isTutorial) {
+                isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4;
+                document.getElementById('scoutingHint').classList.remove('hidden');
+            } else {
+                isPreviewing = false; targetZoom = 1.0;
+            }
+
             document.getElementById('langBtn').classList.add('hidden');
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('gameHud').classList.remove('hidden');
             document.getElementById('progressBarContainer').classList.remove('hidden');
             document.getElementById('pauseBtn').classList.remove('hidden');
-            document.getElementById('scoutingHint').classList.remove('hidden');
+
             initGame();
         }
 
@@ -616,10 +761,18 @@
             alive = true; started = false; player.segIdx = 0; currentProg = 0; shake = 0;
             pState.x = pState.prevX = currentTrack.pts[0].x;
             pState.y = pState.prevY = currentTrack.pts[0].y;
-            if (isPreviewing) { cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y; }
+
+            if (isPreviewing) {
+                cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y;
+            } else {
+                cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y;
+            }
+
             updateVelocity();
-            document.getElementById('hudTrackVal').textContent = currentTrack.id;
-            document.getElementById('hudAttemptsVal').textContent = attempts;
+            if (!isTutorial) {
+                document.getElementById('hudTrackVal').textContent = currentTrack.id;
+                document.getElementById('hudAttemptsVal').textContent = attempts;
+            }
             document.getElementById('hudProgress').textContent = "0%";
             document.getElementById('progressBarFill').style.width = "0%";
             document.getElementById('gameOverlay').classList.add('hidden');
@@ -636,7 +789,39 @@
                 document.getElementById('overlayMainBtn').click();
                 return;
             }
+
             if (!alive || paused) return;
+
+            // --- TUTORIAL INPUT LOGIC ---
+            if (isTutorial) {
+                const t = i18n[currentLang];
+                // Phase 0: Start
+                if (!started) {
+                    started = true;
+                    if (tutorialPhase === 0) tutorialPhase = 1;
+                    else if (tutorialPhase === 3) { /* Stay 3 for late demo */ }
+                    else if (tutorialPhase === 5) { /* Real try */ }
+                    showTutorialText(null);
+                    return;
+                }
+
+                // Phase 2: User clicks too early (frozen state)
+                if (tutorialPhase === 2) {
+                    tutorialPause = false; // Unfreeze
+                    // Force crash logic
+                    // Turn straight into wall visually
+                    player.vx = 0; player.vy = 1; // Arbitrary wrong direction
+                    fail();
+                    return;
+                }
+
+                // Phase 3/4: Late demo - IGNORE INPUT
+                if (tutorialPhase === 3 || tutorialPhase === 4) {
+                    return;
+                }
+            }
+            // ----------------------------
+
             if (isPreviewing) {
                 isPreviewing = false;
                 targetZoom = 0.8;
@@ -651,15 +836,26 @@
                 document.getElementById('scoutingHint').classList.add('hidden');
                 return;
             }
+
+            // Normal turning logic
             let next = currentTrack.pts[player.segIdx + 1];
             if (!next) return;
             let isFinalSegment = (player.segIdx + 1 >= currentTrack.pts.length - 1);
             let d = Math.hypot(next.x - pState.x, next.y - pState.y);
+
             if (!isFinalSegment && d < currentTrack.speed * currentTrack.timing) {
                 player.segIdx++; pState.x = next.x; pState.y = next.y;
                 updateVelocity();
                 AudioSfx.play('turn');
-            } else if (!isFinalSegment) fail();
+
+                // Tutorial Success Check
+                if (isTutorial && tutorialPhase === 5 && player.segIdx >= 3) {
+                    win();
+                }
+
+            } else if (!isFinalSegment) {
+                fail();
+            }
         }
 
         function togglePause() {
@@ -669,13 +865,15 @@
         }
 
         function exitToMenu() {
-            alive = false; started = false; paused = false; currentTrack = null;
+            alive = false; started = false; paused = false; currentTrack = null; isTutorial = false;
             document.getElementById('gameHud').classList.add('hidden');
             document.getElementById('progressBarContainer').classList.add('hidden');
             document.getElementById('pauseBtn').classList.add('hidden');
+            document.getElementById('skipTutBtn').classList.add('hidden');
             document.getElementById('gameOverlay').classList.add('hidden');
             document.getElementById('pauseScreen').classList.add('hidden');
             document.getElementById('scoutingHint').classList.add('hidden');
+            document.getElementById('tutorialInstr').classList.add('hidden');
             showScreen('mainMenu');
         }
 
@@ -683,7 +881,51 @@
             if (!alive) return;
             alive = false; shake = 25;
             AudioSfx.play('fail');
+
             const t = i18n[currentLang];
+
+            // Tutorial Fail Handling
+            if (isTutorial) {
+                document.getElementById('overlayExitBtn').classList.add('hidden');
+                document.getElementById('progressInfo').innerHTML = "";
+
+                if (tutorialPhase === 2) {
+                    // Early fail
+                    document.getElementById('msgTitle').textContent = t.tutFailEarly;
+                    document.getElementById('msgBody').textContent = "";
+                    document.getElementById('overlayMainBtn').textContent = t.tutNextStep;
+                    document.getElementById('overlayMainBtn').onclick = () => {
+                        tutorialPhase = 3;
+                        attempts = 1;
+                        initGame();
+                        showTutorialText(null);
+                        // Auto start for late demo
+                        setTimeout(() => handleInput(), 500);
+                    };
+                } else if (tutorialPhase === 3 || tutorialPhase === 4) {
+                    // Late fail
+                    document.getElementById('msgTitle').textContent = t.tutFailLate;
+                    document.getElementById('msgBody').textContent = "";
+                    document.getElementById('overlayMainBtn').textContent = t.tutTryReal;
+                    document.getElementById('overlayMainBtn').onclick = () => {
+                        tutorialPhase = 5;
+                        attempts = 1;
+                        initGame();
+                        showTutorialText(t.tutRealTry);
+                    };
+                } else {
+                    // Real fail in tutorial
+                    document.getElementById('msgTitle').textContent = t.crash;
+                    document.getElementById('msgBody').textContent = t.tryAgain;
+                    document.getElementById('overlayMainBtn').textContent = t.tryAgainBtn;
+                    document.getElementById('overlayMainBtn').onclick = () => { attempts++; initGame(); };
+                }
+
+                document.getElementById('gameOverlay').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('overlayExitBtn').classList.remove('hidden');
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             if (!history[currentTrack.id]) history[currentTrack.id] = { attempts: 0, bestProg: 0, cleared: false };
             if (!history[currentTrack.id].cleared) history[currentTrack.id].attempts = attempts;
@@ -691,6 +933,7 @@
             let oldPBVal = history[currentTrack.id].bestProg || 0;
             if (isNewPB) history[currentTrack.id].bestProg = currentProg;
             localStorage.setItem('maze_history_pro', JSON.stringify(history));
+
             document.getElementById('msgTitle').textContent = t.crash;
             document.getElementById('progressInfo').innerHTML = `${t.hudDone}: ${Math.round(currentProg)}%` +
                 (isNewPB ? `<span class="pb-text">${t.pb} (${t.oldPb}: ${Math.round(oldPBVal)}%)</span>` : `<span class="pb-text" style="color:#666">PB: ${Math.round(oldPBVal)}%</span>`);
@@ -704,6 +947,19 @@
             alive = false;
             AudioSfx.play('win');
             const t = i18n[currentLang];
+
+            if (isTutorial) {
+                document.getElementById('msgTitle').textContent = t.tutWin;
+                document.getElementById('progressInfo').innerHTML = "";
+                document.getElementById('msgBody').textContent = "";
+                document.getElementById('overlayMainBtn').textContent = "OK";
+                document.getElementById('overlayExitBtn').classList.add('hidden');
+                document.getElementById('overlayMainBtn').onclick = endTutorial;
+                document.getElementById('gameOverlay').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('overlayExitBtn').classList.remove('hidden');
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             if (!history[currentTrack.id]) {
                 history[currentTrack.id] = { attempts: attempts, bestAttempts: attempts, bestProg: 100, cleared: true };
@@ -713,6 +969,7 @@
                 history[currentTrack.id].bestProg = 100;
             }
             localStorage.setItem('maze_history_pro', JSON.stringify(history));
+
             document.getElementById('msgTitle').textContent = t.winTitle;
             document.getElementById('progressInfo').innerHTML = `<span style="color:var(--success)">100% ${t.hudDone}!</span><br><small>${t.winStats.replace('{n}', attempts)}</small>`;
             document.getElementById('msgBody').textContent = t.winBody.replace('{id}', currentTrack.id);
@@ -723,10 +980,11 @@
         }
 
         function updatePhysics() {
-            if (paused) return;
+            if (paused || tutorialPause) return;
             prevZoom = zoom;
             zoom += (targetZoom - zoom) * 0.05;
             if (shake > 0) shake *= 0.9;
+
             if (isPreviewing) {
                 let target = currentTrack.pts[previewTargetIdx];
                 let dx = target.x - cam.x; let dy = target.y - cam.y;
@@ -743,13 +1001,29 @@
                 }
                 return;
             }
+
             if (alive && started) {
                 pState.prevX = pState.x; pState.prevY = pState.y;
                 cam.prevX = cam.x; cam.prevY = cam.y;
+
+                // Tutorial Phase 1 -> 2 Transition (Approaching first turn)
+                if (isTutorial && tutorialPhase === 1) {
+                    // Check distance to first turn
+                    let turnPt = currentTrack.pts[1];
+                    let dist = Math.hypot(turnPt.x - pState.x, turnPt.y - pState.y);
+                    if (dist < 100) { // Close to turn
+                        tutorialPause = true;
+                        tutorialPhase = 2; // Wait for click
+                        showTutorialText(i18n[currentLang].tutTurnNow);
+                        return;
+                    }
+                }
+
                 pState.x += player.vx * currentTrack.speed * dt;
                 pState.y += player.vy * currentTrack.speed * dt;
                 cam.x += (pState.x - cam.x) * (dt * 12);
                 cam.y += (pState.y - cam.y) * (dt * 12);
+
                 let p1 = currentTrack.pts[player.segIdx], p2 = currentTrack.pts[player.segIdx + 1];
                 let dx = p2.x - p1.x, dy = p2.y - p1.y;
                 let segmentLenSq = dx * dx + dy * dy;
@@ -757,11 +1031,23 @@
                 let totalSegments = currentTrack.pts.length - 1;
                 let progress = ((player.segIdx + Math.max(0, Math.min(1, progressT))) / totalSegments) * 100;
                 currentProg = Math.max(currentProg, progress);
+
                 document.getElementById('hudProgress').textContent = Math.floor(currentProg) + "%";
                 document.getElementById('progressBarFill').style.width = currentProg + "%";
+
                 if (player.segIdx === currentTrack.pts.length - 2 && progressT >= 1) { win(); return; }
+
                 let cx = p1.x + Math.max(0, Math.min(1, progressT)) * dx, cy = p1.y + Math.max(0, Math.min(1, progressT)) * dy;
-                if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) fail();
+                if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) {
+                    // Tutorial Phase 3 -> 4 (Late Crash)
+                    if (isTutorial && tutorialPhase === 3) {
+                        tutorialPhase = 4; // Register as late crash
+                        fail();
+                        return;
+                    }
+                    fail();
+                }
+
             } else if (!isPreviewing) {
                 cam.prevX = cam.x; cam.prevY = cam.y;
                 cam.x += (pState.x - cam.x) * 0.1; cam.y += (pState.y - cam.y) * 0.1;
@@ -776,18 +1062,19 @@
                 const lerpCamX = cam.prevX + (cam.x - cam.prevX) * alpha;
                 const lerpCamY = cam.prevY + (cam.y - cam.prevY) * alpha;
                 const lerpZoom = prevZoom + (zoom - prevZoom) * alpha;
+
                 ctx.save();
                 let offsetX = (Math.random() - 0.5) * shake;
                 let offsetY = (Math.random() - 0.5) * shake;
                 ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY);
                 ctx.scale(lerpZoom, lerpZoom);
                 ctx.translate(-lerpCamX, -lerpCamY);
+
                 ctx.strokeStyle = (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ? "#ff0044" : "#fff";
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
                 currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
 
-                // Visa cirklar endast på lätt och medel
                 if (currentTrack.difficulty === 'easy' || currentTrack.difficulty === 'medium') {
                     ctx.fillStyle = "rgba(29, 43, 255, 0.25)";
                     currentTrack.pts.forEach((p, idx) => {
@@ -804,7 +1091,8 @@
 
                 if (!started && !isPreviewing && alive) {
                     ctx.fillStyle = "white"; ctx.font = "bold 40px 'Segoe UI'"; ctx.textAlign = "center";
-                    ctx.fillText(i18n[currentLang].clickStart, lerpX, lerpY - 60);
+                    let txt = isTutorial ? i18n[currentLang].tutStart : i18n[currentLang].clickStart;
+                    ctx.fillText(txt, lerpX, lerpY - 60);
                 }
                 if (isPreviewing) {
                     ctx.fillStyle = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
@@ -823,6 +1111,7 @@
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
         window.onresize();
         updateTexts();
+
         requestAnimationFrame(loop);
         function loop(timestamp) {
             let frameTime = (timestamp - lastTime) / 1000;
