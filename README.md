@@ -1,5 +1,12 @@
+Uppdatering/Update 1.6.0
+- Ändrat antalet banor. / Changed the number of tracks:
+  
+- Lätt är ändrad från 6 till 15 / Easy has been changed from 6 to 15.
+- Medel är ändrad från 6 till 15 / Medium has been changed from 6 to 15. 
+- Svår är ändrad från 6 till 10 / Hard has been changed from 6 to 10.
+- Brutal är ändrad från 6 till 10 / Brutal has been changed from 6 to 10.
 
-
+-------------------------------
 Uppdatering/Update 1.5.0
 - Lagt till möjligheten att trycka på skärmen för att försöka igen, utan att behöva trycka på Försök igen. / Added the possibility to try again without pressing "Try Again".
 - Lagt till ljudeffekter när man svänger, kraschar eller klarar banan. / Added sound effect for turns, crashes or completing the track.
