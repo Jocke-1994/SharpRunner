@@ -35,11 +35,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* Ändrad för att tillåta scroll */
             background: var(--bg);
             color: var(--text);
             z-index: 10;
-            padding: 20px;
+            padding: 40px 20px;
             overflow-y: auto;
         }
 
@@ -75,7 +75,6 @@
                 font-size: 11px;
             }
 
-        /* --- UPPDATERAD SCOUTING HINT MED TOUCH-STÖD --- */
         #scoutingHint {
             position: fixed;
             bottom: 70px;
@@ -183,6 +182,7 @@
             color: #fff;
             text-shadow: 0 0 30px var(--primary);
             letter-spacing: 5px;
+            text-align: center;
         }
 
         h2 {
@@ -190,7 +190,7 @@
             width: 100%;
             max-width: 650px;
             padding-bottom: 5px;
-            margin-top: 30px;
+            margin-top: 40px;
             font-size: 1.2rem;
             text-transform: uppercase;
         }
@@ -236,7 +236,7 @@
 
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 15px;
             width: 100%;
             max-width: 650px;
@@ -386,7 +386,7 @@
         <h2 style="color:var(--brutal); border-color:var(--brutal);" data-t="diffBrut">BRUTAL</h2><div class="menu-grid" id="grid-brutal"></div>
     </div>
 
-    <div id="pauseScreen" class="screen hidden" style="background: rgba(5,6,8,0.85); backdrop-filter: blur(5px);">
+    <div id="pauseScreen" class="screen hidden" style="background: rgba(5,6,8,0.85); backdrop-filter: blur(5px); justify-content: center;">
         <h1 data-t="pausedTitle">PAUSAD</h1>
         <button class="btn" onclick="togglePause()" data-t="resumeBtn">Återuppta</button>
         <button class="btn btn-secondary" onclick="exitToMenu()" data-t="exitBtn">Avsluta till Meny</button>
@@ -399,7 +399,7 @@
         <button class="btn btn-secondary" style="margin-top: 25px;" onclick="showScreen('mainMenu')" data-t="back">Tillbaka</button>
     </div>
 
-    <div id="aboutScreen" class="screen hidden">
+    <div id="aboutScreen" class="screen hidden" style="justify-content: center;">
         <h1 data-t="aboutBtn">OM SPELET</h1>
         <div id="aboutContent" style="max-width: 500px; text-align: center; background: var(--panel); padding: 40px; border-radius: 25px; border: 1px solid #333;">
         </div>
@@ -503,32 +503,48 @@
             if (!document.getElementById('statsScreen').classList.contains('hidden')) renderStats();
         }
 
+        // --- BAN-GENERERING (UPPDATERAD TILL 50 BANOR) ---
         const tracks = [];
-        for (let i = 1; i <= 24; i++) {
-            let diff = i <= 6 ? 'easy' : (i <= 12 ? 'medium' : (i <= 18 ? 'hard' : 'brutal'));
-            let speed = 180 + (i * 20);
-            let width = Math.max(5, 55 - (i * 2.5));
-            let timing = 0.52 - (i * 0.015);
-            if (diff === 'brutal') { speed = 600 + (i * 10); width = 5; timing = 0.15; }
-            tracks.push({
-                id: i.toString().padStart(3, '0'),
-                num: i,
-                difficulty: diff,
-                speed: speed,
-                width: width,
-                timing: timing,
-                pts: generateComplexPath(i, diff)
-            });
-        }
+        const diffSettings = [
+            { id: 'easy', count: 15, baseSpeed: 180, speedInc: 15, baseWidth: 55, widthDec: 1.5, timing: 0.52 },
+            { id: 'medium', count: 15, baseSpeed: 400, speedInc: 12, baseWidth: 32, widthDec: 1.0, timing: 0.40 },
+            { id: 'hard', count: 10, baseSpeed: 580, speedInc: 15, baseWidth: 22, widthDec: 0.8, timing: 0.25 },
+            { id: 'brutal', count: 10, baseSpeed: 750, speedInc: 20, baseWidth: 14, widthDec: 0.5, timing: 0.15 }
+        ];
+
+        let globalIndex = 1;
+        diffSettings.forEach(setting => {
+            for (let i = 0; i < setting.count; i++) {
+                let speed = setting.baseSpeed + (i * setting.speedInc);
+                let width = Math.max(5, setting.baseWidth - (i * setting.widthDec));
+                let timing = setting.timing - (i * 0.005);
+
+                tracks.push({
+                    id: globalIndex.toString().padStart(3, '0'),
+                    num: globalIndex,
+                    difficulty: setting.id,
+                    speed: speed,
+                    width: width,
+                    timing: timing,
+                    pts: generateComplexPath(globalIndex, setting.id)
+                });
+                globalIndex++;
+            }
+        });
 
         function generateComplexPath(num, diff) {
             const pts = [{ x: 0, y: 0 }];
             let curX = 0, curY = 0;
-            let segments = num <= 6 ? 12 : (num <= 18 ? 30 : 60);
+            let segments = 10 + Math.floor(num * 1.5);
+
             for (let j = 0; j < segments; j++) {
-                const len = 350 + (Math.random() * 400);
-                if (j % 2 === 0) curX += len;
-                else curY += (len * (diff === 'brutal' ? 1.3 : 0.8)) * (Math.random() > 0.5 ? 1 : -1);
+                const len = 300 + (Math.random() * 400) + (num * 5);
+                if (j % 2 === 0) {
+                    curX += len;
+                } else {
+                    let yMult = (diff === 'brutal' || diff === 'hard') ? 1.5 : 0.8;
+                    curY += (len * yMult) * (Math.random() > 0.5 ? 1 : -1);
+                }
                 pts.push({ x: Math.round(curX), y: Math.round(curY) });
             }
             return pts;
@@ -766,10 +782,12 @@
                 ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY);
                 ctx.scale(lerpZoom, lerpZoom);
                 ctx.translate(-lerpCamX, -lerpCamY);
-                ctx.strokeStyle = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#fff";
+                ctx.strokeStyle = (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ? "#ff0044" : "#fff";
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
                 currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
+
+                // Visa cirklar endast på lätt och medel
                 if (currentTrack.difficulty === 'easy' || currentTrack.difficulty === 'medium') {
                     ctx.fillStyle = "rgba(29, 43, 255, 0.25)";
                     currentTrack.pts.forEach((p, idx) => {
@@ -778,10 +796,12 @@
                         }
                     });
                 }
+
                 ctx.shadowBlur = 15; ctx.shadowColor = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
                 ctx.fillStyle = alive ? ctx.shadowColor : "#555";
                 ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
                 ctx.shadowBlur = 0;
+
                 if (!started && !isPreviewing && alive) {
                     ctx.fillStyle = "white"; ctx.font = "bold 40px 'Segoe UI'"; ctx.textAlign = "center";
                     ctx.fillText(i18n[currentLang].clickStart, lerpX, lerpY - 60);
