@@ -75,6 +75,24 @@
                 font-size: 11px;
             }
 
+        #progressBarContainer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            z-index: 5;
+        }
+
+        #progressBarFill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #00d2ff);
+            transition: width 0.1s linear;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
         .pause-trigger {
             position: fixed;
             top: 25px;
@@ -106,12 +124,6 @@
             margin-top: 30px;
             font-size: 1.2rem;
             text-transform: uppercase;
-        }
-
-        .h2-brutal {
-            border-color: var(--brutal);
-            color: var(--brutal);
-            text-shadow: 0 0 10px var(--brutal);
         }
 
         .btn {
@@ -224,10 +236,10 @@
         .popup {
             background: #fff;
             color: #000;
-            padding: 50px;
+            padding: 40px;
             border-radius: 30px;
             text-align: center;
-            min-width: 360px;
+            min-width: 400px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.8);
         }
 
@@ -237,6 +249,19 @@
                 margin-bottom: 10px;
                 color: #000;
             }
+
+        #progressInfo {
+            margin: 15px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .pb-text {
+            color: var(--success);
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -244,7 +269,13 @@
     <div id="gameHud" class="hud hidden">
         <div class="pill"><span>BANA</span> <b id="hudTrack">001</b></div>
         <div class="pill"><span>FÖRSÖK</span> <b id="hudAttempts">1</b></div>
+        <div class="pill"><span>KLART</span> <b id="hudProgress">0%</b></div>
     </div>
+
+    <div id="progressBarContainer" class="hidden">
+        <div id="progressBarFill"></div>
+    </div>
+
     <button id="pauseBtn" class="pause-trigger hidden" onclick="togglePause()">PAUS</button>
 
     <div id="mainMenu" class="screen">
@@ -259,7 +290,7 @@
         <h2>LÄTT</h2><div class="menu-grid" id="grid-easy"></div>
         <h2>MEDEL</h2><div class="menu-grid" id="grid-medium"></div>
         <h2>SVÅR</h2><div class="menu-grid" id="grid-hard"></div>
-        <h2 class="h2-brutal">BRUTAL</h2><div class="menu-grid" id="grid-brutal"></div>
+        <h2 style="color:var(--brutal); border-color:var(--brutal);">BRUTAL</h2><div class="menu-grid" id="grid-brutal"></div>
     </div>
 
     <div id="pauseScreen" class="screen hidden" style="background: rgba(5,6,8,0.85); backdrop-filter: blur(5px);">
@@ -288,6 +319,7 @@
     <div id="gameOverlay" class="overlay hidden">
         <div class="popup" id="popupBox">
             <h2 id="msgTitle">Resultat</h2>
+            <div id="progressInfo"></div>
             <p id="msgBody"></p>
             <button id="overlayMainBtn" class="btn">NÄSTA</button>
             <button class="btn btn-secondary" onclick="exitToMenu()">MENY</button>
@@ -333,7 +365,7 @@
         // --- ENGINE ---
         let currentTrack = null, pState = { x: 0, y: 0, prevX: 0, prevY: 0 }, player = { vx: 0, vy: 0, segIdx: 0 };
         let cam = { x: 0, y: 0, prevX: 0, prevY: 0 }, alive = false, started = false, paused = false, attempts = 1;
-        let lastTime = 0, accumulator = 0, dt = 1 / 144;
+        let lastTime = 0, accumulator = 0, dt = 1 / 144, currentProg = 0;
         const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
 
         function showScreen(id) {
@@ -350,7 +382,7 @@
                 grid.innerHTML = '';
                 tracks.filter(t => t.difficulty === diff).forEach(t => {
                     const d = document.createElement('div');
-                    d.className = `level-card ${history[t.id] ? 'cleared' : ''}`;
+                    d.className = `level-card ${history[t.id]?.cleared ? 'cleared' : ''}`;
                     d.innerHTML = `<strong>${t.id}</strong>`;
                     d.onclick = () => startTrack(t);
                     grid.appendChild(d);
@@ -362,29 +394,38 @@
             const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             const list = document.getElementById('statsList');
             list.innerHTML = '';
-            document.getElementById('statsSummary').innerHTML = `KLARADE: ${Object.keys(history).length} / ${tracks.length}`;
+            let clearedCount = Object.values(history).filter(h => h.cleared).length;
+            document.getElementById('statsSummary').innerHTML = `KLARADE: ${clearedCount} / ${tracks.length}`;
             Object.keys(history).sort((a, b) => a - b).forEach(id => {
                 const track = tracks.find(t => t.id === id);
-                list.innerHTML += `<div class="stats-item"><span>Bana ${id} <span class="tag ${track.difficulty}">${track.difficulty.toUpperCase()}</span></span> <span>${history[id].attempts} försök</span></div>`;
+                if (track) {
+                    let pb = history[id].bestProg ? Math.round(history[id].bestProg) : 0;
+                    // HÄR VISAR VI NU BÄSTA FÖRSÖK (MINSTA ANTALET)
+                    let attemptsText = history[id].cleared ? `${history[id].bestAttempts} försök (PB)` : `${history[id].attempts} försök`;
+                    list.innerHTML += `<div class="stats-item"><span>Bana ${id} <span class="tag ${track.difficulty}">${track.difficulty.toUpperCase()}</span></span> <span>PB: ${pb}% | ${attemptsText}</span></div>`;
+                }
             });
         }
 
         function startTrack(t) {
-            currentTrack = t; attempts = 1; paused = false;
+            currentTrack = t; attempts = 1; paused = false; currentProg = 0;
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('gameHud').classList.remove('hidden');
+            document.getElementById('progressBarContainer').classList.remove('hidden');
             document.getElementById('pauseBtn').classList.remove('hidden');
             initGame();
         }
 
         function initGame() {
-            alive = true; started = false; player.segIdx = 0;
+            alive = true; started = false; player.segIdx = 0; currentProg = 0;
             pState.x = pState.prevX = currentTrack.pts[0].x;
             pState.y = pState.prevY = currentTrack.pts[0].y;
             cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y;
             updateVelocity();
             document.getElementById('hudTrack').textContent = currentTrack.id;
             document.getElementById('hudAttempts').textContent = attempts;
+            document.getElementById('hudProgress').textContent = "0%";
+            document.getElementById('progressBarFill').style.width = "0%";
             document.getElementById('gameOverlay').classList.add('hidden');
         }
 
@@ -397,23 +438,13 @@
         function handleInput() {
             if (!alive || paused) return;
             if (!started) { started = true; return; }
-
             let next = currentTrack.pts[player.segIdx + 1];
             if (!next) return;
-
-            // Kolla om detta är sista svängen innan mål
             let isFinalSegment = (player.segIdx + 1 >= currentTrack.pts.length - 1);
             let d = Math.hypot(next.x - pState.x, next.y - pState.y);
-
-            // Om vi inte är på målsträckan, tillåt sväng
             if (!isFinalSegment && d < currentTrack.speed * currentTrack.timing) {
-                player.segIdx++;
-                pState.x = next.x;
-                pState.y = next.y;
-                updateVelocity();
-            } else if (!isFinalSegment) {
-                fail();
-            }
+                player.segIdx++; pState.x = next.x; pState.y = next.y; updateVelocity();
+            } else if (!isFinalSegment) fail();
         }
 
         function togglePause() {
@@ -425,6 +456,7 @@
         function exitToMenu() {
             alive = false; started = false; paused = false; currentTrack = null;
             document.getElementById('gameHud').classList.add('hidden');
+            document.getElementById('progressBarContainer').classList.add('hidden');
             document.getElementById('pauseBtn').classList.add('hidden');
             document.getElementById('gameOverlay').classList.add('hidden');
             document.getElementById('pauseScreen').classList.add('hidden');
@@ -433,7 +465,23 @@
 
         function fail() {
             alive = false;
+            let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
+            if (!history[currentTrack.id]) history[currentTrack.id] = { attempts: 0, bestProg: 0, cleared: false };
+
+            // Uppdaterar temporärt antal försök för statistikskärmen om man inte klarat den än
+            if (!history[currentTrack.id].cleared) {
+                history[currentTrack.id].attempts = attempts;
+            }
+
+            let isNewPB = currentProg > (history[currentTrack.id].bestProg || 0);
+            let oldPB = history[currentTrack.id].bestProg || 0;
+            if (isNewPB) history[currentTrack.id].bestProg = currentProg;
+
+            localStorage.setItem('maze_history_pro', JSON.stringify(history));
+
             document.getElementById('msgTitle').textContent = "KRASCH!";
+            document.getElementById('progressInfo').innerHTML = `Du klarade: ${Math.round(currentProg)}%` +
+                (isNewPB ? `<span class="pb-text">NYTT PERSONBÄSTA! (Gammalt: ${Math.round(oldPB)}%)</span>` : `<span class="pb-text" style="color:#666">PB: ${Math.round(oldPB)}%</span>`);
             document.getElementById('msgBody').textContent = "Försök igen.";
             document.getElementById('overlayMainBtn').textContent = "FÖRSÖK IGEN";
             document.getElementById('overlayMainBtn').onclick = () => { attempts++; initGame(); };
@@ -443,11 +491,23 @@
         function win() {
             alive = false;
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
-            if (!history[currentTrack.id] || attempts < history[currentTrack.id].attempts) {
-                history[currentTrack.id] = { attempts: attempts };
-                localStorage.setItem('maze_history_pro', JSON.stringify(history));
+
+            // Om banan aldrig spelats förut, skapa objektet
+            if (!history[currentTrack.id]) {
+                history[currentTrack.id] = { attempts: attempts, bestAttempts: attempts, bestProg: 100, cleared: true };
+            } else {
+                // NY LOGIK: Kolla om nuvarande försök är bättre än tidigare personbästa
+                if (!history[currentTrack.id].cleared || attempts < history[currentTrack.id].bestAttempts) {
+                    history[currentTrack.id].bestAttempts = attempts;
+                }
+                history[currentTrack.id].cleared = true;
+                history[currentTrack.id].bestProg = 100;
             }
+
+            localStorage.setItem('maze_history_pro', JSON.stringify(history));
+
             document.getElementById('msgTitle').textContent = "KLAR!";
+            document.getElementById('progressInfo').innerHTML = `<span style="color:var(--success)">100% AVKLARAD!</span><br><small>Klarade på ${attempts} försök.</small>`;
             document.getElementById('msgBody').textContent = `Bana ${currentTrack.id} avklarad!`;
             const next = tracks.find(t => t.num === currentTrack.num + 1);
             document.getElementById('overlayMainBtn').textContent = next ? "NÄSTA BANA" : "MENY";
@@ -469,11 +529,14 @@
                 let segmentLenSq = dx * dx + dy * dy;
                 let t = ((pState.x - p1.x) * dx + (pState.y - p1.y) * dy) / segmentLenSq;
 
-                // AUTOMATISK VINST vid sista punkten
-                if (player.segIdx === currentTrack.pts.length - 2 && t >= 1) {
-                    win();
-                    return;
-                }
+                let totalSegments = currentTrack.pts.length - 1;
+                let progress = ((player.segIdx + Math.max(0, Math.min(1, t))) / totalSegments) * 100;
+                currentProg = Math.max(currentProg, progress);
+
+                document.getElementById('hudProgress').textContent = Math.floor(currentProg) + "%";
+                document.getElementById('progressBarFill').style.width = currentProg + "%";
+
+                if (player.segIdx === currentTrack.pts.length - 2 && t >= 1) { win(); return; }
 
                 let cx = p1.x + Math.max(0, Math.min(1, t)) * dx, cy = p1.y + Math.max(0, Math.min(1, t)) * dy;
                 if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) fail();
@@ -497,28 +560,20 @@
                 const lerpY = pState.prevY + (pState.y - pState.prevY) * alpha;
                 const lerpCamX = cam.prevX + (cam.x - cam.prevX) * alpha;
                 const lerpCamY = cam.prevY + (cam.y - cam.prevY) * alpha;
-
                 ctx.save();
                 ctx.translate(canvas.width / 2 - lerpCamX, canvas.height / 2 - lerpCamY);
-
-                // Rita banan
                 ctx.strokeStyle = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#fff";
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
                 currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
-
-                // Rita sväng-cirklar (men inte vid sista punkten/målet)
                 ctx.fillStyle = currentTrack.difficulty === 'brutal' ? "rgba(255,0,68,0.15)" : "rgba(29, 43, 255, 0.25)";
                 currentTrack.pts.forEach((p, idx) => {
                     if (idx > 0 && idx < currentTrack.pts.length - 1) {
                         ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill();
                     }
                 });
-
-                // Rita spelaren
                 ctx.shadowBlur = 15; ctx.shadowColor = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
                 ctx.fillStyle = ctx.shadowColor; ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
-
                 ctx.restore();
             }
         }
