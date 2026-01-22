@@ -284,19 +284,52 @@
                 background: #eee;
             }
 
-        .btn-lang {
+        /* --- NEW LANGUAGE SELECTOR STYLES --- */
+        .lang-switcher {
             position: fixed;
             top: 25px;
             right: 120px;
-            min-width: 60px;
-            padding: 8px 15px;
-            background: #1a1e2b;
-            border: 1px solid #333;
-            color: #fff;
-            border-radius: 8px;
-            cursor: pointer;
+            display: flex;
+            gap: 12px;
             z-index: 20;
+            background: rgba(18, 20, 29, 0.8);
+            padding: 8px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
         }
+
+        .lang-option {
+            width: 36px;
+            height: 24px;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            filter: grayscale(80%);
+        }
+
+            .lang-option svg {
+                width: 100%;
+                height: 100%;
+                display: block;
+            }
+
+            .lang-option:hover {
+                opacity: 0.8;
+                transform: scale(1.1);
+                filter: grayscale(0%);
+            }
+
+            .lang-option.active {
+                opacity: 1;
+                border-color: var(--primary);
+                box-shadow: 0 0 15px var(--primary);
+                transform: scale(1.15);
+                filter: grayscale(0%);
+            }
 
         .menu-grid {
             display: grid;
@@ -409,11 +442,172 @@
             display: block;
             margin-top: 5px;
         }
+
+        /* --- ABOUT SCREEN STYLES --- */
+        #aboutContent {
+            max-width: 600px;
+            text-align: center;
+            background: var(--panel);
+            padding: 40px;
+            border-radius: 25px;
+            border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .founder-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .founder-title {
+            color: var(--text);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        .founder-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .founder-card {
+            background: linear-gradient(145deg, #1a1e2b, #12141d);
+            border: 1px solid #333;
+            padding: 20px 25px;
+            border-radius: 12px;
+            min-width: 180px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+            .founder-card:hover {
+                border-color: var(--primary);
+                transform: translateY(-5px);
+                box-shadow: 0 5px 20px rgba(29, 43, 255, 0.2);
+            }
+
+        .founder-name {
+            display: block;
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .founder-role {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .social-row {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+            .social-btn svg {
+                width: 16px;
+                height: 16px;
+                fill: #aaa;
+                transition: 0.2s;
+            }
+
+            .social-btn:hover {
+                background: rgba(255,255,255,0.1);
+                transform: scale(1.1);
+            }
+
+                .social-btn:hover svg {
+                    fill: #fff;
+                }
+
+            .social-btn.gh:hover svg {
+                fill: #cfd7ff;
+            }
+
+            .social-btn.li:hover svg {
+                fill: #0077b5;
+            }
+
+        .wish-box {
+            background: rgba(0, 200, 83, 0.05);
+            border-left: 3px solid var(--success);
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .wish-text {
+            color: #fff;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .wish-label {
+            display: block;
+            color: var(--success);
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .instr-list p {
+            margin: 8px 0;
+            color: #aaa;
+        }
+
+        .instr-list b {
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 
-    <button id="langBtn" class="btn-lang" onclick="toggleLanguage()">EN</button>
+    <div id="langSwitcher" class="lang-switcher">
+        <div class="lang-option" id="lang-sv" onclick="setLanguage('sv')" title="Svenska">
+            <svg viewBox="0 0 16 10" preserveAspectRatio="none">
+                <rect width="16" height="10" fill="#006aa7" />
+                <rect width="2" height="10" x="5" fill="#fecc00" />
+                <rect width="16" height="2" y="4" fill="#fecc00" />
+            </svg>
+        </div>
+        <div class="lang-option" id="lang-en" onclick="setLanguage('en')" title="English">
+            <svg viewBox="0 0 60 30" preserveAspectRatio="none">
+                <rect width="60" height="30" fill="#012169" />
+                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="4" />
+                <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10" />
+                <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6" />
+            </svg>
+        </div>
+    </div>
 
     <div id="gameHud" class="hud hidden">
         <div class="pill"><span data-t="hudTrack">BANA</span> <b id="hudTrackVal">001</b></div>
@@ -445,7 +639,7 @@
         <button class="btn" onclick="showScreen('levelSelect')" data-t="startBtn">Starta Spelet</button>
         <button class="btn btn-tut" onclick="startTutorial()" data-t="tutBtn">Tutorial</button>
         <button class="btn btn-secondary" onclick="showScreen('statsScreen')" data-t="statsBtn">Statistik</button>
-        <button class="btn btn-secondary" onclick="showScreen('aboutScreen')" data-t="aboutBtn">Om Spelet</button>
+        <button class="btn btn-secondary" onclick="showScreen('aboutScreen')" data-t="aboutBtn">Om Oss</button>
     </div>
 
     <div id="levelSelect" class="screen hidden">
@@ -470,8 +664,8 @@
     </div>
 
     <div id="aboutScreen" class="screen hidden" style="justify-content: center;">
-        <h1 data-t="aboutBtn">OM SPELET</h1>
-        <div id="aboutContent" style="max-width: 500px; text-align: center; background: var(--panel); padding: 40px; border-radius: 25px; border: 1px solid #333;">
+        <h1 data-t="aboutBtn">OM OSS</h1>
+        <div id="aboutContent">
         </div>
         <button class="btn btn-secondary" style="margin-top: 20px;" onclick="showScreen('mainMenu')">OK</button>
     </div>
@@ -489,6 +683,10 @@
     <canvas id="c"></canvas>
 
     <script>
+        // SVG paths for icons
+        const iconGithub = `<svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`;
+        const iconLinkedin = `<svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>`;
+
         const AudioSfx = {
             ctx: null,
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
@@ -519,15 +717,42 @@
 
         const i18n = {
             sv: {
-                title: "LABYRINT", startBtn: "Starta Spelet", statsBtn: "Statistik", aboutBtn: "Om Spelet",
+                title: "LABYRINT", startBtn: "Starta Spelet", statsBtn: "Statistik", aboutBtn: "Om Oss",
                 backMenu: "← MENY", diffEasy: "LÄTT", diffMed: "MEDEL", diffHard: "SVÅR", diffBrut: "BRUTAL",
                 pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
                 back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
-                aboutText: `<p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
-                                    <p>Du kan även använda <b>Space</b> för att starta banan eller starta om direkt efter en krasch.</p>
-                                    <p>Tips: Klicka/Space under rekognoscering för att hoppa direkt till start.</p>
-                                    <p>På SVÅR och BRUTAL syns inga cirklar - lita på din tajming!</p>
-                                    <p>Tryck på <b>P</b> för att pausa.</p>`,
+                aboutText: `
+                        <div class="founder-section">
+                            <div class="founder-title">Grundarna</div>
+                            <div class="founder-grid">
+                                <div class="founder-card">
+                                    <span class="founder-name">Bozhidar Ivanov</span>
+                                    <span class="founder-role">Lead Developer</span>
+                                    <div class="social-row">
+                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                    </div>
+                                </div>
+                                <div class="founder-card">
+                                    <span class="founder-name">Joakim Rehn</span>
+                                    <span class="founder-role">Lead Designer</span>
+                                    <div class="social-row">
+                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wish-box">
+                                <span class="wish-label">En önskan från oss:</span>
+                                <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
+                            </div>
+                        </div>
+                        <div class="instr-list">
+                            <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
+                            <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
+                            <p>På SVÅR och BRUTAL syns inga cirklar.</p>
+                            <p>Tryck på <b>P</b> för att pausa.</p>
+                        </div>`,
                 clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
                 skipHint: "KLICKA FÖR ATT HOPPA ÖVER",
                 crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
@@ -544,15 +769,42 @@
                 tutNextStep: "GÅ VIDARE", tutTryReal: "FÖRSÖK IGEN"
             },
             en: {
-                title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About",
+                title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us",
                 backMenu: "← MENU", diffEasy: "EASY", diffMed: "MEDIUM", diffHard: "HARD", diffBrut: "BRUTAL",
                 pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
                 back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
-                aboutText: `<p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
-                                    <p>You can also use <b>Space</b> to start the level or restart quickly after a crash.</p>
-                                    <p>Tip: Click/Space during scouting to skip directly to the start.</p>
-                                    <p>On HARD and BRUTAL, no circles are shown - trust your timing!</p>
-                                    <p>Press <b>P</b> to pause.</p>`,
+                aboutText: `
+                        <div class="founder-section">
+                            <div class="founder-title">The Founders</div>
+                            <div class="founder-grid">
+                                <div class="founder-card">
+                                    <span class="founder-name">Bozhidar Ivanov</span>
+                                    <span class="founder-role">Lead Developer</span>
+                                    <div class="social-row">
+                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                    </div>
+                                </div>
+                                <div class="founder-card">
+                                    <span class="founder-name">Joakim Rehn</span>
+                                    <span class="founder-role">Lead Designer</span>
+                                    <div class="social-row">
+                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wish-box">
+                                <span class="wish-label">A wish from us:</span>
+                                <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
+                            </div>
+                        </div>
+                        <div class="instr-list">
+                            <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
+                            <p>Tip: Click/Space during scouting to skip directly to the start.</p>
+                            <p>On HARD and BRUTAL, no circles are shown.</p>
+                            <p>Press <b>P</b> to pause.</p>
+                        </div>`,
                 clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...",
                 skipHint: "CLICK TO SKIP",
                 crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN (SPACE)",
@@ -579,14 +831,19 @@
                 if (t[key]) el.textContent = t[key];
             });
             document.getElementById('aboutContent').innerHTML = t.aboutText;
-            document.getElementById('langBtn').textContent = currentLang === 'sv' ? 'EN' : 'SV';
         }
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'sv' ? 'en' : 'sv';
+        function setLanguage(lang) {
+            currentLang = lang;
             localStorage.setItem('maze_lang', currentLang);
             updateTexts();
+            updateLangUI();
             if (!document.getElementById('statsScreen').classList.contains('hidden')) renderStats();
+        }
+
+        function updateLangUI() {
+            document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('active'));
+            document.getElementById('lang-' + currentLang).classList.add('active');
         }
 
         const tracks = [];
@@ -658,9 +915,9 @@
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
+            document.getElementById('langSwitcher').classList.toggle('hidden', id !== 'mainMenu');
             if (id === 'levelSelect') renderGrids();
             if (id === 'statsScreen') renderStats();
-            document.getElementById('langBtn').classList.toggle('hidden', id !== 'mainMenu');
         }
 
         function renderGrids() {
@@ -748,7 +1005,7 @@
                 isPreviewing = false; targetZoom = 1.0;
             }
 
-            document.getElementById('langBtn').classList.add('hidden');
+            document.getElementById('langSwitcher').classList.add('hidden');
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('gameHud').classList.remove('hidden');
             document.getElementById('progressBarContainer').classList.remove('hidden');
@@ -1111,6 +1368,7 @@
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
         window.onresize();
         updateTexts();
+        updateLangUI(); // Initialize language UI state
 
         requestAnimationFrame(loop);
         function loop(timestamp) {
