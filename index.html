@@ -151,6 +151,20 @@
             box-shadow: 0 4px 0px #000;
         }
 
+        .btn-lang {
+            position: fixed;
+            top: 25px;
+            right: 120px;
+            min-width: 60px;
+            padding: 8px 15px;
+            background: #1a1e2b;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 20;
+        }
+
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -266,53 +280,51 @@
 </head>
 <body>
 
+    <button id="langBtn" class="btn-lang" onclick="toggleLanguage()">EN</button>
+
     <div id="gameHud" class="hud hidden">
-        <div class="pill"><span>BANA</span> <b id="hudTrack">001</b></div>
-        <div class="pill"><span>FÖRSÖK</span> <b id="hudAttempts">1</b></div>
-        <div class="pill"><span>KLART</span> <b id="hudProgress">0%</b></div>
+        <div class="pill"><span data-t="hudTrack">BANA</span> <b id="hudTrackVal">001</b></div>
+        <div class="pill"><span data-t="hudAttempts">FÖRSÖK</span> <b id="hudAttemptsVal">1</b></div>
+        <div class="pill"><span data-t="hudDone">KLART</span> <b id="hudProgress">0%</b></div>
     </div>
 
     <div id="progressBarContainer" class="hidden">
         <div id="progressBarFill"></div>
     </div>
 
-    <button id="pauseBtn" class="pause-trigger hidden" onclick="togglePause()">PAUS</button>
+    <button id="pauseBtn" class="pause-trigger hidden" onclick="togglePause()" data-t="pause">PAUS</button>
 
     <div id="mainMenu" class="screen">
-        <h1>LABYRINT</h1>
-        <button class="btn" onclick="showScreen('levelSelect')">Starta Spelet</button>
-        <button class="btn btn-secondary" onclick="showScreen('statsScreen')">Statistik</button>
-        <button class="btn btn-secondary" onclick="showScreen('aboutScreen')">Om Spelet</button>
+        <h1 data-t="title">LABYRINT</h1>
+        <button class="btn" onclick="showScreen('levelSelect')" data-t="startBtn">Starta Spelet</button>
+        <button class="btn btn-secondary" onclick="showScreen('statsScreen')" data-t="statsBtn">Statistik</button>
+        <button class="btn btn-secondary" onclick="showScreen('aboutScreen')" data-t="aboutBtn">Om Spelet</button>
     </div>
 
     <div id="levelSelect" class="screen hidden">
-        <button class="btn btn-secondary" style="align-self: flex-start; min-width: 120px;" onclick="showScreen('mainMenu')">← MENY</button>
-        <h2>LÄTT</h2><div class="menu-grid" id="grid-easy"></div>
-        <h2>MEDEL</h2><div class="menu-grid" id="grid-medium"></div>
-        <h2>SVÅR</h2><div class="menu-grid" id="grid-hard"></div>
-        <h2 style="color:var(--brutal); border-color:var(--brutal);">BRUTAL</h2><div class="menu-grid" id="grid-brutal"></div>
+        <button class="btn btn-secondary" style="align-self: flex-start; min-width: 120px;" onclick="showScreen('mainMenu')" data-t="backMenu">← MENY</button>
+        <h2 data-t="diffEasy">LÄTT</h2><div class="menu-grid" id="grid-easy"></div>
+        <h2 data-t="diffMed">MEDEL</h2><div class="menu-grid" id="grid-medium"></div>
+        <h2 data-t="diffHard">SVÅR</h2><div class="menu-grid" id="grid-hard"></div>
+        <h2 style="color:var(--brutal); border-color:var(--brutal);" data-t="diffBrut">BRUTAL</h2><div class="menu-grid" id="grid-brutal"></div>
     </div>
 
     <div id="pauseScreen" class="screen hidden" style="background: rgba(5,6,8,0.85); backdrop-filter: blur(5px);">
-        <h1>PAUSAD</h1>
-        <button class="btn" onclick="togglePause()">Återuppta</button>
-        <button class="btn btn-secondary" onclick="exitToMenu()">Avsluta till Meny</button>
+        <h1 data-t="pausedTitle">PAUSAD</h1>
+        <button class="btn" onclick="togglePause()" data-t="resumeBtn">Återuppta</button>
+        <button class="btn btn-secondary" onclick="exitToMenu()" data-t="exitBtn">Avsluta till Meny</button>
     </div>
 
     <div id="statsScreen" class="screen hidden">
-        <h1>STATISTIK</h1>
+        <h1 data-t="statsBtn">STATISTIK</h1>
         <div id="statsSummary" style="margin-bottom: 20px; font-weight: bold; font-size: 1.4rem;"></div>
         <div class="stats-list" id="statsList"></div>
-        <button class="btn btn-secondary" style="margin-top: 25px;" onclick="showScreen('mainMenu')">Tillbaka</button>
+        <button class="btn btn-secondary" style="margin-top: 25px;" onclick="showScreen('mainMenu')" data-t="back">Tillbaka</button>
     </div>
 
     <div id="aboutScreen" class="screen hidden">
-        <h1>OM SPELET</h1>
-        <div style="max-width: 500px; text-align: center; background: var(--panel); padding: 40px; border-radius: 25px; border: 1px solid #333;">
-            <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
-            <p>På SVÅR och BRUTAL syns inga cirklar - lita på din tajming!</p>
-            <p>Du behöver inte klicka vid sista punkten - kör bara i mål!</p>
-            <p>Tryck på <b>P</b> för att pausa.</p>
+        <h1 data-t="aboutBtn">OM SPELET</h1>
+        <div id="aboutContent" style="max-width: 500px; text-align: center; background: var(--panel); padding: 40px; border-radius: 25px; border: 1px solid #333;">
         </div>
         <button class="btn btn-secondary" style="margin-top: 20px;" onclick="showScreen('mainMenu')">OK</button>
     </div>
@@ -323,13 +335,69 @@
             <div id="progressInfo"></div>
             <p id="msgBody"></p>
             <button id="overlayMainBtn" class="btn">NÄSTA</button>
-            <button class="btn btn-secondary" onclick="exitToMenu()">MENY</button>
+            <button class="btn btn-secondary" onclick="exitToMenu()" data-t="backMenu">MENY</button>
         </div>
     </div>
 
     <canvas id="c"></canvas>
 
     <script>
+        // --- LOCALIZATION ---
+        const i18n = {
+            sv: {
+                title: "LABYRINT", startBtn: "Starta Spelet", statsBtn: "Statistik", aboutBtn: "Om Spelet",
+                backMenu: "← MENY", diffEasy: "LÄTT", diffMed: "MEDEL", diffHard: "SVÅR", diffBrut: "BRUTAL",
+                pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
+                back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
+                aboutText: `<p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
+                                <p>På SVÅR och BRUTAL syns inga cirklar - lita på din tajming!</p>
+                                <p>Du behöver inte klicka vid sista punkten - kör bara i mål!</p>
+                                <p>Tryck på <b>P</b> för att pausa.</p>`,
+                clickStart: "KLICKA FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
+                crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN",
+                pb: "NYTT PERSONBÄSTA!", oldPb: "Gammalt", winTitle: "KLAR!", winBody: "Bana {id} avklarad!",
+                winStats: "Klarade på {n} försök.", nextBtn: "NÄSTA BANA", statsCleared: "KLARADE: {c} / {t}",
+                statsBest: "PB: {p}% | {a} försök"
+            },
+            en: {
+                title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About",
+                backMenu: "← MENU", diffEasy: "EASY", diffMed: "MEDIUM", diffHard: "HARD", diffBrut: "BRUTAL",
+                pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
+                back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
+                aboutText: `<p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
+                                <p>On HARD and BRUTAL, no circles are shown - trust your timing!</p>
+                                <p>No need to click at the final point - just reach the goal!</p>
+                                <p>Press <b>P</b> to pause.</p>`,
+                clickStart: "CLICK TO START", scouting: "SCOUTING TRACK...",
+                crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN",
+                pb: "NEW PERSONAL BEST!", oldPb: "Previous", winTitle: "CLEAR!", winBody: "Level {id} cleared!",
+                winStats: "Cleared in {n} attempts.", nextBtn: "NEXT LEVEL", statsCleared: "CLEARED: {c} / {t}",
+                statsBest: "PB: {p}% | {a} attempts"
+            }
+        };
+
+        let currentLang = localStorage.getItem('maze_lang') || 'sv';
+
+        function updateTexts() {
+            const t = i18n[currentLang];
+            document.querySelectorAll('[data-t]').forEach(el => {
+                const key = el.getAttribute('data-t');
+                if (t[key]) el.textContent = t[key];
+            });
+            document.getElementById('aboutContent').innerHTML = t.aboutText;
+            document.getElementById('langBtn').textContent = currentLang === 'sv' ? 'EN' : 'SV';
+            if (currentTrack) {
+                document.getElementById('hudTrackVal').textContent = currentTrack.id;
+            }
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'sv' ? 'en' : 'sv';
+            localStorage.setItem('maze_lang', currentLang);
+            updateTexts();
+            if (document.getElementById('statsScreen').classList.contains('hidden') === false) renderStats();
+        }
+
         // --- DATA ---
         const tracks = [];
         for (let i = 1; i <= 24; i++) {
@@ -378,6 +446,8 @@
             document.getElementById(id).classList.remove('hidden');
             if (id === 'levelSelect') renderGrids();
             if (id === 'statsScreen') renderStats();
+            if (id === 'mainMenu') document.getElementById('langBtn').classList.remove('hidden');
+            else document.getElementById('langBtn').classList.add('hidden');
         }
 
         function renderGrids() {
@@ -397,16 +467,19 @@
 
         function renderStats() {
             const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
+            const t = i18n[currentLang];
             const list = document.getElementById('statsList');
             list.innerHTML = '';
             let clearedCount = Object.values(history).filter(h => h.cleared).length;
-            document.getElementById('statsSummary').innerHTML = `KLARADE: ${clearedCount} / ${tracks.length}`;
+            document.getElementById('statsSummary').innerHTML = t.statsCleared.replace('{c}', clearedCount).replace('{t}', tracks.length);
+
             Object.keys(history).sort((a, b) => a - b).forEach(id => {
-                const track = tracks.find(t => t.id === id);
+                const track = tracks.find(tr => tr.id === id);
                 if (track) {
-                    let pb = history[id].bestProg ? Math.round(history[id].bestProg) : 0;
-                    let attemptsText = history[id].cleared ? `${history[id].bestAttempts} försök (PB)` : `${history[id].attempts} försök`;
-                    list.innerHTML += `<div class="stats-item"><span>Bana ${id} <span class="tag ${track.difficulty}">${track.difficulty.toUpperCase()}</span></span> <span>PB: ${pb}% | ${attemptsText}</span></div>`;
+                    let pbVal = history[id].bestProg ? Math.round(history[id].bestProg) : 0;
+                    let atts = history[id].cleared ? history[id].bestAttempts : history[id].attempts;
+                    let line = t.statsBest.replace('{p}', pbVal).replace('{a}', atts);
+                    list.innerHTML += `<div class="stats-item"><span>${t.hudTrack} ${id} <span class="tag ${track.difficulty}">${track.difficulty.toUpperCase()}</span></span> <span>${line}</span></div>`;
                 }
             });
         }
@@ -414,7 +487,7 @@
         function startTrack(t) {
             currentTrack = t; attempts = 1; paused = false; currentProg = 0;
             isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4;
-
+            document.getElementById('langBtn').classList.add('hidden');
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('gameHud').classList.remove('hidden');
             document.getElementById('progressBarContainer').classList.remove('hidden');
@@ -426,15 +499,10 @@
             alive = true; started = false; player.segIdx = 0; currentProg = 0;
             pState.x = pState.prevX = currentTrack.pts[0].x;
             pState.y = pState.prevY = currentTrack.pts[0].y;
-
-            if (isPreviewing) {
-                cam.x = cam.prevX = pState.x;
-                cam.y = cam.prevY = pState.y;
-            }
-
+            if (isPreviewing) { cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y; }
             updateVelocity();
-            document.getElementById('hudTrack').textContent = currentTrack.id;
-            document.getElementById('hudAttempts').textContent = attempts;
+            document.getElementById('hudTrackVal').textContent = currentTrack.id;
+            document.getElementById('hudAttemptsVal').textContent = attempts;
             document.getElementById('hudProgress').textContent = "0%";
             document.getElementById('progressBarFill').style.width = "0%";
             document.getElementById('gameOverlay').classList.add('hidden');
@@ -476,26 +544,28 @@
 
         function fail() {
             alive = false;
+            const t = i18n[currentLang];
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             if (!history[currentTrack.id]) history[currentTrack.id] = { attempts: 0, bestProg: 0, cleared: false };
             if (!history[currentTrack.id].cleared) history[currentTrack.id].attempts = attempts;
 
             let isNewPB = currentProg > (history[currentTrack.id].bestProg || 0);
-            let oldPB = history[currentTrack.id].bestProg || 0;
+            let oldPBVal = history[currentTrack.id].bestProg || 0;
             if (isNewPB) history[currentTrack.id].bestProg = currentProg;
             localStorage.setItem('maze_history_pro', JSON.stringify(history));
 
-            document.getElementById('msgTitle').textContent = "KRASCH!";
-            document.getElementById('progressInfo').innerHTML = `Du klarade: ${Math.round(currentProg)}%` +
-                (isNewPB ? `<span class="pb-text">NYTT PERSONBÄSTA! (Gammalt: ${Math.round(oldPB)}%)</span>` : `<span class="pb-text" style="color:#666">PB: ${Math.round(oldPB)}%</span>`);
-            document.getElementById('msgBody').textContent = "Försök igen.";
-            document.getElementById('overlayMainBtn').textContent = "FÖRSÖK IGEN";
+            document.getElementById('msgTitle').textContent = t.crash;
+            document.getElementById('progressInfo').innerHTML = `${t.hudDone}: ${Math.round(currentProg)}%` +
+                (isNewPB ? `<span class="pb-text">${t.pb} (${t.oldPb}: ${Math.round(oldPBVal)}%)</span>` : `<span class="pb-text" style="color:#666">PB: ${Math.round(oldPBVal)}%</span>`);
+            document.getElementById('msgBody').textContent = t.tryAgain;
+            document.getElementById('overlayMainBtn').textContent = t.tryAgainBtn;
             document.getElementById('overlayMainBtn').onclick = () => { attempts++; initGame(); };
             document.getElementById('gameOverlay').classList.remove('hidden');
         }
 
         function win() {
             alive = false;
+            const t = i18n[currentLang];
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             if (!history[currentTrack.id]) {
                 history[currentTrack.id] = { attempts: attempts, bestAttempts: attempts, bestProg: 100, cleared: true };
@@ -506,37 +576,29 @@
             }
             localStorage.setItem('maze_history_pro', JSON.stringify(history));
 
-            document.getElementById('msgTitle').textContent = "KLAR!";
-            document.getElementById('progressInfo').innerHTML = `<span style="color:var(--success)">100% AVKLARAD!</span><br><small>Klarade på ${attempts} försök.</small>`;
-            document.getElementById('msgBody').textContent = `Bana ${currentTrack.id} avklarad!`;
-            const next = tracks.find(t => t.num === currentTrack.num + 1);
-            document.getElementById('overlayMainBtn').textContent = next ? "NÄSTA BANA" : "MENY";
+            document.getElementById('msgTitle').textContent = t.winTitle;
+            document.getElementById('progressInfo').innerHTML = `<span style="color:var(--success)">100% ${t.hudDone}!</span><br><small>${t.winStats.replace('{n}', attempts)}</small>`;
+            document.getElementById('msgBody').textContent = t.winBody.replace('{id}', currentTrack.id);
+            const next = tracks.find(tr => tr.num === currentTrack.num + 1);
+            document.getElementById('overlayMainBtn').textContent = next ? t.nextBtn : (currentLang === 'sv' ? "MENY" : "MENU");
             document.getElementById('overlayMainBtn').onclick = next ? () => startTrack(next) : exitToMenu;
             document.getElementById('gameOverlay').classList.remove('hidden');
         }
 
         function updatePhysics() {
             if (!alive || paused) return;
-
             prevZoom = zoom;
             zoom += (targetZoom - zoom) * 0.05;
 
             if (isPreviewing) {
                 let target = currentTrack.pts[previewTargetIdx];
-                let dx = target.x - cam.x;
-                let dy = target.y - cam.y;
+                let dx = target.x - cam.x; let dy = target.y - cam.y;
                 let dist = Math.hypot(dx, dy);
-
                 cam.prevX = cam.x; cam.prevY = cam.y;
-                cam.x += dx * 0.08;
-                cam.y += dy * 0.08;
-
+                cam.x += dx * 0.08; cam.y += dy * 0.08;
                 if (dist < 50) {
                     previewTargetIdx++;
-                    if (previewTargetIdx >= currentTrack.pts.length) {
-                        isPreviewing = false;
-                        targetZoom = 0.8;
-                    }
+                    if (previewTargetIdx >= currentTrack.pts.length) { isPreviewing = false; targetZoom = 0.8; }
                 }
                 return;
             }
@@ -552,34 +614,23 @@
                 let p1 = currentTrack.pts[player.segIdx], p2 = currentTrack.pts[player.segIdx + 1];
                 let dx = p2.x - p1.x, dy = p2.y - p1.y;
                 let segmentLenSq = dx * dx + dy * dy;
-                let t = ((pState.x - p1.x) * dx + (pState.y - p1.y) * dy) / segmentLenSq;
+                let progressT = ((pState.x - p1.x) * dx + (pState.y - p1.y) * dy) / segmentLenSq;
 
                 let totalSegments = currentTrack.pts.length - 1;
-                let progress = ((player.segIdx + Math.max(0, Math.min(1, t))) / totalSegments) * 100;
+                let progress = ((player.segIdx + Math.max(0, Math.min(1, progressT))) / totalSegments) * 100;
                 currentProg = Math.max(currentProg, progress);
 
                 document.getElementById('hudProgress').textContent = Math.floor(currentProg) + "%";
                 document.getElementById('progressBarFill').style.width = currentProg + "%";
 
-                if (player.segIdx === currentTrack.pts.length - 2 && t >= 1) { win(); return; }
+                if (player.segIdx === currentTrack.pts.length - 2 && progressT >= 1) { win(); return; }
 
-                let cx = p1.x + Math.max(0, Math.min(1, t)) * dx, cy = p1.y + Math.max(0, Math.min(1, t)) * dy;
+                let cx = p1.x + Math.max(0, Math.min(1, progressT)) * dx, cy = p1.y + Math.max(0, Math.min(1, progressT)) * dy;
                 if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) fail();
             } else {
                 cam.prevX = cam.x; cam.prevY = cam.y;
-                cam.x += (pState.x - cam.x) * 0.1;
-                cam.y += (pState.y - cam.y) * 0.1;
+                cam.x += (pState.x - cam.x) * 0.1; cam.y += (pState.y - cam.y) * 0.1;
             }
-        }
-
-        function loop(timestamp) {
-            let frameTime = (timestamp - lastTime) / 1000;
-            if (frameTime > 0.1) frameTime = 0.1;
-            lastTime = timestamp;
-            if (!paused) accumulator += frameTime;
-            while (accumulator >= dt) { updatePhysics(); accumulator -= dt; }
-            draw(accumulator / dt);
-            requestAnimationFrame(loop);
         }
 
         function draw(alpha) {
@@ -596,42 +647,33 @@
                 ctx.scale(lerpZoom, lerpZoom);
                 ctx.translate(-lerpCamX, -lerpCamY);
 
-                // Rita bana
                 ctx.strokeStyle = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#fff";
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
                 currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
 
-                // SVÄNG-CIRKLAR: Visas endast på 'easy' och 'medium'
                 if (currentTrack.difficulty === 'easy' || currentTrack.difficulty === 'medium') {
                     ctx.fillStyle = "rgba(29, 43, 255, 0.25)";
                     currentTrack.pts.forEach((p, idx) => {
                         if (idx > 0 && idx < currentTrack.pts.length - 1) {
-                            ctx.beginPath();
-                            ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2);
-                            ctx.fill();
+                            ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill();
                         }
                     });
                 }
 
-                // Spelare
                 ctx.shadowBlur = 15; ctx.shadowColor = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
                 ctx.fillStyle = ctx.shadowColor; ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
 
-                // Text overlays
+                ctx.shadowBlur = 0;
                 if (!started && !isPreviewing && alive) {
-                    ctx.fillStyle = "white";
-                    ctx.font = "bold 40px 'Segoe UI'";
-                    ctx.textAlign = "center";
-                    ctx.fillText("KLICKA FÖR ATT STARTA", lerpX, lerpY - 60);
+                    ctx.fillStyle = "white"; ctx.font = "bold 40px 'Segoe UI'"; ctx.textAlign = "center";
+                    ctx.fillText(i18n[currentLang].clickStart, lerpX, lerpY - 60);
                 }
                 if (isPreviewing) {
                     ctx.fillStyle = currentTrack.difficulty === 'brutal' ? "#ff0044" : "#1d2bff";
-                    ctx.font = "bold 50px 'Segoe UI'";
-                    ctx.textAlign = "center";
-                    ctx.fillText("REKOGNOSCERAR BANA...", cam.x, cam.y - 120);
+                    ctx.font = "bold 50px 'Segoe UI'"; ctx.textAlign = "center";
+                    ctx.fillText(i18n[currentLang].scouting, cam.x, cam.y - 120);
                 }
-
                 ctx.restore();
             }
         }
@@ -642,7 +684,21 @@
         });
         canvas.addEventListener("pointerdown", e => { e.preventDefault(); handleInput(); });
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-        window.onresize(); requestAnimationFrame(loop);
+
+        // Init
+        window.onresize();
+        updateTexts();
+        requestAnimationFrame(loop);
+
+        function loop(timestamp) {
+            let frameTime = (timestamp - lastTime) / 1000;
+            if (frameTime > 0.1) frameTime = 0.1;
+            lastTime = timestamp;
+            if (!paused) accumulator += frameTime;
+            while (accumulator >= dt) { updatePhysics(); accumulator -= dt; }
+            draw(accumulator / dt);
+            requestAnimationFrame(loop);
+        }
     </script>
 </body>
 </html>
