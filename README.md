@@ -1,3 +1,17 @@
+Uppdatering/Update 1.9.1 
+Funktioner och Fix / Features and bugfix
+- Lagt till en ny nivå "Mindflip" med 10 nya banor. Banorna är en blandning av dynamic och svår. / Added a new level "Mindflip" with 10 new tracks. The tracks are a combination of Dynamic and Hard.
+- Lagt till möjligheten att stänga av/sätta på ljudeffekter från menyn Inställningar. / Added the possibility to turn the soundeffects on and off from the Settings-menu.
+- Lagt till effekter när man krockar i en väg. / Added effects when you crash into a wall.
+- Lagt till konfetti-emoji i meddelandet när man klarat av banan. / Added a confetti-emoji in the message you get when you finish a track.
+- Spelet sparar nu tiden det tar att klara en bara i millisekunder, bästa tiden sparas per bana. / The game now saves the time it takes to complete a track in milliseconds, the best time is saved per track.
+- Om man slår nytt rekord kommer detta uppdateras korrekt. / If you get a new highscore, this will update accordingly.
+- Lagt till en knapp i Inställningar för att nollställa statistiken. / Added a reset-button in the Settings-menu to reset your statistics.
+- En guldstjärna kommer nu synas bredvid svårighetsgraden på sektionen när man klarat alla banor på en nivå. / A goldstar will now appear next to the name of the level once you have completed all the tracks on a level.
+
+- Byggt om Statistik som nu har en snyggare visuell sida. / Rebuilt Statistics page for a better visual look.
+- Lagt till "TOTALA DÖDSFALL", "WIN STREAK" och "BÄSTA STREAK" samt möjligheten att se procentuellt hur mycket av en svårighetsgrad som man klarat av. / Added "Total Deaths", "WIN STREAK" and "BEST STREAK" and also the percentage of how much of a difficulty that has been completed.
+-------------------------------
 Uppdatering/Update 1.8.0
 Feature:
 - Lagt till sektionen Dynamic med 10 nya banor som svänger allt mellan 10-170 grader. / Added the section Dynamic with 10 new tracks with turns, ranging from 10-170 degrees.
