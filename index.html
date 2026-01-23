@@ -3,13 +3,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Labyrint Master: DYNAMIC EDITION</title>
+    <title>Labyrint Master: MINDFLIP UPDATE</title>
     <style>
         :root {
             --bg: #050608;
             --primary: #1d2bff;
             --brutal: #ff0044;
             --dynamic: #d946ef;
+            --mindflip: #ff8800; /* Ny färg för Mindflip */
             --text: #cfd7ff;
             --panel: #12141d;
             --success: #00c853;
@@ -408,6 +409,10 @@
             background: var(--dynamic);
         }
 
+        .mindflip {
+            background: var(--mindflip);
+        }
+
         .overlay {
             position: fixed;
             inset: 0;
@@ -666,6 +671,48 @@
         .toggle-btn.active .toggle-knob {
             left: 33px;
         }
+
+        /* --- RANGE SLIDER STYLES --- */
+        .range-container {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 30px auto;
+            text-align: center;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #333;
+            outline: none;
+            margin: 15px 0;
+        }
+
+            input[type=range]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 25px;
+                height: 25px;
+                border-radius: 50%;
+                background: var(--primary);
+                cursor: pointer;
+                box-shadow: 0 0 10px var(--primary);
+                transition: .2s;
+            }
+
+                input[type=range]::-webkit-slider-thumb:hover {
+                    transform: scale(1.2);
+                    background: #fff;
+                }
+
+        #speedValueDisplay {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(29, 43, 255, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -729,6 +776,16 @@
         <h2 data-t="skinTitle">VÄLJ FÄRG</h2>
         <div class="skin-grid" id="skinGrid"></div>
 
+        <h2 data-t="speedTitle">SPELHASTIGHET</h2>
+        <div class="range-container">
+            <div id="speedValueDisplay">100%</div>
+            <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="1" oninput="updateSpeedDisplay(this.value)" onchange="saveSpeedSetting(this.value)">
+            <div style="display:flex; justify-content:space-between; color:#666; font-size:0.8rem; font-weight:bold;">
+                <span>LÅNGSAMT</span>
+                <span>SNABBT</span>
+            </div>
+        </div>
+
         <h2 data-t="optionsTitle">ALTERNATIV</h2>
         <div class="toggle-container" onclick="toggleFog()">
             <div class="toggle-label" data-t="fogLabel">DIMMA (SVÅRT)</div>
@@ -747,6 +804,8 @@
         <h2 data-t="diffMed">MEDEL</h2><div class="menu-grid" id="grid-medium"></div>
 
         <h2 style="color:var(--dynamic); border-color:var(--dynamic);" data-t="diffDyn">DYNAMIC</h2><div class="menu-grid" id="grid-dynamic"></div>
+
+        <h2 style="color:var(--mindflip); border-color:var(--mindflip);" data-t="diffMindflip">MINDFLIP</h2><div class="menu-grid" id="grid-mindflip"></div>
 
         <h2 data-t="diffHard">SVÅR</h2><div class="menu-grid" id="grid-hard"></div>
         <h2 style="color:var(--brutal); border-color:var(--brutal);" data-t="diffBrut">BRUTAL</h2><div class="menu-grid" id="grid-brutal"></div>
@@ -820,47 +879,47 @@
         const i18n = {
             sv: {
                 title: "LABYRINT", startBtn: "Starta Spelet", statsBtn: "Statistik", aboutBtn: "Om Oss", settingsBtn: "Inställningar",
-                backMenu: "← MENY", diffEasy: "LÄTT", diffMed: "MEDEL", diffDyn: "DYNAMIC", diffHard: "SVÅR", diffBrut: "BRUTAL",
+                backMenu: "← MENY", diffEasy: "LÄTT", diffMed: "MEDEL", diffDyn: "DYNAMIC", diffMindflip: "MINDFLIP", diffHard: "SVÅR", diffBrut: "BRUTAL",
                 pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
                 back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
                 aboutText: `
-                                    <div class="founder-section">
-                                        <div class="founder-title">Grundarna</div>
-                                        <div class="founder-grid">
-                                            <div class="founder-card">
-                                                <span class="founder-name">Bozhidar Ivanov</span>
-                                                <span class="founder-role">Lead Developer</span>
-                                                <div class="social-row">
-                                                    <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                    <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                        <div class="founder-section">
+                                            <div class="founder-title">Grundarna</div>
+                                            <div class="founder-grid">
+                                                <div class="founder-card">
+                                                    <span class="founder-name">Bozhidar Ivanov</span>
+                                                    <span class="founder-role">Lead Developer</span>
+                                                    <div class="social-row">
+                                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                    </div>
+                                                </div>
+                                                <div class="founder-card">
+                                                    <span class="founder-name">Joakim Rehn</span>
+                                                    <span class="founder-role">Lead Designer</span>
+                                                    <div class="social-row">
+                                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="founder-card">
-                                                <span class="founder-name">Joakim Rehn</span>
-                                                <span class="founder-role">Lead Designer</span>
-                                                <div class="social-row">
-                                                    <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                    <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                            <div class="wish-box" style="border-left-color: var(--mindflip); background: rgba(255, 136, 0, 0.05);">
+                                                <span class="wish-label" style="color: var(--mindflip)">NEW: MINDFLIP MODE</span>
+                                                <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
+                                                   Testa de nya <b>Mindflip</b>-banorna! De byter riktning, går i loopar och är designade för att förvirra.
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="wish-box" style="border-left-color: var(--dynamic); background: rgba(217, 70, 239, 0.05);">
-                                            <span class="wish-label" style="color: var(--dynamic)">Skins & Dimma</span>
-                                            <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
-                                               Nu kan du anpassa din spelare i <b>Inställningar</b>! Välj din favoritfärg eller aktivera <b>Dimma</b> för en brutal utmaning.
+                                            <div class="wish-box">
+                                                <span class="wish-label">En önskan från oss:</span>
+                                                <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
                                             </div>
                                         </div>
-                                        <div class="wish-box">
-                                            <span class="wish-label">En önskan från oss:</span>
-                                            <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
-                                        </div>
-                                    </div>
-                                    <div class="instr-list">
-                                        <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
-                                        <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
-                                        <p>På SVÅR och BRUTAL syns inga cirklar.</p>
-                                        <p>Tryck på <b>P</b> för att pausa.</p>
-                                    </div>`,
+                                        <div class="instr-list">
+                                            <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
+                                            <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
+                                            <p>På SVÅR och BRUTAL syns inga cirklar.</p>
+                                            <p>Tryck på <b>P</b> för att pausa.</p>
+                                        </div>`,
                 clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
                 skipHint: "KLICKA FÖR ATT HOPPA ÖVER",
                 crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
@@ -875,51 +934,52 @@
                 tutRealTry: "NU KÖR VI PÅ RIKTIGT! KLARA 3 SVÄNGAR.",
                 tutWin: "GRATTIS! DU HAR KLARAT TUTORIALEN.",
                 tutNextStep: "GÅ VIDARE", tutTryReal: "FÖRSÖK IGEN",
-                skinTitle: "VÄLJ FÄRG", optionsTitle: "ALTERNATIV", fogLabel: "DIMMA (SVÅRT)"
+                skinTitle: "VÄLJ FÄRG", optionsTitle: "ALTERNATIV", fogLabel: "DIMMA (SVÅRT)",
+                speedTitle: "SPELHASTIGHET"
             },
             en: {
                 title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us", settingsBtn: "Settings",
-                backMenu: "← MENU", diffEasy: "EASY", diffMed: "MEDIUM", diffDyn: "DYNAMIC", diffHard: "HARD", diffBrut: "BRUTAL",
+                backMenu: "← MENU", diffEasy: "EASY", diffMed: "MEDIUM", diffDyn: "DYNAMIC", diffMindflip: "MINDFLIP", diffHard: "HARD", diffBrut: "BRUTAL",
                 pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
                 back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
                 aboutText: `
-                                    <div class="founder-section">
-                                        <div class="founder-title">The Founders</div>
-                                        <div class="founder-grid">
-                                            <div class="founder-card">
-                                                <span class="founder-name">Bozhidar Ivanov</span>
-                                                <span class="founder-role">Lead Developer</span>
-                                                <div class="social-row">
-                                                    <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                    <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                        <div class="founder-section">
+                                            <div class="founder-title">The Founders</div>
+                                            <div class="founder-grid">
+                                                <div class="founder-card">
+                                                    <span class="founder-name">Bozhidar Ivanov</span>
+                                                    <span class="founder-role">Lead Developer</span>
+                                                    <div class="social-row">
+                                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                    </div>
+                                                </div>
+                                                <div class="founder-card">
+                                                    <span class="founder-name">Joakim Rehn</span>
+                                                    <span class="founder-role">Lead Designer</span>
+                                                    <div class="social-row">
+                                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="founder-card">
-                                                <span class="founder-name">Joakim Rehn</span>
-                                                <span class="founder-role">Lead Designer</span>
-                                                <div class="social-row">
-                                                    <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                    <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                             <div class="wish-box" style="border-left-color: var(--mindflip); background: rgba(255, 136, 0, 0.05);">
+                                                <span class="wish-label" style="color: var(--mindflip)">NEW: MINDFLIP MODE</span>
+                                                <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
+                                                   Try the new <b>Mindflip</b> levels! They reverse direction, loop around, and are designed to disorient.
                                                 </div>
                                             </div>
-                                        </div>
-                                         <div class="wish-box" style="border-left-color: var(--dynamic); background: rgba(217, 70, 239, 0.05);">
-                                            <span class="wish-label" style="color: var(--dynamic)">New: Skins & Fog</span>
-                                            <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
-                                               You can now customize your player in <b>Settings</b>! Choose your favorite color or enable <b>Fog of War</b> for a brutal challenge.
+                                            <div class="wish-box">
+                                                <span class="wish-label">A wish from us:</span>
+                                                <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
                                             </div>
                                         </div>
-                                        <div class="wish-box">
-                                            <span class="wish-label">A wish from us:</span>
-                                            <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
-                                        </div>
-                                    </div>
-                                    <div class="instr-list">
-                                        <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
-                                        <p>Tip: Click/Space during scouting to skip directly to the start.</p>
-                                        <p>On HARD and BRUTAL, no circles are shown.</p>
-                                        <p>Press <b>P</b> to pause.</p>
-                                    </div>`,
+                                        <div class="instr-list">
+                                            <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
+                                            <p>Tip: Click/Space during scouting to skip directly to the start.</p>
+                                            <p>On HARD and BRUTAL, no circles are shown.</p>
+                                            <p>Press <b>P</b> to pause.</p>
+                                        </div>`,
                 clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...",
                 skipHint: "CLICK TO SKIP",
                 crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN (SPACE)",
@@ -934,7 +994,8 @@
                 tutRealTry: "LET'S DO THIS! CLEAR 3 TURNS.",
                 tutWin: "CONGRATS! TUTORIAL COMPLETED.",
                 tutNextStep: "NEXT STEP", tutTryReal: "TRY AGAIN",
-                skinTitle: "CHOOSE COLOR", optionsTitle: "OPTIONS", fogLabel: "FOG OF WAR (HARD)"
+                skinTitle: "CHOOSE COLOR", optionsTitle: "OPTIONS", fogLabel: "FOG OF WAR (HARD)",
+                speedTitle: "GAME SPEED"
             }
         };
 
@@ -948,13 +1009,29 @@
             "#fecc00", // Gold
             "#d946ef", // Dynamic Pink
             "#ffffff", // White
-            "#00d2ff"  // Cyan
+            "#00d2ff", // Cyan
+            "#ff8800"  // Mindflip Orange
         ];
 
-        let gameSettings = JSON.parse(localStorage.getItem('maze_settings') || '{"skin": "#1d2bff", "fog": false}');
+        let gameSettings = JSON.parse(localStorage.getItem('maze_settings') || '{"skin": "#1d2bff", "fog": false, "speed": 1}');
 
         function saveSettings() {
             localStorage.setItem('maze_settings', JSON.stringify(gameSettings));
+        }
+
+        function updateSpeedDisplay(val) {
+            const percent = Math.round(val * 100);
+            const el = document.getElementById('speedValueDisplay');
+            el.textContent = percent + "%";
+
+            if (val < 1) { el.style.color = "#00c853"; }
+            else if (val > 1) { el.style.color = "#ff0044"; }
+            else { el.style.color = "#1d2bff"; }
+        }
+
+        function saveSpeedSetting(val) {
+            gameSettings.speed = parseFloat(val);
+            saveSettings();
         }
 
         function renderSettings() {
@@ -971,6 +1048,11 @@
                 };
                 grid.appendChild(d);
             });
+
+            // Set Speed Slider
+            const slider = document.getElementById('speedRange');
+            slider.value = gameSettings.speed || 1;
+            updateSpeedDisplay(slider.value);
 
             const fogBtn = document.getElementById('fogToggle');
             if (gameSettings.fog) fogBtn.classList.add('active');
@@ -1010,6 +1092,8 @@
             { id: 'easy', count: 15, baseSpeed: 180, speedInc: 15, baseWidth: 55, widthDec: 1.5, timing: 0.52 },
             { id: 'medium', count: 15, baseSpeed: 400, speedInc: 12, baseWidth: 32, widthDec: 1.0, timing: 0.40 },
             { id: 'dynamic', count: 10, baseSpeed: 450, speedInc: 15, baseWidth: 28, widthDec: 0.8, timing: 0.35 },
+            // NEW MINDFLIP SETTINGS
+            { id: 'mindflip', count: 10, baseSpeed: 500, speedInc: 15, baseWidth: 25, widthDec: 0.5, timing: 0.30 },
             { id: 'hard', count: 10, baseSpeed: 580, speedInc: 15, baseWidth: 22, widthDec: 0.8, timing: 0.25 },
             { id: 'brutal', count: 10, baseSpeed: 750, speedInc: 20, baseWidth: 14, widthDec: 0.5, timing: 0.15 }
         ];
@@ -1024,6 +1108,8 @@
                 let pathPoints;
                 if (setting.id === 'dynamic') {
                     pathPoints = generateDynamicPath(globalIndex);
+                } else if (setting.id === 'mindflip') {
+                    pathPoints = generateMindflipPath(globalIndex);
                 } else {
                     pathPoints = generateComplexPath(globalIndex, setting.id);
                 }
@@ -1076,6 +1162,43 @@
             return pts;
         }
 
+        // --- NEW MINDFLIP GENERATOR ---
+        function generateMindflipPath(num) {
+            const pts = [{ x: 0, y: 0 }];
+            let curX = 0, curY = 0;
+            let currentAngle = 0;
+            // Increased segments for confusion
+            let segments = 15 + Math.floor(num * 1.5);
+
+            for (let j = 0; j < segments; j++) {
+                const len = 350 + (Math.random() * 200);
+
+                let behavior = Math.random();
+
+                // Logic for "Mindflip": Sudden reversals or loops
+                if (j > 0 && behavior > 0.7) {
+                    // SUDDEN REVERSE (170-190 degrees roughly)
+                    // We avoid exact 180 to make it playable (lines don't perfectly overlap)
+                    let reverseDir = Math.PI + (Math.random() * 0.5 - 0.25);
+                    currentAngle += reverseDir;
+                } else if (behavior < 0.2) {
+                    // SHARP TURN (90 deg)
+                    currentAngle += (Math.PI / 2) * (Math.random() > 0.5 ? 1 : -1);
+                } else {
+                    // STANDARD WOBBLE
+                    let turnDegrees = 20 + Math.random() * 100;
+                    let deviation = turnDegrees * (Math.PI / 180);
+                    if (Math.random() < 0.5) deviation = -deviation;
+                    currentAngle += deviation;
+                }
+
+                curX += Math.cos(currentAngle) * len;
+                curY += Math.sin(currentAngle) * len;
+                pts.push({ x: Math.round(curX), y: Math.round(curY) });
+            }
+            return pts;
+        }
+
         // --- CONFETTI SYSTEM ---
         let particles = [];
 
@@ -1103,8 +1226,6 @@
                 p.rotation += p.rotSpeed;
                 p.vy += 0.1; // Gravity
 
-                // If particle falls below screen, recycle it for a continuous effect (optional)
-                // Or just let it fall. Let's let it fall and stop updating when empty
                 if (p.y > canvas.height + 20) {
                     particles.splice(i, 1);
                     i--;
@@ -1114,7 +1235,6 @@
 
         function drawConfetti(ctx) {
             ctx.save();
-            // Confetti is drawn in screen space, so we reset transform
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
             particles.forEach(p => {
@@ -1153,7 +1273,8 @@
 
         function renderGrids() {
             const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
-            ['easy', 'medium', 'dynamic', 'hard', 'brutal'].forEach(diff => {
+            // ADDED mindflip to array
+            ['easy', 'medium', 'dynamic', 'mindflip', 'hard', 'brutal'].forEach(diff => {
                 const grid = document.getElementById('grid-' + diff);
                 if (!grid) return;
                 grid.innerHTML = '';
@@ -1321,7 +1442,9 @@
             let isFinalSegment = (player.segIdx + 1 >= currentTrack.pts.length - 1);
             let d = Math.hypot(next.x - pState.x, next.y - pState.y);
 
-            if (!isFinalSegment && d < currentTrack.speed * currentTrack.timing) {
+            let speedMod = gameSettings.speed || 1;
+
+            if (!isFinalSegment && d < (currentTrack.speed * speedMod) * currentTrack.timing) {
                 player.segIdx++; pState.x = next.x; pState.y = next.y;
                 updateVelocity();
                 AudioSfx.play('turn');
@@ -1490,8 +1613,10 @@
                     }
                 }
 
-                pState.x += player.vx * currentTrack.speed * dt;
-                pState.y += player.vy * currentTrack.speed * dt;
+                let speedMod = gameSettings.speed || 1;
+
+                pState.x += player.vx * currentTrack.speed * speedMod * dt;
+                pState.y += player.vy * currentTrack.speed * speedMod * dt;
                 cam.x += (pState.x - cam.x) * (dt * 12);
                 cam.y += (pState.y - cam.y) * (dt * 12);
 
@@ -1549,14 +1674,19 @@
 
                 if (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ctx.strokeStyle = "#ff0044";
                 else if (currentTrack.difficulty === 'dynamic') ctx.strokeStyle = "#d946ef";
+                else if (currentTrack.difficulty === 'mindflip') ctx.strokeStyle = "#ff8800"; // Mindflip Color
                 else ctx.strokeStyle = "#fff";
 
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
                 currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
 
-                if (currentTrack.difficulty === 'easy' || currentTrack.difficulty === 'medium' || currentTrack.difficulty === 'dynamic') {
-                    ctx.fillStyle = currentTrack.difficulty === 'dynamic' ? "rgba(217, 70, 239, 0.25)" : "rgba(29, 43, 255, 0.25)";
+                if (['easy', 'medium', 'dynamic', 'mindflip'].includes(currentTrack.difficulty)) {
+                    let circleColor = "rgba(29, 43, 255, 0.25)";
+                    if (currentTrack.difficulty === 'dynamic') circleColor = "rgba(217, 70, 239, 0.25)";
+                    if (currentTrack.difficulty === 'mindflip') circleColor = "rgba(255, 136, 0, 0.25)";
+
+                    ctx.fillStyle = circleColor;
                     currentTrack.pts.forEach((p, idx) => {
                         if (idx > 0 && idx < currentTrack.pts.length - 1) {
                             ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill();
@@ -1567,6 +1697,7 @@
                 ctx.shadowBlur = 15;
                 if (currentTrack.difficulty === 'brutal') ctx.shadowColor = "#ff0044";
                 else if (currentTrack.difficulty === 'dynamic') ctx.shadowColor = "#d946ef";
+                else if (currentTrack.difficulty === 'mindflip') ctx.shadowColor = "#ff8800";
                 else ctx.shadowColor = "#1d2bff";
 
                 // --- MODIFIED PLAYER COLOR ---
@@ -1597,6 +1728,7 @@
                 if (isPreviewing) {
                     if (currentTrack.difficulty === 'brutal') ctx.fillStyle = "#ff0044";
                     else if (currentTrack.difficulty === 'dynamic') ctx.fillStyle = "#d946ef";
+                    else if (currentTrack.difficulty === 'mindflip') ctx.fillStyle = "#ff8800";
                     else ctx.fillStyle = "#1d2bff";
 
                     ctx.font = "bold 50px 'Segoe UI'"; ctx.textAlign = "center";
