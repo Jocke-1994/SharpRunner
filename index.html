@@ -453,6 +453,40 @@
                 color: #000;
             }
 
+        /* --- NY ANIMATION FÖR RESULTATRUTAN --- */
+        .popup-anim {
+            animation: bounceIn 0.6s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+
+            20% {
+                transform: scale(1.1);
+            }
+
+            40% {
+                transform: scale(0.9);
+            }
+
+            60% {
+                opacity: 1;
+                transform: scale(1.03);
+            }
+
+            80% {
+                transform: scale(0.97);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         #progressInfo {
             margin: 15px 0;
             font-size: 1.2rem;
@@ -951,19 +985,14 @@
         const iconLinkedin = `<svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>`;
 
         // --- SETTINGS LOGIC INITIALIZATION ---
-        // Läser in settings först för att AudioSfx ska kunna använda dem
         let gameSettings = JSON.parse(localStorage.getItem('maze_settings') || '{"skin": "#1d2bff", "fog": false, "speed": 1, "sound": true}');
-
-        // Säkerställ att gamla sparfiler får ljudet påslaget om det saknas
         if (gameSettings.sound === undefined) gameSettings.sound = true;
 
         const AudioSfx = {
             ctx: null,
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
             play(type) {
-                // KOLLA OM LJUDET ÄR PÅ
                 if (!gameSettings.sound) return;
-
                 this.init();
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
@@ -1214,7 +1243,6 @@
             const pts = [{ x: 0, y: 0 }];
             let curX = 0, curY = 0;
 
-            // 1. Slalombacken (Mjukare sicksack)
             if (levelIndex === 1) {
                 for (let j = 0; j < 12; j++) {
                     curX += 250;
@@ -1222,7 +1250,6 @@
                     pts.push({ x: curX, y: curY });
                 }
             }
-            // 2. Motorvägen (Långa rakor, små variationer)
             else if (levelIndex === 2) {
                 for (let j = 0; j < 10; j++) {
                     curX += 500;
@@ -1230,7 +1257,6 @@
                     pts.push({ x: curX, y: curY });
                 }
             }
-            // 3. Vägskälet (Lång-kort-rytmen)
             else if (levelIndex === 3) {
                 for (let j = 0; j < 15; j++) {
                     let len = (j % 3 === 0) ? 400 : 150;
@@ -1239,7 +1265,6 @@
                     pts.push({ x: curX, y: curY });
                 }
             }
-            // 4. Lägenheten (Trappsteg)
             else if (levelIndex === 4) {
                 for (let j = 0; j < 12; j++) {
                     if (j % 2 === 0) curX += 300;
@@ -1247,7 +1272,6 @@
                     pts.push({ x: curX, y: curY });
                 }
             }
-            // 5. Schackbrädet (Diagonal sicksack)
             else if (levelIndex === 5) {
                 for (let j = 0; j < 14; j++) {
                     curX += 200;
@@ -1255,7 +1279,6 @@
                     pts.push({ x: curX, y: curY });
                 }
             }
-            // 6. Rondellen (Fixad: Inga överlappande punkter)
             else if (levelIndex === 6) {
                 pts.push({ x: curX += 300, y: curY });
                 pts.push({ x: curX += 200, y: curY += 200 });
@@ -1264,7 +1287,6 @@
                 pts.push({ x: curX += 400, y: curY -= 100 });
                 pts.push({ x: curX += 400, y: curY += 200 });
             }
-            // 7. Fjärilen (Symmetri)
             else if (levelIndex === 7) {
                 pts.push({ x: curX += 300, y: curY -= 250 });
                 pts.push({ x: curX += 100, y: curY += 50 });
@@ -1274,7 +1296,6 @@
                 pts.push({ x: curX += 100, y: curY -= 50 });
                 pts.push({ x: curX += 300, y: curY -= 250 });
             }
-            // 8. Oasen (Lång vs Korta)
             else if (levelIndex === 8) {
                 for (let j = 0; j < 5; j++) {
                     pts.push({ x: curX += 500, y: curY });
@@ -1282,7 +1303,6 @@
                     pts.push({ x: curX += 150, y: curY -= 150 });
                 }
             }
-            // 9. Spiralen (Fixad: Relativ rörelse)
             else if (levelIndex === 9) {
                 let step = 150;
                 for (let j = 0; j < 10; j++) {
@@ -1294,7 +1314,6 @@
                     pts.push({ x: curX, y: curY });
                 }
             }
-            // 10. Parkour (Random kontrollerad)
             else {
                 for (let j = 0; j < 12; j++) {
                     let len = 300 + Math.random() * 200;
@@ -1413,24 +1432,49 @@
             }
         });
 
-        // --- PARTICLE SYSTEM (ENHANCED) ---
+        // --- PARTICLE SYSTEM (ENHANCED FOR JUICE) ---
         let particles = [];
 
-        function startConfetti() {
-            for (let i = 0; i < 150; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height - canvas.height,
-                    vx: (Math.random() - 0.5) * 10,
-                    vy: Math.random() * 10 + 5,
-                    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-                    size: Math.random() * 8 + 4,
-                    rotation: Math.random() * 360,
-                    rotSpeed: (Math.random() - 0.5) * 10,
-                    type: 'confetti',
-                    life: 1.0
-                });
-            }
+        function triggerWinCelebration(x, y) {
+            // 1. Skapa en chockvåg vid spelaren (World Space)
+            particles.push({
+                type: 'shockwave', x: x, y: y, size: 10, maxSize: 500,
+                alpha: 1, color: '#fff', speed: 25
+            });
+
+            // 2. Skapa en explosion vid spelaren
+            spawnExplosion(x, y, "#fff");
+
+            // 3. Starta guldregn/fyrverkeri från botten av skärmen (Screen Space)
+            let colors = ['#ff0044', '#00c853', '#2979ff', '#ffeb3b', '#d500f9'];
+
+            // Skjut upp partiklar under 1.5 sekunder
+            let celebrationInterval = setInterval(() => {
+                if (!document.getElementById('gameOverlay').classList.contains('hidden')) {
+                    // Skapa 5 partiklar åt gången
+                    for (let i = 0; i < 5; i++) {
+                        particles.push({
+                            type: 'confetti',
+                            // Slumpmässigt från botten av skärmen
+                            screenX: Math.random() * canvas.width,
+                            screenY: canvas.height + 10,
+                            vx: (Math.random() - 0.5) * 10, // Spridning i X
+                            vy: -(Math.random() * 15 + 10), // Skjut uppåt med hög fart
+                            color: colors[Math.floor(Math.random() * colors.length)],
+                            size: Math.random() * 8 + 5,
+                            rotation: Math.random() * 360,
+                            rotSpeed: (Math.random() - 0.5) * 15,
+                            life: 1.0,
+                            gravity: 0.4
+                        });
+                    }
+                } else {
+                    clearInterval(celebrationInterval);
+                }
+            }, 50);
+
+            // Stoppa regnet efter en stund automatiskt om man stannar kvar
+            setTimeout(() => clearInterval(celebrationInterval), 2000);
         }
 
         function spawnExplosion(x, y, color) {
@@ -1459,27 +1503,33 @@
                 let p = particles[i];
 
                 if (p.type === 'confetti') {
-                    p.x += p.vx;
-                    p.y += p.vy;
+                    // Använd screenX/Y för confetti som ligger "ovanpå" spelet
+                    p.screenX += p.vx;
+                    p.screenY += p.vy;
                     p.rotation += p.rotSpeed;
-                    p.vy += 0.1; // Gravity
-                    if (p.y > canvas.height + 20) {
-                        particles.splice(i, 1);
-                        i--;
-                    }
-                } else if (p.type === 'explosion') {
+                    p.vy += p.gravity; // Tyngdkraft
+                    p.life -= 0.005;   // Tona ut långsamt
+
+                    if (p.screenY > canvas.height + 50 && p.vy > 0) p.life = 0; // Döda om de ramlar ut
+                }
+                else if (p.type === 'explosion') {
                     p.x += p.vx;
                     p.y += p.vy;
-                    p.vx *= 0.92; // Friction
+                    p.vx *= 0.92;
                     p.vy *= 0.92;
-                    p.rotation += p.rotSpeed;
                     p.life -= p.decay;
                     p.size *= 0.95;
+                }
+                else if (p.type === 'shockwave') {
+                    p.size += p.speed;
+                    p.alpha -= 0.03;
+                    if (p.alpha <= 0) p.life = 0;
+                    else p.life = 1; // Håll den vid liv tills alpha är 0
+                }
 
-                    if (p.life <= 0) {
-                        particles.splice(i, 1);
-                        i--;
-                    }
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                    i--;
                 }
             }
         }
@@ -1487,20 +1537,36 @@
         function drawParticles(ctx, camX, camY, zoom) {
             particles.forEach(p => {
                 ctx.save();
+
                 if (p.type === 'confetti') {
-                    // Confetti ritas i screen space
+                    // Ritas i Screen Space (ignorerar kamera och zoom)
                     ctx.setTransform(1, 0, 0, 1, 0, 0);
+                    ctx.translate(p.screenX, p.screenY);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.life;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                }
+                else if (p.type === 'shockwave') {
+                    // Ritas i World Space (vid spelaren)
+                    // Context är redan transformerat korrekt i main draw loop
                     ctx.translate(p.x, p.y);
-                } else {
-                    // Explosioner ritas i world space (måste följa kameran/zoomen)
-                    // Context är redan transformerat i main draw loop, så vi ritar bara på p.x, p.y
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+                    ctx.strokeStyle = p.color;
+                    ctx.lineWidth = 5;
+                    ctx.globalAlpha = p.alpha;
+                    ctx.stroke();
+                }
+                else {
+                    // Explosioner (World Space)
                     ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.life;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
                 }
 
-                ctx.rotate(p.rotation * Math.PI / 180);
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = p.life;
-                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
                 ctx.restore();
             });
         }
@@ -1816,14 +1882,23 @@
         function win() {
             alive = false;
             AudioSfx.play('win');
-            startConfetti();
+
+            // --- NYTT: Starta det maffiga firandet ---
+            triggerWinCelebration(pState.x, pState.y);
 
             // JUICE: Win Flash
             flash.active = true;
             flash.color = '#ffffff';
-            flash.alpha = 0.6;
+            flash.alpha = 0.8; // Lite starkare blixt
 
             const t = i18n[currentLang];
+            const overlay = document.getElementById('gameOverlay');
+            const popup = document.getElementById('popupBox');
+
+            // Återställ animationen så den spelas varje gång
+            popup.classList.remove('popup-anim');
+            void popup.offsetWidth; // Trigger reflow
+            popup.classList.add('popup-anim');
 
             if (isTutorial) {
                 document.getElementById('msgTitle').textContent = t.tutWin;
@@ -1832,7 +1907,7 @@
                 document.getElementById('overlayMainBtn').textContent = "OK";
                 document.getElementById('overlayExitBtn').classList.add('hidden');
                 document.getElementById('overlayMainBtn').onclick = endTutorial;
-                document.getElementById('gameOverlay').classList.remove('hidden');
+                overlay.classList.remove('hidden');
                 return;
             }
 
@@ -1848,12 +1923,19 @@
             localStorage.setItem('maze_history_pro', JSON.stringify(history));
 
             document.getElementById('msgTitle').textContent = t.winTitle;
-            document.getElementById('progressInfo').innerHTML = `<span style="color:var(--success)">100% ${t.hudDone}!</span><br><small>${t.winStats.replace('{n}', attempts)}</small>`;
+
+            // Lite snyggare formatting på texten
+            document.getElementById('progressInfo').innerHTML =
+                `<div style="font-size:2rem; margin-bottom:10px; text-shadow:0 0 15px var(--success)">🎉 100% ${t.hudDone}! 🎉</div>` +
+                `<small style="color:#aaa">${t.winStats.replace('{n}', attempts)}</small>`;
+
             document.getElementById('msgBody').textContent = t.winBody.replace('{id}', currentTrack.id);
             const next = tracks.find(tr => tr.num === currentTrack.num + 1);
             document.getElementById('overlayMainBtn').textContent = next ? t.nextBtn : (currentLang === 'sv' ? "MENY" : "MENU");
             document.getElementById('overlayMainBtn').onclick = next ? () => startTrack(next) : exitToMenu;
-            document.getElementById('gameOverlay').classList.remove('hidden');
+
+            // Visa overlay direkt nu eftersom vi har partiklar ovanpå
+            overlay.classList.remove('hidden');
         }
 
         function updatePhysics() {
