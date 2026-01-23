@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-    <title>Labyrint Master: JUICED UP 2.0</title>
+    <title>Labyrint Master: ARCADE EDITION</title>
     <style>
         :root {
             --bg: #050608;
@@ -369,32 +369,150 @@
             border: 2px solid var(--success) !important;
         }
 
+        /* --- STATS SCREEN UPDATES --- */
+        .stats-wrapper {
+            width: 100%;
+            max-width: 650px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .arcade-hero {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: var(--panel);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .stat-val {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+            display: block;
+            line-height: 1;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            font-weight: 700;
+        }
+
+        .stat-box.streak .stat-val {
+            color: var(--mindflip);
+            text-shadow: 0 0 20px rgba(255, 136, 0, 0.4);
+        }
+
+        .stat-box.deaths .stat-val {
+            color: var(--brutal);
+            text-shadow: 0 0 20px rgba(255, 0, 68, 0.4);
+        }
+
+        .stat-box.best .stat-val {
+            color: var(--tricky);
+            text-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+        }
+
+        .diff-breakdown {
+            background: var(--panel);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .diff-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+            .diff-row:last-child {
+                border-bottom: none;
+            }
+
+        .diff-name {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 100px;
+        }
+
+        .diff-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .diff-bar-bg {
+            flex-grow: 1;
+            height: 8px;
+            background: rgba(0,0,0,0.5);
+            margin: 0 15px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .diff-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .diff-perc {
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: #fff;
+            min-width: 50px;
+            text-align: right;
+        }
+
         .stats-list {
             width: 100%;
-            max-width: 550px;
             background: var(--panel);
-            border-radius: 20px;
-            padding: 20px;
-            max-height: 450px;
+            border-radius: 16px;
+            padding: 10px;
+            max-height: 300px;
             overflow-y: auto;
-            border: 1px solid #333;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-top: 10px;
         }
 
         .stats-item {
             display: flex;
             justify-content: space-between;
-            padding: 14px;
+            padding: 12px;
             border-bottom: 1px solid #222;
-            font-size: 14px;
+            font-size: 13px;
+            color: #aaa;
         }
+
+            .stats-item span b {
+                color: #fff;
+            }
 
         .tag {
             font-size: 10px;
-            padding: 4px 10px;
-            border-radius: 6px;
+            padding: 3px 8px;
+            border-radius: 4px;
             font-weight: bold;
-            margin-left: 10px;
+            margin-left: 8px;
             color: white;
+            text-transform: uppercase;
         }
 
         .easy {
@@ -955,8 +1073,29 @@
 
     <div id="statsScreen" class="screen hidden">
         <h1 data-t="statsBtn">STATISTIK</h1>
-        <div id="statsSummary" style="margin-bottom: 20px; font-weight: bold; font-size: 1.4rem;"></div>
-        <div class="stats-list" id="statsList"></div>
+
+        <div class="stats-wrapper">
+            <div class="arcade-hero">
+                <div class="stat-box streak">
+                    <span class="stat-val" id="stWinStreak">0</span>
+                    <span class="stat-label" data-t="statStreak">WIN STREAK</span>
+                </div>
+                <div class="stat-box best">
+                    <span class="stat-val" id="stBestStreak">0</span>
+                    <span class="stat-label" data-t="statBestStreak">BEST STREAK</span>
+                </div>
+                <div class="stat-box deaths" style="grid-column: span 2;">
+                    <span class="stat-val" id="stDeaths">0</span>
+                    <span class="stat-label" data-t="statDeaths">TOTAL DEATHS</span>
+                </div>
+            </div>
+
+            <div class="diff-breakdown" id="diffBreakdown">
+            </div>
+
+            <div class="stats-list" id="statsList"></div>
+        </div>
+
         <button class="btn btn-secondary" style="margin-top: 25px;" onclick="showScreen('mainMenu')" data-t="back">Tillbaka</button>
     </div>
 
@@ -992,6 +1131,9 @@
         let turnCombo = 0; // FEATURE 3: Dynamic Pitch
         let ghosts = JSON.parse(localStorage.getItem('maze_ghosts') || "{}"); // FEATURE 2: Ghost
 
+        // --- NEW ARCADE STATS ---
+        let arcadeStats = JSON.parse(localStorage.getItem('maze_arcade') || '{"deaths":0, "streak":0, "bestStreak":0}');
+
         const AudioSfx = {
             ctx: null,
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
@@ -1004,11 +1146,8 @@
                 const now = this.ctx.currentTime;
 
                 if (type === 'turn') {
-                    // FEATURE 3: DYNAMIC PITCH
-                    // Base 400Hz, increase 20Hz per successful turn, cap at 800Hz
                     let baseFreq = 400;
                     let freq = Math.min(800, baseFreq + (turnCombo * 20));
-
                     osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now);
                     osc.frequency.exponentialRampToValueAtTime(Math.max(100, freq - 300), now + 0.1);
                     gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.1);
@@ -1076,7 +1215,7 @@
                 crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
                 pb: "NYTT PERSONBÄSTA!", oldPb: "Gammalt", winTitle: "KLAR!", winBody: "Bana {id} avklarad!",
                 winStats: "Klarade på {n} försök.", nextBtn: "NÄSTA BANA (SPACE)", statsCleared: "KLARADE: {c} / {t}",
-                statsBest: "PB: {p}% | {a} försök",
+                statsBest: "PB: {p}% | {a} försök", statsTime: "Tid: {t}s",
                 tutBtn: "TUTORIAL", skipTut: "SKIPPA",
                 tutStart: "TRYCK FÖR ATT STARTA",
                 tutTurnNow: "TRYCK FÖR ATT SVÄNGA NU!",
@@ -1086,7 +1225,8 @@
                 tutWin: "GRATTIS! DU HAR KLARAT TUTORIALEN.",
                 tutNextStep: "GÅ VIDARE", tutTryReal: "FÖRSÖK IGEN",
                 skinTitle: "VÄLJ FÄRG", optionsTitle: "ALTERNATIV", fogLabel: "DIMMA (SVÅRT)", soundLabel: "LJUD PÅ",
-                speedTitle: "SPELHASTIGHET"
+                speedTitle: "SPELHASTIGHET",
+                statStreak: "WIN STREAK", statBestStreak: "BÄSTA STREAK", statDeaths: "TOTALA DÖDSFALL"
             },
             en: {
                 title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us", settingsBtn: "Settings",
@@ -1136,7 +1276,7 @@
                 crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN (SPACE)",
                 pb: "NEW PERSONAL BEST!", oldPb: "Previous", winTitle: "CLEAR!", winBody: "Level {id} cleared!",
                 winStats: "Cleared in {n} attempts.", nextBtn: "NEXT LEVEL (SPACE)", statsCleared: "CLEARED: {c} / {t}",
-                statsBest: "PB: {p}% | {a} attempts",
+                statsBest: "PB: {p}% | {a} attempts", statsTime: "Time: {t}s",
                 tutBtn: "TUTORIAL", skipTut: "SKIP",
                 tutStart: "TAP TO START",
                 tutTurnNow: "TAP TO TURN NOW!",
@@ -1146,7 +1286,8 @@
                 tutWin: "CONGRATS! TUTORIAL COMPLETED.",
                 tutNextStep: "NEXT STEP", tutTryReal: "TRY AGAIN",
                 skinTitle: "CHOOSE COLOR", optionsTitle: "OPTIONS", fogLabel: "FOG OF WAR (HARD)", soundLabel: "SOUND",
-                speedTitle: "GAME SPEED"
+                speedTitle: "GAME SPEED",
+                statStreak: "WIN STREAK", statBestStreak: "BEST STREAK", statDeaths: "TOTAL DEATHS"
             }
         };
 
@@ -1583,6 +1724,7 @@
         let zoom = 1, targetZoom = 1, prevZoom = 1;
         let isPreviewing = false, previewTargetIdx = 0;
         let shake = 0;
+        let gameStartTime = 0; // NEW: Timer start
 
         // Visual effects state
         let flash = { active: false, color: '#fff', alpha: 0 };
@@ -1621,16 +1763,61 @@
         function renderStats() {
             const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             const t = i18n[currentLang];
+
+            // 1. Render Hero Stats (Arcade Stats)
+            document.getElementById('stWinStreak').textContent = arcadeStats.streak;
+            document.getElementById('stBestStreak').textContent = arcadeStats.bestStreak;
+            document.getElementById('stDeaths').textContent = arcadeStats.deaths;
+
+            // 2. Render Difficulty Breakdown
+            const diffBreakdown = document.getElementById('diffBreakdown');
+            diffBreakdown.innerHTML = '';
+
+            const difficulties = ['easy', 'medium', 'dynamic', 'mindflip', 'tricky', 'hard', 'brutal'];
+            const diffColors = {
+                easy: '#4caf50', medium: '#ff9800', dynamic: '#d946ef', mindflip: '#ff8800',
+                tricky: '#00e5ff', hard: '#f44336', brutal: '#ff0044'
+            };
+
+            difficulties.forEach(diff => {
+                const totalTracks = tracks.filter(t => t.difficulty === diff).length;
+                if (totalTracks === 0) return;
+
+                const clearedTracks = tracks.filter(t => t.difficulty === diff && history[t.id]?.cleared).length;
+                const percentage = Math.round((clearedTracks / totalTracks) * 100);
+                const color = diffColors[diff];
+
+                const row = document.createElement('div');
+                row.className = 'diff-row';
+                row.innerHTML = `
+                        <div class="diff-name">
+                            <div class="diff-dot" style="background:${color}"></div>
+                            ${diff.toUpperCase()}
+                        </div>
+                        <div class="diff-bar-bg">
+                            <div class="diff-bar-fill" style="width:${percentage}%; background:${color}; box-shadow: 0 0 10px ${color}"></div>
+                        </div>
+                        <div class="diff-perc">${percentage}%</div>
+                    `;
+                diffBreakdown.appendChild(row);
+            });
+
+
+            // 3. Render List
             const list = document.getElementById('statsList');
             list.innerHTML = '';
-            let clearedCount = Object.values(history).filter(h => h.cleared).length;
-            document.getElementById('statsSummary').innerHTML = t.statsCleared.replace('{c}', clearedCount).replace('{t}', tracks.length);
             Object.keys(history).sort((a, b) => a - b).forEach(id => {
                 const track = tracks.find(tr => tr.id === id);
                 if (track) {
                     let pbVal = history[id].bestProg ? Math.round(history[id].bestProg) : 0;
                     let atts = history[id].cleared ? history[id].bestAttempts : history[id].attempts;
                     let line = t.statsBest.replace('{p}', pbVal).replace('{a}', atts);
+
+                    // Show time if cleared
+                    if (history[id].cleared && history[id].bestTime) {
+                        line += ` | ${t.statsTime.replace('{t}', (history[id].bestTime / 1000).toFixed(2))}`;
+                    }
+
                     list.innerHTML += `<div class="stats-item"><span>${t.hudTrack} ${id} <span class="tag ${track.difficulty}">${track.difficulty.toUpperCase()}</span></span> <span>${line}</span></div>`;
                 }
             });
@@ -1769,6 +1956,8 @@
             }
             if (!started) {
                 started = true;
+                // NEW: Set Start Time
+                gameStartTime = Date.now();
                 targetZoom = 1.0;
                 document.getElementById('scoutingHint').classList.add('hidden');
                 return;
@@ -1821,6 +2010,13 @@
             if (!alive) return;
             alive = false;
             turnCombo = 0; // Reset Combo
+
+            // FEATURE: ARCADE STATS UPDATE
+            if (!isTutorial) {
+                arcadeStats.deaths++;
+                arcadeStats.streak = 0; // Reset streak on death
+                localStorage.setItem('maze_arcade', JSON.stringify(arcadeStats));
+            }
 
             // FEATURE 2: SAVE GHOST POSITION
             if (currentTrack && !isTutorial) {
@@ -1897,6 +2093,19 @@
         function win() {
             alive = false;
             turnCombo = 0; // Reset Combo
+
+            // FEATURE: TIME TRACKING
+            let timeTaken = Date.now() - gameStartTime;
+
+            // FEATURE: ARCADE STATS UPDATE
+            if (!isTutorial) {
+                arcadeStats.streak++;
+                if (arcadeStats.streak > arcadeStats.bestStreak) {
+                    arcadeStats.bestStreak = arcadeStats.streak;
+                }
+                localStorage.setItem('maze_arcade', JSON.stringify(arcadeStats));
+            }
+
             AudioSfx.play('win');
 
             triggerWinCelebration(pState.x, pState.y);
@@ -1927,9 +2136,15 @@
             document.getElementById('overlayExitBtn').classList.remove('hidden');
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             if (!history[currentTrack.id]) {
-                history[currentTrack.id] = { attempts: attempts, bestAttempts: attempts, bestProg: 100, cleared: true };
+                history[currentTrack.id] = { attempts: attempts, bestAttempts: attempts, bestProg: 100, cleared: true, bestTime: timeTaken };
             } else {
                 if (!history[currentTrack.id].cleared || attempts < history[currentTrack.id].bestAttempts) history[currentTrack.id].bestAttempts = attempts;
+
+                // Update Best Time
+                if (!history[currentTrack.id].bestTime || timeTaken < history[currentTrack.id].bestTime) {
+                    history[currentTrack.id].bestTime = timeTaken;
+                }
+
                 history[currentTrack.id].cleared = true;
                 history[currentTrack.id].bestProg = 100;
             }
@@ -1943,9 +2158,11 @@
 
             document.getElementById('msgTitle').textContent = t.winTitle;
 
+            let timeStr = (timeTaken / 1000).toFixed(2) + "s";
+
             document.getElementById('progressInfo').innerHTML =
                 `<div style="font-size:2rem; margin-bottom:10px; text-shadow:0 0 15px var(--success)">🎉 100% ${t.hudDone}! 🎉</div>` +
-                `<small style="color:#aaa">${t.winStats.replace('{n}', attempts)}</small>`;
+                `<small style="color:#aaa">${t.winStats.replace('{n}', attempts)} | ${timeStr}</small>`;
 
             document.getElementById('msgBody').textContent = t.winBody.replace('{id}', currentTrack.id);
             const next = tracks.find(tr => tr.num === currentTrack.num + 1);
