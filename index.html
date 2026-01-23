@@ -252,6 +252,30 @@
             margin-top: 40px;
             font-size: 1.2rem;
             text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* MEDAL ICON ANIMATION */
+        .medal-icon {
+            width: 24px;
+            height: 24px;
+            fill: #fecc00;
+            filter: drop-shadow(0 0 8px #fecc00);
+            animation: medalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        @keyframes medalPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .btn {
@@ -283,6 +307,15 @@
             background: #222;
             box-shadow: 0 4px 0px #000;
         }
+
+        .btn-danger {
+            background: var(--brutal);
+            box-shadow: 0 4px 0px #a3002b;
+        }
+
+            .btn-danger:hover {
+                box-shadow: 0 10px 20px rgba(255, 0, 68, 0.3);
+            }
 
         .btn-tut {
             background: #fff;
@@ -880,6 +913,15 @@
             text-shadow: 0 0 10px rgba(29, 43, 255, 0.5);
         }
 
+        /* Reset Button Container */
+        .reset-section {
+            width: 100%;
+            max-width: 300px;
+            margin-top: 30px;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+
         /* --- MOBILOPTIMERINGAR --- */
         @media (max-width: 768px) {
             h1 {
@@ -1046,6 +1088,10 @@
             </div>
         </div>
 
+        <div class="reset-section">
+            <button class="btn btn-danger" onclick="resetGameData()" data-t="resetBtn" style="width:100%">RENSA DATA</button>
+        </div>
+
         <button class="btn btn-secondary" style="margin-top: 25px;" onclick="showScreen('mainMenu')" data-t="back">Tillbaka</button>
     </div>
 
@@ -1122,6 +1168,7 @@
         // SVG paths for icons
         const iconGithub = `<svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`;
         const iconLinkedin = `<svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>`;
+        const iconStar = `<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
 
         // --- SETTINGS LOGIC INITIALIZATION ---
         let gameSettings = JSON.parse(localStorage.getItem('maze_settings') || '{"skin": "#1d2bff", "fog": false, "speed": 1, "sound": true}');
@@ -1136,7 +1183,11 @@
 
         const AudioSfx = {
             ctx: null,
-            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
             play(type) {
                 if (!gameSettings.sound) return;
                 this.init();
@@ -1226,7 +1277,8 @@
                 tutNextStep: "GÅ VIDARE", tutTryReal: "FÖRSÖK IGEN",
                 skinTitle: "VÄLJ FÄRG", optionsTitle: "ALTERNATIV", fogLabel: "DIMMA (SVÅRT)", soundLabel: "LJUD PÅ",
                 speedTitle: "SPELHASTIGHET",
-                statStreak: "WIN STREAK", statBestStreak: "BÄSTA STREAK", statDeaths: "TOTALA DÖDSFALL"
+                statStreak: "WIN STREAK", statBestStreak: "BÄSTA STREAK", statDeaths: "TOTALA DÖDSFALL",
+                resetBtn: "RENSA DATA", resetConfirm: "Är du säker? Allt rensas och sidan laddas om."
             },
             en: {
                 title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us", settingsBtn: "Settings",
@@ -1287,7 +1339,8 @@
                 tutNextStep: "NEXT STEP", tutTryReal: "TRY AGAIN",
                 skinTitle: "CHOOSE COLOR", optionsTitle: "OPTIONS", fogLabel: "FOG OF WAR (HARD)", soundLabel: "SOUND",
                 speedTitle: "GAME SPEED",
-                statStreak: "WIN STREAK", statBestStreak: "BEST STREAK", statDeaths: "TOTAL DEATHS"
+                statStreak: "WIN STREAK", statBestStreak: "BEST STREAK", statDeaths: "TOTAL DEATHS",
+                resetBtn: "RESET DATA", resetConfirm: "Are you sure? This will wipe progress and reload."
             }
         };
 
@@ -1307,6 +1360,17 @@
 
         function saveSettings() {
             localStorage.setItem('maze_settings', JSON.stringify(gameSettings));
+        }
+
+        function resetGameData() {
+            const t = i18n[currentLang];
+            if (confirm(t.resetConfirm)) {
+                localStorage.removeItem('maze_settings');
+                localStorage.removeItem('maze_ghosts');
+                localStorage.removeItem('maze_arcade');
+                localStorage.removeItem('maze_history_pro');
+                location.reload();
+            }
         }
 
         function updateSpeedDisplay(val) {
@@ -1746,11 +1810,32 @@
 
         function renderGrids() {
             const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
-            ['easy', 'medium', 'dynamic', 'mindflip', 'tricky', 'hard', 'brutal'].forEach(diff => {
+            const difficulties = ['easy', 'medium', 'dynamic', 'mindflip', 'tricky', 'hard', 'brutal'];
+
+            difficulties.forEach(diff => {
                 const grid = document.getElementById('grid-' + diff);
                 if (!grid) return;
+
+                // Clear existing medals from header
+                const header = grid.previousElementSibling;
+                if (header.querySelector('.medal-icon')) {
+                    header.removeChild(header.querySelector('.medal-icon'));
+                }
+
+                // Check completion
+                const tracksInDiff = tracks.filter(t => t.difficulty === diff);
+                const clearedCount = tracksInDiff.filter(t => history[t.id]?.cleared).length;
+
+                // If 100% cleared, add medal
+                if (tracksInDiff.length > 0 && clearedCount === tracksInDiff.length) {
+                    const span = document.createElement('span');
+                    span.innerHTML = iconStar;
+                    span.className = 'medal-icon';
+                    header.appendChild(span);
+                }
+
                 grid.innerHTML = '';
-                tracks.filter(t => t.difficulty === diff).forEach(t => {
+                tracksInDiff.forEach(t => {
                     const d = document.createElement('div');
                     d.className = `level-card ${history[t.id]?.cleared ? 'cleared' : ''}`;
                     d.innerHTML = `<strong>${t.id}</strong>`;
@@ -1790,15 +1875,15 @@
                 const row = document.createElement('div');
                 row.className = 'diff-row';
                 row.innerHTML = `
-                        <div class="diff-name">
-                            <div class="diff-dot" style="background:${color}"></div>
-                            ${diff.toUpperCase()}
-                        </div>
-                        <div class="diff-bar-bg">
-                            <div class="diff-bar-fill" style="width:${percentage}%; background:${color}; box-shadow: 0 0 10px ${color}"></div>
-                        </div>
-                        <div class="diff-perc">${percentage}%</div>
-                    `;
+                            <div class="diff-name">
+                                <div class="diff-dot" style="background:${color}"></div>
+                                ${diff.toUpperCase()}
+                            </div>
+                            <div class="diff-bar-bg">
+                                <div class="diff-bar-fill" style="width:${percentage}%; background:${color}; box-shadow: 0 0 10px ${color}"></div>
+                            </div>
+                            <div class="diff-perc">${percentage}%</div>
+                        `;
                 diffBreakdown.appendChild(row);
             });
 
