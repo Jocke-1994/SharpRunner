@@ -40,6 +40,14 @@
             background: transparent;
         }
 
+        /* --- START ANIMATION CLASS --- */
+        .fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.4s ease-in;
+            pointer-events: none;
+        }
+
         .screen {
             position: fixed;
             inset: 0;
@@ -53,6 +61,7 @@
             padding: 40px 20px;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            transition: opacity 0.3s;
         }
 
         #settingsScreen, #statsScreen, #aboutScreen {
@@ -163,6 +172,7 @@
             font-size: 11px;
             box-shadow: 0 3px 0 #999;
             text-transform: uppercase;
+            display: inline-block;
         }
 
         .touch-icon {
@@ -665,8 +675,7 @@
             text-transform: uppercase;
             font-style: italic;
             width: 100%;
-            text-align: center; /* Säkerställer centrering */
-
+            text-align: center;
             animation: glitch-skew 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite, glitch-color 0.2s infinite;
         }
 
@@ -889,13 +898,55 @@
             margin-bottom: 5px;
         }
 
-        .instr-list p {
-            margin: 8px 0;
-            color: #aaa;
+        /* NYA STILAR FÖR KONTROLLER */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            text-align: left;
+            margin-top: 25px;
+            margin-bottom: 25px;
         }
 
-        .instr-list b {
-            color: #fff;
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .control-keys {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-or {
+            font-size: 0.7rem;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .warning-text {
+            color: var(--brutal);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 10px;
+            background: rgba(255,0,68,0.1);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,0,68,0.2);
         }
 
         /* SETTINGS STYLES */
@@ -1078,7 +1129,7 @@
                 }
 
             .key-cap {
-                display: none;
+                display: inline-block;
             }
 
             .lang-switcher {
@@ -1361,19 +1412,88 @@
             }
         };
 
-        // Återställer aboutText i i18n då jag kortade ner den ovan för läsbarhet i kodblocket
-        i18n.sv.aboutText = document.getElementById('aboutContent').innerHTML; // Placeholder, fylls i updateTexts
+        // --- UPPDATERAD ABOUT-TEXT MED SNYGGA KONTROLLER & CITAT ---
 
-        // Populate correct about text content (från originalkoden)
-        const aboutContentHTML_SV = `
-                <div class="founder-section"><div class="founder-title">Grundarna</div><div class="founder-grid"><div class="founder-card"><span class="founder-name">Bozhidar Ivanov</span><span class="founder-role">Lead Developer</span><div class="social-row"><a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div><div class="founder-card"><span class="founder-name">Joakim Rehn</span><span class="founder-role">Lead Designer</span><div class="social-row"><a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div></div><div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Testa de nya <b>Tricky</b>-banorna! Breda vägar men kluriga vägval. Designade för flow och aha-upplevelser. Inte för lätt, inte för svårt.</div></div><div class="wish-box"><span class="wish-label">En önskan från oss:</span><div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div></div></div><div class="instr-list"><p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p><p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p><p>På SVÅR och BRUTAL syns inga cirklar.</p><p>Tryck på <b>P</b> för att pausa.</p></div>
-            `;
-        const aboutContentHTML_EN = `
-                <div class="founder-section"><div class="founder-title">The Founders</div><div class="founder-grid"><div class="founder-card"><span class="founder-name">Bozhidar Ivanov</span><span class="founder-role">Lead Developer</span><div class="social-row"><a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div><div class="founder-card"><span class="founder-name">Joakim Rehn</span><span class="founder-role">Lead Designer</span><div class="social-row"><a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div></div><div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Try the new <b>Tricky</b> levels! Wide paths but complex decisions. Designed for flow. Not too easy, not too hard.</div></div><div class="wish-box"><span class="wish-label">A wish from us:</span><div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div></div></div><div class="instr-list"><p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p><p>Tip: Click/Space during scouting to skip directly to the start.</p><p>On HARD and BRUTAL, no circles are shown.</p><p>Press <b>P</b> to pause.</p></div>
+        // Gemensam HTML för founders (återanvänds)
+        const commonFounders = `
+                <div class="founder-section"><div class="founder-title">Grundarna / Founders</div><div class="founder-grid"><div class="founder-card"><span class="founder-name">Bozhidar Ivanov</span><span class="founder-role">Lead Developer</span><div class="social-row"><a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div><div class="founder-card"><span class="founder-name">Joakim Rehn</span><span class="founder-role">Lead Designer</span><div class="social-row"><a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div></div>
             `;
 
-        i18n.sv.aboutText = aboutContentHTML_SV;
-        i18n.en.aboutText = aboutContentHTML_EN;
+        // Tricky Box (Svenska)
+        const wishBoxTrickySV = `
+                <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Testa de nya <b>Tricky</b>-banorna! Breda vägar men kluriga vägval. Designade för flow och aha-upplevelser. Inte för lätt, inte för svårt.</div></div>
+            `;
+        // Tricky Box (Engelska)
+        const wishBoxTrickyEN = `
+                <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Try the new <b>Tricky</b> levels! Wide paths but complex decisions. Designed for flow. Not too easy, not too hard.</div></div>
+            `;
+
+        // Quote Box (Svenska) - DEN SOM FÖRSVANN
+        const wishBoxQuoteSV = `
+                <div class="wish-box"><span class="wish-label">En önskan från oss:</span><div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div></div>
+            `;
+        // Quote Box (Engelska) - DEN SOM FÖRSVANN
+        const wishBoxQuoteEN = `
+                <div class="wish-box"><span class="wish-label">A WISH FROM US:</span><div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div></div>
+            `;
+
+        // Svenska Instruktioner (NY LAYOUT)
+        const instructionsSV = `
+                <div class="controls-grid">
+                    <div class="control-row">
+                        <span class="control-label">Svänga</span>
+                        <div class="control-keys">
+                            <div class="key-cap">SPACE</div>
+                            <span class="control-or">ELLER</span>
+                            <div class="key-cap">KLICK</div>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <span class="control-label">Hoppa över scout</span>
+                        <div class="control-keys">
+                            <div class="key-cap">SPACE</div>
+                            <span class="control-or">/</span>
+                            <div class="key-cap">KLICK</div>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <span class="control-label">Pausa</span>
+                        <div class="key-cap">P</div>
+                    </div>
+                </div>
+                <div class="warning-text">OBS: Inga cirklar på SVÅR & BRUTAL!</div>
+            `;
+
+        // Engelska Instruktioner (NY LAYOUT)
+        const instructionsEN = `
+                <div class="controls-grid">
+                    <div class="control-row">
+                        <span class="control-label">Turn</span>
+                        <div class="control-keys">
+                            <div class="key-cap">SPACE</div>
+                            <span class="control-or">OR</span>
+                            <div class="key-cap">CLICK</div>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <span class="control-label">Skip Scouting</span>
+                        <div class="control-keys">
+                            <div class="key-cap">SPACE</div>
+                            <span class="control-or">/</span>
+                            <div class="key-cap">CLICK</div>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <span class="control-label">Pause</span>
+                        <div class="key-cap">P</div>
+                    </div>
+                </div>
+                <div class="warning-text">NOTE: No circles on HARD & BRUTAL!</div>
+            `;
+
+        // Sätt ihop allt korrekt
+        i18n.sv.aboutText = commonFounders + wishBoxTrickySV + wishBoxQuoteSV + instructionsSV;
+        i18n.en.aboutText = commonFounders + wishBoxTrickyEN + wishBoxQuoteEN + instructionsEN;
 
         let currentLang = localStorage.getItem('maze_lang') || 'sv';
         const skins = ["#1d2bff", "#ff0044", "#00c853", "#fecc00", "#d946ef", "#ffffff", "#00d2ff", "#ff8800", "#00e5ff"];
@@ -1630,10 +1750,26 @@
 
         function startTrack(t) {
             currentTrack = t; attempts = 1; paused = false; currentProg = 0; tutorialPause = false; particles = []; flash.alpha = 0;
-            if (!isTutorial) { isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4; document.getElementById('scoutingHint').classList.remove('hidden'); } else { isPreviewing = false; targetZoom = 1.0; }
-            document.getElementById('langSwitcher').classList.add('hidden'); document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById('gameHud').classList.remove('hidden'); document.getElementById('progressBarContainer').classList.remove('hidden'); document.getElementById('pauseBtn').classList.remove('hidden');
+            const activeScreen = document.querySelector('.screen:not(.hidden)');
             initGame();
+            zoom = 0.2; // Start zoomed out
+            if (!isTutorial) { isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4; document.getElementById('scoutingHint').classList.remove('hidden'); } else { isPreviewing = false; targetZoom = 1.0; }
+            document.getElementById('langSwitcher').classList.add('hidden');
+
+            if (activeScreen) {
+                activeScreen.classList.add('fade-out');
+                setTimeout(() => {
+                    activeScreen.classList.add('hidden');
+                    activeScreen.classList.remove('fade-out');
+                    document.getElementById('gameHud').classList.remove('hidden');
+                    document.getElementById('progressBarContainer').classList.remove('hidden');
+                    document.getElementById('pauseBtn').classList.remove('hidden');
+                }, 400);
+            } else {
+                document.getElementById('gameHud').classList.remove('hidden');
+                document.getElementById('progressBarContainer').classList.remove('hidden');
+                document.getElementById('pauseBtn').classList.remove('hidden');
+            }
         }
 
         function initGame() {
