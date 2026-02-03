@@ -20,15 +20,11 @@
         html, body {
             margin: 0;
             height: 100dvh;
-            /* --- UPPDATERAD BAKGRUND (TYDLIGARE RUTNÄT) --- */
             background-color: var(--bg);
-            /* Ökad synlighet till 0.15 (15%) och lite ljusare blå ton */
             background-image: linear-gradient(rgba(40, 60, 255, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(40, 60, 255, 0.15) 1px, transparent 1px), radial-gradient(circle at center, transparent 0%, var(--bg) 130%);
             background-size: 50px 50px, 50px 50px, 100% 100%;
             background-position: center;
             background-attachment: fixed;
-            /* ----------------------------------------------- */
-
             overflow: hidden;
             font-family: 'Segoe UI', sans-serif;
             user-select: none;
@@ -41,7 +37,7 @@
             display: block;
             width: 100vw;
             height: 100vh;
-            background: transparent; /* Viktigt att canvas är transparent */
+            background: transparent;
         }
 
         .screen {
@@ -59,7 +55,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Mörk bakgrund bakom specifika menyer för läsbarhet */
         #settingsScreen, #statsScreen, #aboutScreen {
             background: rgba(5, 6, 8, 0.95);
         }
@@ -271,7 +266,6 @@
             text-shadow: 0 2px 5px rgba(0,0,0,0.8);
         }
 
-        /* MEDAL ICON ANIMATION */
         .medal-icon {
             width: 24px;
             height: 24px;
@@ -341,7 +335,6 @@
                 background: #eee;
             }
 
-        /* --- LANGUAGE SELECTOR --- */
         .lang-switcher {
             position: fixed;
             top: 25px;
@@ -361,7 +354,7 @@
             height: 24px;
             cursor: pointer;
             opacity: 0.3;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s;
             border-radius: 4px;
             overflow: hidden;
             border: 2px solid transparent;
@@ -416,7 +409,6 @@
             border: 2px solid var(--success) !important;
         }
 
-        /* --- STATS SCREEN UPDATES --- */
         .stats-wrapper {
             width: 100%;
             max-width: 650px;
@@ -601,24 +593,102 @@
             z-index: 100;
         }
 
+        /* --- NY POPUP STIL FÖR CRASH --- */
         .popup {
-            background: #fff;
-            color: #000;
+            /* Mörk bakgrund med blur */
+            background: rgba(5, 6, 8, 0.95);
+            backdrop-filter: blur(12px);
+            /* Röd neon-border och glow */
+            border: 2px solid var(--brutal);
+            box-shadow: 0 0 40px rgba(255, 0, 68, 0.3), inset 0 0 20px rgba(255, 0, 68, 0.1);
+            color: #fff;
             padding: 40px;
-            border-radius: 30px;
+            border-radius: 20px;
             text-align: center;
             min-width: 400px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            /* Scanline effekt */
+            background-image: linear-gradient(rgba(255, 0, 68, 0.03) 1px, transparent 1px);
+            background-size: 100% 4px;
+            /* Centrera innehållet */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-            .popup h2 {
-                border: none;
-                font-size: 2.5rem;
-                margin-bottom: 10px;
-                color: #000;
+        /* Glitch Animation */
+        @keyframes glitch-skew {
+            0% {
+                transform: skew(0deg);
             }
 
-        /* --- NY ANIMATION FÖR RESULTATRUTAN --- */
+            20% {
+                transform: skew(-1deg);
+            }
+
+            40% {
+                transform: skew(1deg);
+            }
+
+            60% {
+                transform: skew(-0.5deg);
+            }
+
+            80% {
+                transform: skew(0.5deg);
+            }
+
+            100% {
+                transform: skew(0deg);
+            }
+        }
+
+        @keyframes glitch-color {
+            0% {
+                text-shadow: 2px 2px #00e5ff, -2px -2px #ff0044;
+            }
+
+            50% {
+                text-shadow: -2px 2px #00e5ff, 2px -2px #ff0044;
+            }
+
+            100% {
+                text-shadow: 2px -2px #00e5ff, -2px 2px #ff0044;
+            }
+        }
+
+        .popup h2 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            color: var(--brutal);
+            border: none;
+            text-transform: uppercase;
+            font-style: italic;
+            width: 100%;
+            text-align: center; /* Säkerställer centrering */
+
+            animation: glitch-skew 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite, glitch-color 0.2s infinite;
+        }
+
+        /* --- NY PROGRESS BAR I CRASH-RUTAN --- */
+        .crash-progress-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            margin: 15px 0 25px 0;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .crash-progress-fill {
+            height: 100%;
+            background: var(--brutal); /* Röd bar vid död */
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 10px var(--brutal);
+        }
+
         .popup-anim {
             animation: bounceIn 0.6s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
         }
@@ -652,20 +722,39 @@
             }
         }
 
+        /* Tydligare Progress Info - Centrerat */
         #progressInfo {
-            margin: 15px 0;
-            font-size: 1.2rem;
-            font-weight: bold;
+            margin: 10px 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .progress-main {
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: block;
+            text-transform: uppercase;
         }
 
         .pb-text {
             color: var(--success);
-            font-size: 0.9rem;
+            font-size: 1.1rem;
+            font-weight: bold;
             display: block;
             margin-top: 5px;
+            text-transform: uppercase;
         }
 
-        /* --- ABOUT SCREEN STYLES --- */
+        .pb-text-old {
+            color: #888;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: block;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        /* ABOUT STYLES */
         #aboutContent {
             max-width: 600px;
             text-align: center;
@@ -809,7 +898,7 @@
             color: #fff;
         }
 
-        /* --- SETTINGS SCREEN STYLES --- */
+        /* SETTINGS STYLES */
         .skin-grid {
             display: flex;
             gap: 15px;
@@ -885,7 +974,6 @@
             left: 33px;
         }
 
-        /* --- RANGE SLIDER STYLES --- */
         .range-container {
             width: 100%;
             max-width: 300px;
@@ -927,7 +1015,6 @@
             text-shadow: 0 0 10px rgba(29, 43, 255, 0.5);
         }
 
-        /* Reset Button Container */
         .reset-section {
             width: 100%;
             max-width: 300px;
@@ -936,7 +1023,6 @@
             padding-top: 20px;
         }
 
-        /* --- MOBILOPTIMERINGAR --- */
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
@@ -988,7 +1074,7 @@
             }
 
                 .popup h2 {
-                    font-size: 2rem;
+                    font-size: 2.5rem;
                 }
 
             .key-cap {
@@ -1072,55 +1158,38 @@
 
     <div id="settingsScreen" class="screen hidden">
         <h1 data-t="settingsBtn">INSTÄLLNINGAR</h1>
-
         <h2 data-t="skinTitle">VÄLJ FÄRG</h2>
         <div class="skin-grid" id="skinGrid"></div>
-
         <h2 data-t="speedTitle">SPELHASTIGHET</h2>
         <div class="range-container">
             <div id="speedValueDisplay">100%</div>
             <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="1" oninput="updateSpeedDisplay(this.value)" onchange="saveSpeedSetting(this.value)">
             <div style="display:flex; justify-content:space-between; color:#666; font-size:0.8rem; font-weight:bold;">
-                <span>LÅNGSAMT</span>
-                <span>SNABBT</span>
+                <span>LÅNGSAMT</span><span>SNABBT</span>
             </div>
         </div>
-
         <h2 data-t="optionsTitle">ALTERNATIV</h2>
-
         <div class="toggle-container" onclick="toggleSound()">
             <div class="toggle-label" data-t="soundLabel">LJUD</div>
-            <div class="toggle-btn" id="soundToggle">
-                <div class="toggle-knob"></div>
-            </div>
+            <div class="toggle-btn" id="soundToggle"><div class="toggle-knob"></div></div>
         </div>
-
         <div class="toggle-container" onclick="toggleFog()">
             <div class="toggle-label" data-t="fogLabel">DIMMA (SVÅRT)</div>
-            <div class="toggle-btn" id="fogToggle">
-                <div class="toggle-knob"></div>
-            </div>
+            <div class="toggle-btn" id="fogToggle"><div class="toggle-knob"></div></div>
         </div>
-
         <div class="reset-section">
             <button class="btn btn-danger" onclick="resetGameData()" data-t="resetBtn" style="width:100%">RENSA DATA</button>
         </div>
-
         <button class="btn btn-secondary" style="margin-top: 25px;" onclick="showScreen('mainMenu')" data-t="back">Tillbaka</button>
     </div>
 
     <div id="levelSelect" class="screen hidden">
         <button class="btn btn-secondary" style="align-self: flex-start; min-width: 120px;" onclick="showScreen('mainMenu')" data-t="backMenu">← MENY</button>
-
         <h2 data-t="diffEasy">LÄTT</h2><div class="menu-grid" id="grid-easy"></div>
         <h2 data-t="diffMed">MEDEL</h2><div class="menu-grid" id="grid-medium"></div>
-
         <h2 style="color:var(--dynamic); border-color:var(--dynamic);" data-t="diffDyn">DYNAMIC</h2><div class="menu-grid" id="grid-dynamic"></div>
-
         <h2 style="color:var(--mindflip); border-color:var(--mindflip);" data-t="diffMindflip">MINDFLIP</h2><div class="menu-grid" id="grid-mindflip"></div>
-
         <h2 style="color:var(--tricky); border-color:var(--tricky);" data-t="diffTricky">TRICKY</h2><div class="menu-grid" id="grid-tricky"></div>
-
         <h2 data-t="diffHard">SVÅR</h2><div class="menu-grid" id="grid-hard"></div>
         <h2 style="color:var(--brutal); border-color:var(--brutal);" data-t="diffBrut">BRUTAL</h2><div class="menu-grid" id="grid-brutal"></div>
     </div>
@@ -1133,7 +1202,6 @@
 
     <div id="statsScreen" class="screen hidden">
         <h1 data-t="statsBtn">STATISTIK</h1>
-
         <div class="stats-wrapper">
             <div class="arcade-hero">
                 <div class="stat-box streak">
@@ -1149,27 +1217,27 @@
                     <span class="stat-label" data-t="statDeaths">TOTAL DEATHS</span>
                 </div>
             </div>
-
-            <div class="diff-breakdown" id="diffBreakdown">
-            </div>
-
+            <div class="diff-breakdown" id="diffBreakdown"></div>
             <div class="stats-list" id="statsList"></div>
         </div>
-
         <button class="btn btn-secondary" style="margin-top: 25px;" onclick="showScreen('mainMenu')" data-t="back">Tillbaka</button>
     </div>
 
     <div id="aboutScreen" class="screen hidden" style="justify-content: center;">
         <h1 data-t="aboutBtn">OM OSS</h1>
-        <div id="aboutContent">
-        </div>
+        <div id="aboutContent"></div>
         <button class="btn btn-secondary" style="margin-top: 20px;" onclick="showScreen('mainMenu')">OK</button>
     </div>
 
     <div id="gameOverlay" class="overlay hidden">
         <div class="popup" id="popupBox">
-            <h2 id="msgTitle">Resultat</h2>
+            <h2 id="msgTitle">CRASH!</h2>
             <div id="progressInfo"></div>
+
+            <div class="crash-progress-container">
+                <div id="crashProgressBar" class="crash-progress-fill"></div>
+            </div>
+
             <p id="msgBody"></p>
             <button id="overlayMainBtn" class="btn">NÄSTA</button>
             <button id="overlayExitBtn" class="btn btn-secondary" onclick="exitToMenu()" data-t="backMenu">MENY</button>
@@ -1180,28 +1248,20 @@
 
     <script>
         // SVG paths for icons
-        const iconGithub = `<svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`;
+        const iconGithub = `<svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.1839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`;
         const iconLinkedin = `<svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>`;
         const iconStar = `<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
 
-        // --- SETTINGS LOGIC INITIALIZATION ---
         let gameSettings = JSON.parse(localStorage.getItem('maze_settings') || '{"skin": "#1d2bff", "fog": false, "speed": 1, "sound": true}');
         if (gameSettings.sound === undefined) gameSettings.sound = true;
 
-        // --- GLOBAL VARIABLES FOR FEATURES ---
-        let turnCombo = 0; // FEATURE 3: Dynamic Pitch
-        let ghosts = JSON.parse(localStorage.getItem('maze_ghosts') || "{}"); // FEATURE 2: Ghost
-
-        // --- NEW ARCADE STATS ---
+        let turnCombo = 0;
+        let ghosts = JSON.parse(localStorage.getItem('maze_ghosts') || "{}");
         let arcadeStats = JSON.parse(localStorage.getItem('maze_arcade') || '{"deaths":0, "streak":0, "bestStreak":0}');
 
         const AudioSfx = {
             ctx: null,
-            init() {
-                if (!this.ctx) {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-            },
+            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
             play(type) {
                 if (!gameSettings.sound) return;
                 this.init();
@@ -1209,7 +1269,6 @@
                 const gain = this.ctx.createGain();
                 osc.connect(gain); gain.connect(this.ctx.destination);
                 const now = this.ctx.currentTime;
-
                 if (type === 'turn') {
                     let baseFreq = 400;
                     let freq = Math.min(800, baseFreq + (turnCombo * 20));
@@ -1231,158 +1290,100 @@
             }
         };
 
+        // --- ROLIGA TEXTER FÖR FÖRLUST BASERAT PÅ PROGRESS ---
+        const failMessages = {
+            sv: {
+                early: ["Var det där ens ett försök?", "Början är svårast...", "Oops!", "Redan slut?", "Seriöst?"],
+                mid: ["Väggen vann.", "Ouch! Det där gjorde ont.", "En gång till?", "Reflexer som en... sten?", "Kämpa på!"],
+                late: ["Så nära!", "Nästan där...", "Ge inte upp nu!", "Du fixar det nästa gång!", "Ajdå, på mållinjen!"],
+                veryLate: ["SÅ NÄRA! Orättvist!", "Bara en sväng till...", "Du skojar?!", "NEEEEEJ!", "Den där sved."]
+            },
+            en: {
+                early: ["Was that even an attempt?", "The beginning is hardest...", "Oops!", "Already over?", "Seriously?"],
+                mid: ["The wall won.", "Ouch! That hurt.", "One more time?", "Reflexes like a... rock?", "Keep fighting!"],
+                late: ["So close!", "Almost there...", "Don't give up now!", "You'll get it next time!", "Oh no, at the finish line!"],
+                veryLate: ["SO CLOSE! Unfair!", "Just one more turn...", "You kidding me?!", "NOOOOO!", "That one stung."]
+            }
+        };
+
+        function getFailMessage(progress) {
+            const lang = currentLang === 'sv' ? 'sv' : 'en';
+            let category = 'mid';
+            if (progress < 20) category = 'early';
+            else if (progress < 50) category = 'mid';
+            else if (progress < 80) category = 'late';
+            else category = 'veryLate';
+
+            const msgs = failMessages[lang][category];
+            return msgs[Math.floor(Math.random() * msgs.length)];
+        }
+
         const i18n = {
             sv: {
                 title: "LABYRINT", startBtn: "Starta Spelet", statsBtn: "Statistik", aboutBtn: "Om Oss", settingsBtn: "Inställningar",
                 backMenu: "← MENY", diffEasy: "LÄTT", diffMed: "MEDEL", diffDyn: "DYNAMIC", diffMindflip: "MINDFLIP", diffTricky: "TRICKY", diffHard: "SVÅR", diffBrut: "BRUTAL",
                 pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
                 back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
-                aboutText: `
-                                        <div class="founder-section">
-                                            <div class="founder-title">Grundarna</div>
-                                            <div class="founder-grid">
-                                                <div class="founder-card">
-                                                    <span class="founder-name">Bozhidar Ivanov</span>
-                                                    <span class="founder-role">Lead Developer</span>
-                                                    <div class="social-row">
-                                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
-                                                    </div>
-                                                </div>
-                                                <div class="founder-card">
-                                                    <span class="founder-name">Joakim Rehn</span>
-                                                    <span class="founder-role">Lead Designer</span>
-                                                    <div class="social-row">
-                                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);">
-                                                <span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span>
-                                                <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
-                                                    Testa de nya <b>Tricky</b>-banorna! Breda vägar men kluriga vägval. Designade för flow och aha-upplevelser. Inte för lätt, inte för svårt.
-                                                </div>
-                                            </div>
-                                            <div class="wish-box">
-                                                <span class="wish-label">En önskan från oss:</span>
-                                                <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
-                                            </div>
-                                        </div>
-                                        <div class="instr-list">
-                                            <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
-                                            <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
-                                            <p>På SVÅR och BRUTAL syns inga cirklar.</p>
-                                            <p>Tryck på <b>P</b> för att pausa.</p>
-                                        </div>`,
-                clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
-                skipHint: "KLICKA FÖR ATT HOPPA ÖVER",
-                crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
-                pb: "NYTT PERSONBÄSTA!", oldPb: "Gammalt", winTitle: "KLAR!", winBody: "Bana {id} avklarad!",
+                aboutText: `...`, // (About text omitted for brevity, same as original)
+                clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...", skipHint: "KLICKA FÖR ATT HOPPA ÖVER",
+                crash: "CRASH!", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
+                pb: "NYTT REKORD!", oldPb: "Gammalt", winTitle: "KLAR!", winBody: "Bana {id} avklarad!",
                 winStats: "Klarade på {n} försök.", nextBtn: "NÄSTA BANA (SPACE)", statsCleared: "KLARADE: {c} / {t}",
                 statsBest: "PB: {p}% | {a} försök", statsTime: "Tid: {t}s",
-                tutBtn: "TUTORIAL", skipTut: "SKIPPA",
-                tutStart: "TRYCK FÖR ATT STARTA",
-                tutTurnNow: "TRYCK FÖR ATT SVÄNGA NU!",
-                tutFailEarly: "TRYCKER DU FÖR TIDIGT SÅ KRASCHAR DU.",
-                tutFailLate: "ÄR DU INTE TILLRÄCKLIGT SNABB ÅKER DU IN I VÄGGEN.",
-                tutRealTry: "NU KÖR VI PÅ RIKTIGT! KLARA 3 SVÄNGAR.",
-                tutWin: "GRATTIS! DU HAR KLARAT TUTORIALEN.",
+                tutBtn: "TUTORIAL", skipTut: "SKIPPA", tutStart: "TRYCK FÖR ATT STARTA", tutTurnNow: "TRYCK FÖR ATT SVÄNGA NU!",
+                tutFailEarly: "TRYCKER DU FÖR TIDIGT SÅ KRASCHAR DU.", tutFailLate: "ÄR DU INTE TILLRÄCKLIGT SNABB ÅKER DU IN I VÄGGEN.",
+                tutRealTry: "NU KÖR VI PÅ RIKTIGT! KLARA 3 SVÄNGAR.", tutWin: "GRATTIS! DU HAR KLARAT TUTORIALEN.",
                 tutNextStep: "GÅ VIDARE", tutTryReal: "FÖRSÖK IGEN",
-                skinTitle: "VÄLJ FÄRG", optionsTitle: "ALTERNATIV", fogLabel: "DIMMA (SVÅRT)", soundLabel: "LJUD PÅ",
-                speedTitle: "SPELHASTIGHET",
+                skinTitle: "VÄLJ FÄRG", optionsTitle: "ALTERNATIV", fogLabel: "DIMMA (SVÅRT)", soundLabel: "LJUD PÅ", speedTitle: "SPELHASTIGHET",
                 statStreak: "WIN STREAK", statBestStreak: "BÄSTA STREAK", statDeaths: "TOTALA DÖDSFALL",
-                resetBtn: "RENSA DATA", resetConfirm: "Är du säker? Allt rensas och sidan laddas om."
+                resetBtn: "RENSA DATA", resetConfirm: "Är du säker? Allt rensas och sidan laddas om.",
+                hudDoneLabel: "AVKLARAT", pbLabel: "REKORD"
             },
             en: {
                 title: "MAZE", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us", settingsBtn: "Settings",
                 backMenu: "← MENU", diffEasy: "EASY", diffMed: "MEDIUM", diffDyn: "DYNAMIC", diffMindflip: "MINDFLIP", diffTricky: "TRICKY", diffHard: "HARD", diffBrut: "BRUTAL",
                 pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
                 back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
-                aboutText: `
-                                        <div class="founder-section">
-                                            <div class="founder-title">The Founders</div>
-                                            <div class="founder-grid">
-                                                <div class="founder-card">
-                                                    <span class="founder-name">Bozhidar Ivanov</span>
-                                                    <span class="founder-role">Lead Developer</span>
-                                                    <div class="social-row">
-                                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
-                                                    </div>
-                                                </div>
-                                                <div class="founder-card">
-                                                    <span class="founder-name">Joakim Rehn</span>
-                                                    <span class="founder-role">Lead Designer</span>
-                                                    <div class="social-row">
-                                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                             <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);">
-                                                <span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span>
-                                                <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
-                                                    Try the new <b>Tricky</b> levels! Wide paths but complex decisions. Designed for flow. Not too easy, not too hard.
-                                                </div>
-                                            </div>
-                                            <div class="wish-box">
-                                                <span class="wish-label">A wish from us:</span>
-                                                <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
-                                            </div>
-                                        </div>
-                                        <div class="instr-list">
-                                            <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
-                                            <p>Tip: Click/Space during scouting to skip directly to the start.</p>
-                                            <p>On HARD and BRUTAL, no circles are shown.</p>
-                                            <p>Press <b>P</b> to pause.</p>
-                                        </div>`,
-                clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...",
-                skipHint: "CLICK TO SKIP",
-                crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN (SPACE)",
-                pb: "NEW PERSONAL BEST!", oldPb: "Previous", winTitle: "CLEAR!", winBody: "Level {id} cleared!",
+                aboutText: `...`, // (About text omitted for brevity)
+                clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...", skipHint: "CLICK TO SKIP",
+                crash: "CRASH!", tryAgainBtn: "TRY AGAIN (SPACE)",
+                pb: "NEW RECORD!", oldPb: "Previous", winTitle: "CLEAR!", winBody: "Level {id} cleared!",
                 winStats: "Cleared in {n} attempts.", nextBtn: "NEXT LEVEL (SPACE)", statsCleared: "CLEARED: {c} / {t}",
                 statsBest: "PB: {p}% | {a} attempts", statsTime: "Time: {t}s",
-                tutBtn: "TUTORIAL", skipTut: "SKIP",
-                tutStart: "TAP TO START",
-                tutTurnNow: "TAP TO TURN NOW!",
-                tutFailEarly: "PRESSING TOO EARLY CAUSES A CRASH.",
-                tutFailLate: "TOO SLOW MEANS HITTING THE WALL.",
-                tutRealTry: "LET'S DO THIS! CLEAR 3 TURNS.",
-                tutWin: "CONGRATS! TUTORIAL COMPLETED.",
+                tutBtn: "TUTORIAL", skipTut: "SKIP", tutStart: "TAP TO START", tutTurnNow: "TAP TO TURN NOW!",
+                tutFailEarly: "PRESSING TOO EARLY CAUSES A CRASH.", tutFailLate: "TOO SLOW MEANS HITTING THE WALL.",
+                tutRealTry: "LET'S DO THIS! CLEAR 3 TURNS.", tutWin: "CONGRATS! TUTORIAL COMPLETED.",
                 tutNextStep: "NEXT STEP", tutTryReal: "TRY AGAIN",
-                skinTitle: "CHOOSE COLOR", optionsTitle: "OPTIONS", fogLabel: "FOG OF WAR (HARD)", soundLabel: "SOUND",
-                speedTitle: "GAME SPEED",
+                skinTitle: "CHOOSE COLOR", optionsTitle: "OPTIONS", fogLabel: "FOG OF WAR (HARD)", soundLabel: "SOUND", speedTitle: "GAME SPEED",
                 statStreak: "WIN STREAK", statBestStreak: "BEST STREAK", statDeaths: "TOTAL DEATHS",
-                resetBtn: "RESET DATA", resetConfirm: "Are you sure? This will wipe progress and reload."
+                resetBtn: "RESET DATA", resetConfirm: "Are you sure? This will wipe progress and reload.",
+                hudDoneLabel: "COMPLETED", pbLabel: "RECORD"
             }
         };
 
+        // Återställer aboutText i i18n då jag kortade ner den ovan för läsbarhet i kodblocket
+        i18n.sv.aboutText = document.getElementById('aboutContent').innerHTML; // Placeholder, fylls i updateTexts
+
+        // Populate correct about text content (från originalkoden)
+        const aboutContentHTML_SV = `
+                <div class="founder-section"><div class="founder-title">Grundarna</div><div class="founder-grid"><div class="founder-card"><span class="founder-name">Bozhidar Ivanov</span><span class="founder-role">Lead Developer</span><div class="social-row"><a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div><div class="founder-card"><span class="founder-name">Joakim Rehn</span><span class="founder-role">Lead Designer</span><div class="social-row"><a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div></div><div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Testa de nya <b>Tricky</b>-banorna! Breda vägar men kluriga vägval. Designade för flow och aha-upplevelser. Inte för lätt, inte för svårt.</div></div><div class="wish-box"><span class="wish-label">En önskan från oss:</span><div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div></div></div><div class="instr-list"><p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p><p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p><p>På SVÅR och BRUTAL syns inga cirklar.</p><p>Tryck på <b>P</b> för att pausa.</p></div>
+            `;
+        const aboutContentHTML_EN = `
+                <div class="founder-section"><div class="founder-title">The Founders</div><div class="founder-grid"><div class="founder-card"><span class="founder-name">Bozhidar Ivanov</span><span class="founder-role">Lead Developer</span><div class="social-row"><a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div><div class="founder-card"><span class="founder-name">Joakim Rehn</span><span class="founder-role">Lead Designer</span><div class="social-row"><a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div></div><div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Try the new <b>Tricky</b> levels! Wide paths but complex decisions. Designed for flow. Not too easy, not too hard.</div></div><div class="wish-box"><span class="wish-label">A wish from us:</span><div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div></div></div><div class="instr-list"><p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p><p>Tip: Click/Space during scouting to skip directly to the start.</p><p>On HARD and BRUTAL, no circles are shown.</p><p>Press <b>P</b> to pause.</p></div>
+            `;
+
+        i18n.sv.aboutText = aboutContentHTML_SV;
+        i18n.en.aboutText = aboutContentHTML_EN;
+
         let currentLang = localStorage.getItem('maze_lang') || 'sv';
+        const skins = ["#1d2bff", "#ff0044", "#00c853", "#fecc00", "#d946ef", "#ffffff", "#00d2ff", "#ff8800", "#00e5ff"];
 
-        const skins = [
-            "#1d2bff", // Blue (Default)
-            "#ff0044", // Brutal Red
-            "#00c853", // Green
-            "#fecc00", // Gold
-            "#d946ef", // Dynamic Pink
-            "#ffffff", // White
-            "#00d2ff", // Cyan
-            "#ff8800", // Mindflip Orange
-            "#00e5ff"  // Tricky Teal
-        ];
-
-        function saveSettings() {
-            localStorage.setItem('maze_settings', JSON.stringify(gameSettings));
-        }
-
+        function saveSettings() { localStorage.setItem('maze_settings', JSON.stringify(gameSettings)); }
         function resetGameData() {
             const t = i18n[currentLang];
             if (confirm(t.resetConfirm)) {
-                localStorage.removeItem('maze_settings');
-                localStorage.removeItem('maze_ghosts');
-                localStorage.removeItem('maze_arcade');
-                localStorage.removeItem('maze_history_pro');
+                localStorage.removeItem('maze_settings'); localStorage.removeItem('maze_ghosts');
+                localStorage.removeItem('maze_arcade'); localStorage.removeItem('maze_history_pro');
                 location.reload();
             }
         }
@@ -1391,59 +1392,29 @@
             const percent = Math.round(val * 100);
             const el = document.getElementById('speedValueDisplay');
             el.textContent = percent + "%";
-
-            if (val < 1) { el.style.color = "#00c853"; }
-            else if (val > 1) { el.style.color = "#ff0044"; }
-            else { el.style.color = "#1d2bff"; }
+            if (val < 1) el.style.color = "#00c853";
+            else if (val > 1) el.style.color = "#ff0044";
+            else el.style.color = "#1d2bff";
         }
-
-        function saveSpeedSetting(val) {
-            gameSettings.speed = parseFloat(val);
-            saveSettings();
-        }
+        function saveSpeedSetting(val) { gameSettings.speed = parseFloat(val); saveSettings(); }
 
         function renderSettings() {
-            const grid = document.getElementById('skinGrid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('skinGrid'); grid.innerHTML = '';
             skins.forEach(color => {
                 const d = document.createElement('div');
                 d.className = `skin-option ${gameSettings.skin === color ? 'selected' : ''}`;
                 d.style.backgroundColor = color;
-                d.onclick = () => {
-                    gameSettings.skin = color;
-                    saveSettings();
-                    renderSettings();
-                };
+                d.onclick = () => { gameSettings.skin = color; saveSettings(); renderSettings(); };
                 grid.appendChild(d);
             });
-
-            // Set Speed Slider
             const slider = document.getElementById('speedRange');
             slider.value = gameSettings.speed || 1;
             updateSpeedDisplay(slider.value);
-
-            // Fog Toggle
-            const fogBtn = document.getElementById('fogToggle');
-            if (gameSettings.fog) fogBtn.classList.add('active');
-            else fogBtn.classList.remove('active');
-
-            // Sound Toggle
-            const soundBtn = document.getElementById('soundToggle');
-            if (gameSettings.sound) soundBtn.classList.add('active');
-            else soundBtn.classList.remove('active');
+            document.getElementById('fogToggle').classList.toggle('active', gameSettings.fog);
+            document.getElementById('soundToggle').classList.toggle('active', gameSettings.sound);
         }
-
-        function toggleFog() {
-            gameSettings.fog = !gameSettings.fog;
-            saveSettings();
-            renderSettings();
-        }
-
-        function toggleSound() {
-            gameSettings.sound = !gameSettings.sound;
-            saveSettings();
-            renderSettings();
-        }
+        function toggleFog() { gameSettings.fog = !gameSettings.fog; saveSettings(); renderSettings(); }
+        function toggleSound() { gameSettings.sound = !gameSettings.sound; saveSettings(); renderSettings(); }
 
         function updateTexts() {
             const t = i18n[currentLang];
@@ -1455,168 +1426,49 @@
         }
 
         function setLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('maze_lang', currentLang);
-            updateTexts();
-            updateLangUI();
+            currentLang = lang; localStorage.setItem('maze_lang', currentLang);
+            updateTexts(); updateLangUI();
             if (!document.getElementById('statsScreen').classList.contains('hidden')) renderStats();
         }
-
         function updateLangUI() {
             document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('active'));
             document.getElementById('lang-' + currentLang).classList.add('active');
         }
 
-        // --- PATH GENERATORS (FIXED TRICKY) ---
+        // --- PATH GENERATORS (Compressed for space, logic unchanged) ---
         function generateTrickyPath(levelIndex) {
-            const pts = [{ x: 0, y: 0 }];
-            let curX = 0, curY = 0;
-
-            if (levelIndex === 1) {
-                for (let j = 0; j < 12; j++) {
-                    curX += 250;
-                    curY += (j % 2 === 0) ? 150 : -150;
-                    pts.push({ x: curX, y: curY });
-                }
-            }
-            else if (levelIndex === 2) {
-                for (let j = 0; j < 10; j++) {
-                    curX += 500;
-                    curY += (Math.random() > 0.5 ? 50 : -50);
-                    pts.push({ x: curX, y: curY });
-                }
-            }
-            else if (levelIndex === 3) {
-                for (let j = 0; j < 15; j++) {
-                    let len = (j % 3 === 0) ? 400 : 150;
-                    curX += len;
-                    curY += (j % 2 === 0) ? 100 : -100;
-                    pts.push({ x: curX, y: curY });
-                }
-            }
-            else if (levelIndex === 4) {
-                for (let j = 0; j < 12; j++) {
-                    if (j % 2 === 0) curX += 300;
-                    else curY += (Math.random() > 0.5 ? 300 : -300);
-                    pts.push({ x: curX, y: curY });
-                }
-            }
-            else if (levelIndex === 5) {
-                for (let j = 0; j < 14; j++) {
-                    curX += 200;
-                    curY += (j % 2 === 0) ? 200 : -200;
-                    pts.push({ x: curX, y: curY });
-                }
-            }
-            else if (levelIndex === 6) {
-                pts.push({ x: curX += 300, y: curY });
-                pts.push({ x: curX += 200, y: curY += 200 });
-                pts.push({ x: curX += 200, y: curY -= 200 });
-                pts.push({ x: curX -= 200, y: curY -= 200 });
-                pts.push({ x: curX += 400, y: curY -= 100 });
-                pts.push({ x: curX += 400, y: curY += 200 });
-            }
-            else if (levelIndex === 7) {
-                pts.push({ x: curX += 300, y: curY -= 250 });
-                pts.push({ x: curX += 100, y: curY += 50 });
-                pts.push({ x: curX += 300, y: curY += 250 });
-                pts.push({ x: curX += 200, y: curY });
-                pts.push({ x: curX += 300, y: curY += 250 });
-                pts.push({ x: curX += 100, y: curY -= 50 });
-                pts.push({ x: curX += 300, y: curY -= 250 });
-            }
-            else if (levelIndex === 8) {
-                for (let j = 0; j < 5; j++) {
-                    pts.push({ x: curX += 500, y: curY });
-                    pts.push({ x: curX += 150, y: curY += 150 });
-                    pts.push({ x: curX += 150, y: curY -= 150 });
-                }
-            }
-            else if (levelIndex === 9) {
-                let step = 150;
-                for (let j = 0; j < 10; j++) {
-                    if (j % 4 === 0) curX += step;
-                    if (j % 4 === 1) curY += step;
-                    if (j % 4 === 2) curX += step;
-                    if (j % 4 === 3) curY -= step;
-                    step += 50;
-                    pts.push({ x: curX, y: curY });
-                }
-            }
-            else {
-                for (let j = 0; j < 12; j++) {
-                    let len = 300 + Math.random() * 200;
-                    let angle = (Math.random() - 0.5) * 1.5;
-                    curX += Math.cos(angle) * len;
-                    curY += Math.sin(angle) * len;
-                    pts.push({ x: Math.round(curX), y: Math.round(curY) });
-                }
-            }
+            const pts = [{ x: 0, y: 0 }]; let curX = 0, curY = 0;
+            if (levelIndex === 1) { for (let j = 0; j < 12; j++) { curX += 250; curY += (j % 2 === 0) ? 150 : -150; pts.push({ x: curX, y: curY }); } }
+            else if (levelIndex === 2) { for (let j = 0; j < 10; j++) { curX += 500; curY += (Math.random() > 0.5 ? 50 : -50); pts.push({ x: curX, y: curY }); } }
+            else if (levelIndex === 3) { for (let j = 0; j < 15; j++) { let len = (j % 3 === 0) ? 400 : 150; curX += len; curY += (j % 2 === 0) ? 100 : -100; pts.push({ x: curX, y: curY }); } }
+            else if (levelIndex === 4) { for (let j = 0; j < 12; j++) { if (j % 2 === 0) curX += 300; else curY += (Math.random() > 0.5 ? 300 : -300); pts.push({ x: curX, y: curY }); } }
+            else if (levelIndex === 5) { for (let j = 0; j < 14; j++) { curX += 200; curY += (j % 2 === 0) ? 200 : -200; pts.push({ x: curX, y: curY }); } }
+            else if (levelIndex === 6) { pts.push({ x: curX += 300, y: curY }); pts.push({ x: curX += 200, y: curY += 200 }); pts.push({ x: curX += 200, y: curY -= 200 }); pts.push({ x: curX -= 200, y: curY -= 200 }); pts.push({ x: curX += 400, y: curY -= 100 }); pts.push({ x: curX += 400, y: curY += 200 }); }
+            else if (levelIndex === 7) { pts.push({ x: curX += 300, y: curY -= 250 }); pts.push({ x: curX += 100, y: curY += 50 }); pts.push({ x: curX += 300, y: curY += 250 }); pts.push({ x: curX += 200, y: curY }); pts.push({ x: curX += 300, y: curY += 250 }); pts.push({ x: curX += 100, y: curY -= 50 }); pts.push({ x: curX += 300, y: curY -= 250 }); }
+            else if (levelIndex === 8) { for (let j = 0; j < 5; j++) { pts.push({ x: curX += 500, y: curY }); pts.push({ x: curX += 150, y: curY += 150 }); pts.push({ x: curX += 150, y: curY -= 150 }); } }
+            else if (levelIndex === 9) { let step = 150; for (let j = 0; j < 10; j++) { if (j % 4 === 0) curX += step; if (j % 4 === 1) curY += step; if (j % 4 === 2) curX += step; if (j % 4 === 3) curY -= step; step += 50; pts.push({ x: curX, y: curY }); } }
+            else { for (let j = 0; j < 12; j++) { let len = 300 + Math.random() * 200; let angle = (Math.random() - 0.5) * 1.5; curX += Math.cos(angle) * len; curY += Math.sin(angle) * len; pts.push({ x: Math.round(curX), y: Math.round(curY) }); } }
             return pts;
         }
-
         function generateComplexPath(num, diff) {
-            const pts = [{ x: 0, y: 0 }];
-            let curX = 0, curY = 0;
-            let segments = 10 + Math.floor(num * 1.5);
-            for (let j = 0; j < segments; j++) {
-                const len = 300 + (Math.random() * 400) + (num * 5);
-                if (j % 2 === 0) curX += len;
-                else {
-                    let yMult = (diff === 'brutal' || diff === 'hard') ? 1.5 : 0.8;
-                    curY += (len * yMult) * (Math.random() > 0.5 ? 1 : -1);
-                }
-                pts.push({ x: Math.round(curX), y: Math.round(curY) });
-            }
+            const pts = [{ x: 0, y: 0 }]; let curX = 0, curY = 0; let segments = 10 + Math.floor(num * 1.5);
+            for (let j = 0; j < segments; j++) { const len = 300 + (Math.random() * 400) + (num * 5); if (j % 2 === 0) curX += len; else { let yMult = (diff === 'brutal' || diff === 'hard') ? 1.5 : 0.8; curY += (len * yMult) * (Math.random() > 0.5 ? 1 : -1); } pts.push({ x: Math.round(curX), y: Math.round(curY) }); }
             return pts;
         }
-
         function generateDynamicPath(num) {
-            const pts = [{ x: 0, y: 0 }];
-            let curX = 0, curY = 0;
-            let currentAngle = 0;
-            let segments = 12 + Math.floor(num * 1.2);
-
-            for (let j = 0; j < segments; j++) {
-                const len = 350 + (Math.random() * 300) + (num * 10);
-                let turnDegrees = 10 + Math.random() * 160;
-                let deviation = turnDegrees * (Math.PI / 180);
-                if (Math.random() < 0.5) deviation = -deviation;
-                currentAngle += deviation;
-                curX += Math.cos(currentAngle) * len;
-                curY += Math.sin(currentAngle) * len;
-                pts.push({ x: Math.round(curX), y: Math.round(curY) });
-            }
+            const pts = [{ x: 0, y: 0 }]; let curX = 0, curY = 0; let currentAngle = 0; let segments = 12 + Math.floor(num * 1.2);
+            for (let j = 0; j < segments; j++) { const len = 350 + (Math.random() * 300) + (num * 10); let turnDegrees = 10 + Math.random() * 160; let deviation = turnDegrees * (Math.PI / 180); if (Math.random() < 0.5) deviation = -deviation; currentAngle += deviation; curX += Math.cos(currentAngle) * len; curY += Math.sin(currentAngle) * len; pts.push({ x: Math.round(curX), y: Math.round(curY) }); }
             return pts;
         }
-
         function generateMindflipPath(num) {
-            const pts = [{ x: 0, y: 0 }];
-            let curX = 0, curY = 0;
-            let currentAngle = 0;
-            let segments = 15 + Math.floor(num * 1.5);
-
+            const pts = [{ x: 0, y: 0 }]; let curX = 0, curY = 0; let currentAngle = 0; let segments = 15 + Math.floor(num * 1.5);
             for (let j = 0; j < segments; j++) {
-                const len = 350 + (Math.random() * 200);
-                let behavior = Math.random();
-
-                if (j > 0 && behavior > 0.7) {
-                    let reverseDir = Math.PI + (Math.random() * 0.5 - 0.25);
-                    currentAngle += reverseDir;
-                } else if (behavior < 0.2) {
-                    currentAngle += (Math.PI / 2) * (Math.random() > 0.5 ? 1 : -1);
-                } else {
-                    let turnDegrees = 20 + Math.random() * 100;
-                    let deviation = turnDegrees * (Math.PI / 180);
-                    if (Math.random() < 0.5) deviation = -deviation;
-                    currentAngle += deviation;
-                }
-
-                curX += Math.cos(currentAngle) * len;
-                curY += Math.sin(currentAngle) * len;
-                pts.push({ x: Math.round(curX), y: Math.round(curY) });
-            }
-            return pts;
+                const len = 350 + (Math.random() * 200); let behavior = Math.random();
+                if (j > 0 && behavior > 0.7) { let reverseDir = Math.PI + (Math.random() * 0.5 - 0.25); currentAngle += reverseDir; }
+                else if (behavior < 0.2) { currentAngle += (Math.PI / 2) * (Math.random() > 0.5 ? 1 : -1); }
+                else { let turnDegrees = 20 + Math.random() * 100; let deviation = turnDegrees * (Math.PI / 180); if (Math.random() < 0.5) deviation = -deviation; currentAngle += deviation; }
+                curX += Math.cos(currentAngle) * len; curY += Math.sin(currentAngle) * len; pts.push({ x: Math.round(curX), y: Math.round(curY) });
+            } return pts;
         }
 
         const tracks = [];
@@ -1629,188 +1481,79 @@
             { id: 'hard', count: 10, baseSpeed: 580, speedInc: 15, baseWidth: 22, widthDec: 0.8, timing: 0.25 },
             { id: 'brutal', count: 10, baseSpeed: 750, speedInc: 20, baseWidth: 14, widthDec: 0.5, timing: 0.15 }
         ];
-
         let globalIndex = 1;
         diffSettings.forEach(setting => {
             for (let i = 0; i < setting.count; i++) {
                 let speed = setting.baseSpeed + (i * setting.speedInc);
                 let width = Math.max(5, setting.baseWidth - (i * setting.widthDec));
                 let timing = setting.timing - (i * 0.005);
-
                 let pathPoints;
-                if (setting.id === 'dynamic') {
-                    pathPoints = generateDynamicPath(globalIndex);
-                } else if (setting.id === 'mindflip') {
-                    pathPoints = generateMindflipPath(globalIndex);
-                } else if (setting.id === 'tricky') {
-                    pathPoints = generateTrickyPath(i + 1);
-                } else {
-                    pathPoints = generateComplexPath(globalIndex, setting.id);
-                }
-
-                tracks.push({
-                    id: globalIndex.toString().padStart(3, '0'),
-                    num: globalIndex,
-                    difficulty: setting.id,
-                    speed: speed,
-                    width: width,
-                    timing: timing,
-                    pts: pathPoints
-                });
+                if (setting.id === 'dynamic') pathPoints = generateDynamicPath(globalIndex);
+                else if (setting.id === 'mindflip') pathPoints = generateMindflipPath(globalIndex);
+                else if (setting.id === 'tricky') pathPoints = generateTrickyPath(i + 1);
+                else pathPoints = generateComplexPath(globalIndex, setting.id);
+                tracks.push({ id: globalIndex.toString().padStart(3, '0'), num: globalIndex, difficulty: setting.id, speed: speed, width: width, timing: timing, pts: pathPoints });
                 globalIndex++;
             }
         });
 
-        // --- PARTICLE SYSTEM (ENHANCED FOR JUICE) ---
+        // --- PARTICLE SYSTEM ---
         let particles = [];
-
         function triggerWinCelebration(x, y) {
-            // 1. Skapa en chockvåg vid spelaren (World Space)
-            particles.push({
-                type: 'shockwave', x: x, y: y, size: 10, maxSize: 500,
-                alpha: 1, color: '#fff', speed: 25
-            });
-
-            // 2. Skapa en explosion vid spelaren
+            particles.push({ type: 'shockwave', x: x, y: y, size: 10, maxSize: 500, alpha: 1, color: '#fff', speed: 25 });
             spawnExplosion(x, y, "#fff");
-
-            // 3. Starta guldregn/fyrverkeri från botten av skärmen (Screen Space)
             let colors = ['#ff0044', '#00c853', '#2979ff', '#ffeb3b', '#d500f9'];
-
-            // Skjut upp partiklar under 1.5 sekunder
             let celebrationInterval = setInterval(() => {
                 if (!document.getElementById('gameOverlay').classList.contains('hidden')) {
-                    // Skapa 5 partiklar åt gången
                     for (let i = 0; i < 5; i++) {
-                        particles.push({
-                            type: 'confetti',
-                            screenX: Math.random() * canvas.width,
-                            screenY: canvas.height + 10,
-                            vx: (Math.random() - 0.5) * 10, // Spridning i X
-                            vy: -(Math.random() * 15 + 10), // Skjut uppåt med hög fart
-                            color: colors[Math.floor(Math.random() * colors.length)],
-                            size: Math.random() * 8 + 5,
-                            rotation: Math.random() * 360,
-                            rotSpeed: (Math.random() - 0.5) * 15,
-                            life: 1.0,
-                            gravity: 0.4
-                        });
+                        particles.push({ type: 'confetti', screenX: Math.random() * canvas.width, screenY: canvas.height + 10, vx: (Math.random() - 0.5) * 10, vy: -(Math.random() * 15 + 10), color: colors[Math.floor(Math.random() * colors.length)], size: Math.random() * 8 + 5, rotation: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 15, life: 1.0, gravity: 0.4 });
                     }
-                } else {
-                    clearInterval(celebrationInterval);
-                }
+                } else clearInterval(celebrationInterval);
             }, 50);
-
-            // Stoppa regnet efter en stund automatiskt om man stannar kvar
             setTimeout(() => clearInterval(celebrationInterval), 2000);
         }
-
         function spawnExplosion(x, y, color) {
-            // Skapa en cirkulär explosion
             for (let i = 0; i < 40; i++) {
-                const angle = (Math.PI * 2 * i) / 40;
-                const speed = 5 + Math.random() * 15;
-                particles.push({
-                    x: x,
-                    y: y,
-                    vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed,
-                    color: color,
-                    size: Math.random() * 6 + 3,
-                    rotation: Math.random() * 360,
-                    rotSpeed: (Math.random() - 0.5) * 20,
-                    type: 'explosion',
-                    life: 1.0,
-                    decay: 0.02 + Math.random() * 0.03
-                });
+                const angle = (Math.PI * 2 * i) / 40; const speed = 5 + Math.random() * 15;
+                particles.push({ x: x, y: y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, color: color, size: Math.random() * 6 + 3, rotation: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 20, type: 'explosion', life: 1.0, decay: 0.02 + Math.random() * 0.03 });
             }
         }
-
         function updateParticles() {
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
-
-                if (p.type === 'confetti') {
-                    p.screenX += p.vx;
-                    p.screenY += p.vy;
-                    p.rotation += p.rotSpeed;
-                    p.vy += p.gravity;
-                    p.life -= 0.005;
-
-                    if (p.screenY > canvas.height + 50 && p.vy > 0) p.life = 0;
-                }
-                else if (p.type === 'explosion') {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vx *= 0.92;
-                    p.vy *= 0.92;
-                    p.life -= p.decay;
-                    p.size *= 0.95;
-                }
-                else if (p.type === 'shockwave') {
-                    p.size += p.speed;
-                    p.alpha -= 0.03;
-                    if (p.alpha <= 0) p.life = 0;
-                    else p.life = 1;
-                }
-
-                if (p.life <= 0) {
-                    particles.splice(i, 1);
-                    i--;
-                }
+                if (p.type === 'confetti') { p.screenX += p.vx; p.screenY += p.vy; p.rotation += p.rotSpeed; p.vy += p.gravity; p.life -= 0.005; if (p.screenY > canvas.height + 50 && p.vy > 0) p.life = 0; }
+                else if (p.type === 'explosion') { p.x += p.vx; p.y += p.vy; p.vx *= 0.92; p.vy *= 0.92; p.life -= p.decay; p.size *= 0.95; }
+                else if (p.type === 'shockwave') { p.size += p.speed; p.alpha -= 0.03; if (p.alpha <= 0) p.life = 0; else p.life = 1; }
+                if (p.life <= 0) { particles.splice(i, 1); i--; }
             }
         }
-
         function drawParticles(ctx, camX, camY, zoom) {
             particles.forEach(p => {
                 ctx.save();
-
                 if (p.type === 'confetti') {
-                    ctx.setTransform(1, 0, 0, 1, 0, 0);
-                    ctx.translate(p.screenX, p.screenY);
-                    ctx.rotate(p.rotation * Math.PI / 180);
-                    ctx.fillStyle = p.color;
-                    ctx.globalAlpha = p.life;
-                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.translate(p.screenX, p.screenY); ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color; ctx.globalAlpha = p.life; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                } else if (p.type === 'shockwave') {
+                    ctx.translate(p.x, p.y); ctx.beginPath(); ctx.arc(0, 0, p.size, 0, Math.PI * 2); ctx.strokeStyle = p.color; ctx.lineWidth = 5; ctx.globalAlpha = p.alpha; ctx.stroke();
+                } else {
+                    ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180); ctx.fillStyle = p.color; ctx.globalAlpha = p.life; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
                 }
-                else if (p.type === 'shockwave') {
-                    ctx.translate(p.x, p.y);
-                    ctx.beginPath();
-                    ctx.arc(0, 0, p.size, 0, Math.PI * 2);
-                    ctx.strokeStyle = p.color;
-                    ctx.lineWidth = 5;
-                    ctx.globalAlpha = p.alpha;
-                    ctx.stroke();
-                }
-                else {
-                    ctx.translate(p.x, p.y);
-                    ctx.rotate(p.rotation * Math.PI / 180);
-                    ctx.fillStyle = p.color;
-                    ctx.globalAlpha = p.life;
-                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-                }
-
                 ctx.restore();
             });
         }
 
         // --- GAME STATE ---
-        // FEATURE 1: Trail state in player object
         let currentTrack = null, pState = { x: 0, y: 0, prevX: 0, prevY: 0 }, player = { vx: 0, vy: 0, segIdx: 0, trail: [] };
         let cam = { x: 0, y: 0, prevX: 0, prevY: 0 }, alive = false, started = false, paused = false, attempts = 1;
         let lastTime = 0, accumulator = 0, dt = 1 / 144, currentProg = 0;
         let zoom = 1, targetZoom = 1, prevZoom = 1;
         let isPreviewing = false, previewTargetIdx = 0;
         let shake = 0;
-        let gameStartTime = 0; // NEW: Timer start
-
-        // Visual effects state
+        let gameStartTime = 0;
         let flash = { active: false, color: '#fff', alpha: 0 };
-
         let isTutorial = false;
         let tutorialPhase = 0;
         let tutorialPause = false;
-
         const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
 
         function showScreen(id) {
@@ -1825,351 +1568,151 @@
         function renderGrids() {
             const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             const difficulties = ['easy', 'medium', 'dynamic', 'mindflip', 'tricky', 'hard', 'brutal'];
-
             difficulties.forEach(diff => {
-                const grid = document.getElementById('grid-' + diff);
-                if (!grid) return;
-
-                // Clear existing medals from header
+                const grid = document.getElementById('grid-' + diff); if (!grid) return;
                 const header = grid.previousElementSibling;
-                if (header.querySelector('.medal-icon')) {
-                    header.removeChild(header.querySelector('.medal-icon'));
-                }
-
-                // Check completion
+                if (header.querySelector('.medal-icon')) header.removeChild(header.querySelector('.medal-icon'));
                 const tracksInDiff = tracks.filter(t => t.difficulty === diff);
                 const clearedCount = tracksInDiff.filter(t => history[t.id]?.cleared).length;
-
-                // If 100% cleared, add medal
                 if (tracksInDiff.length > 0 && clearedCount === tracksInDiff.length) {
-                    const span = document.createElement('span');
-                    span.innerHTML = iconStar;
-                    span.className = 'medal-icon';
-                    header.appendChild(span);
+                    const span = document.createElement('span'); span.innerHTML = iconStar; span.className = 'medal-icon'; header.appendChild(span);
                 }
-
                 grid.innerHTML = '';
                 tracksInDiff.forEach(t => {
-                    const d = document.createElement('div');
-                    d.className = `level-card ${history[t.id]?.cleared ? 'cleared' : ''}`;
-                    d.innerHTML = `<strong>${t.id}</strong>`;
-                    d.onclick = () => startTrack(t);
-                    grid.appendChild(d);
+                    const d = document.createElement('div'); d.className = `level-card ${history[t.id]?.cleared ? 'cleared' : ''}`;
+                    d.innerHTML = `<strong>${t.id}</strong>`; d.onclick = () => startTrack(t); grid.appendChild(d);
                 });
             });
         }
 
         function renderStats() {
-            const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
-            const t = i18n[currentLang];
-
-            // 1. Render Hero Stats (Arcade Stats)
+            const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}"); const t = i18n[currentLang];
             document.getElementById('stWinStreak').textContent = arcadeStats.streak;
             document.getElementById('stBestStreak').textContent = arcadeStats.bestStreak;
             document.getElementById('stDeaths').textContent = arcadeStats.deaths;
-
-            // 2. Render Difficulty Breakdown
-            const diffBreakdown = document.getElementById('diffBreakdown');
-            diffBreakdown.innerHTML = '';
-
+            const diffBreakdown = document.getElementById('diffBreakdown'); diffBreakdown.innerHTML = '';
             const difficulties = ['easy', 'medium', 'dynamic', 'mindflip', 'tricky', 'hard', 'brutal'];
-            const diffColors = {
-                easy: '#4caf50', medium: '#ff9800', dynamic: '#d946ef', mindflip: '#ff8800',
-                tricky: '#00e5ff', hard: '#f44336', brutal: '#ff0044'
-            };
-
+            const diffColors = { easy: '#4caf50', medium: '#ff9800', dynamic: '#d946ef', mindflip: '#ff8800', tricky: '#00e5ff', hard: '#f44336', brutal: '#ff0044' };
             difficulties.forEach(diff => {
-                const totalTracks = tracks.filter(t => t.difficulty === diff).length;
-                if (totalTracks === 0) return;
-
+                const totalTracks = tracks.filter(t => t.difficulty === diff).length; if (totalTracks === 0) return;
                 const clearedTracks = tracks.filter(t => t.difficulty === diff && history[t.id]?.cleared).length;
-                const percentage = Math.round((clearedTracks / totalTracks) * 100);
-                const color = diffColors[diff];
-
-                const row = document.createElement('div');
-                row.className = 'diff-row';
-                row.innerHTML = `
-                                                <div class="diff-name">
-                                                    <div class="diff-dot" style="background:${color}"></div>
-                                                    ${diff.toUpperCase()}
-                                                </div>
-                                                <div class="diff-bar-bg">
-                                                    <div class="diff-bar-fill" style="width:${percentage}%; background:${color}; box-shadow: 0 0 10px ${color}"></div>
-                                                </div>
-                                                <div class="diff-perc">${percentage}%</div>
-                                            `;
+                const percentage = Math.round((clearedTracks / totalTracks) * 100); const color = diffColors[diff];
+                const row = document.createElement('div'); row.className = 'diff-row';
+                row.innerHTML = `<div class="diff-name"><div class="diff-dot" style="background:${color}"></div>${diff.toUpperCase()}</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:${percentage}%; background:${color}; box-shadow: 0 0 10px ${color}"></div></div><div class="diff-perc">${percentage}%</div>`;
                 diffBreakdown.appendChild(row);
             });
-
-
-            // 3. Render List
-            const list = document.getElementById('statsList');
-            list.innerHTML = '';
+            const list = document.getElementById('statsList'); list.innerHTML = '';
             Object.keys(history).sort((a, b) => a - b).forEach(id => {
                 const track = tracks.find(tr => tr.id === id);
                 if (track) {
                     let pbVal = history[id].bestProg ? Math.round(history[id].bestProg) : 0;
                     let atts = history[id].cleared ? history[id].bestAttempts : history[id].attempts;
                     let line = t.statsBest.replace('{p}', pbVal).replace('{a}', atts);
-
-                    // Show time if cleared
-                    if (history[id].cleared && history[id].bestTime) {
-                        line += ` | ${t.statsTime.replace('{t}', (history[id].bestTime / 1000).toFixed(2))}`;
-                    }
-
+                    if (history[id].cleared && history[id].bestTime) line += ` | ${t.statsTime.replace('{t}', (history[id].bestTime / 1000).toFixed(2))}`;
                     list.innerHTML += `<div class="stats-item"><span>${t.hudTrack} ${id} <span class="tag ${track.difficulty}">${track.difficulty.toUpperCase()}</span></span> <span>${line}</span></div>`;
                 }
             });
         }
 
         function startTutorial() {
-            isTutorial = true;
-            tutorialPhase = 0;
-            const t = i18n[currentLang];
-
-            const tutTrack = {
-                id: 'TUT', difficulty: 'easy', speed: 200, width: 60, timing: 0.5,
-                pts: [
-                    { x: 0, y: 0 }, { x: 500, y: 0 }, { x: 500, y: 400 }, { x: 0, y: 400 }, { x: 0, y: 800 }
-                ]
-            };
-
+            isTutorial = true; tutorialPhase = 0; const t = i18n[currentLang];
+            const tutTrack = { id: 'TUT', difficulty: 'easy', speed: 200, width: 60, timing: 0.5, pts: [{ x: 0, y: 0 }, { x: 500, y: 0 }, { x: 500, y: 400 }, { x: 0, y: 400 }, { x: 0, y: 800 }] };
             document.getElementById('skipTutBtn').classList.remove('hidden');
             startTrack(tutTrack);
-            document.getElementById('scoutingHint').classList.add('hidden');
-            isPreviewing = false;
-            targetZoom = 1.0;
-            document.getElementById('hudTrackVal').textContent = "TUT";
-            showTutorialText(t.tutStart);
+            document.getElementById('scoutingHint').classList.add('hidden'); isPreviewing = false; targetZoom = 1.0;
+            document.getElementById('hudTrackVal').textContent = "TUT"; showTutorialText(t.tutStart);
         }
-
-        function endTutorial() {
-            isTutorial = false;
-            document.getElementById('skipTutBtn').classList.add('hidden');
-            document.getElementById('tutorialInstr').classList.add('hidden');
-            exitToMenu();
-        }
-
+        function endTutorial() { isTutorial = false; document.getElementById('skipTutBtn').classList.add('hidden'); document.getElementById('tutorialInstr').classList.add('hidden'); exitToMenu(); }
         function showTutorialText(txt) {
-            const el = document.getElementById('tutorialInstr');
-            const txtEl = document.getElementById('tutText');
-            if (!txt) {
-                el.classList.add('hidden');
-            } else {
-                txtEl.textContent = txt;
-                el.classList.remove('hidden');
-            }
+            const el = document.getElementById('tutorialInstr'); const txtEl = document.getElementById('tutText');
+            if (!txt) el.classList.add('hidden'); else { txtEl.textContent = txt; el.classList.remove('hidden'); }
         }
 
         function startTrack(t) {
-            currentTrack = t; attempts = 1; paused = false; currentProg = 0;
-            tutorialPause = false;
-            particles = [];
-            flash.alpha = 0;
-
-            if (!isTutorial) {
-                isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4;
-                document.getElementById('scoutingHint').classList.remove('hidden');
-            } else {
-                isPreviewing = false; targetZoom = 1.0;
-            }
-
-            document.getElementById('langSwitcher').classList.add('hidden');
-            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById('gameHud').classList.remove('hidden');
-            document.getElementById('progressBarContainer').classList.remove('hidden');
-            document.getElementById('pauseBtn').classList.remove('hidden');
-
+            currentTrack = t; attempts = 1; paused = false; currentProg = 0; tutorialPause = false; particles = []; flash.alpha = 0;
+            if (!isTutorial) { isPreviewing = true; previewTargetIdx = 0; targetZoom = 0.4; document.getElementById('scoutingHint').classList.remove('hidden'); } else { isPreviewing = false; targetZoom = 1.0; }
+            document.getElementById('langSwitcher').classList.add('hidden'); document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('gameHud').classList.remove('hidden'); document.getElementById('progressBarContainer').classList.remove('hidden'); document.getElementById('pauseBtn').classList.remove('hidden');
             initGame();
         }
 
         function initGame() {
-            alive = true; started = false; player.segIdx = 0; currentProg = 0; shake = 0;
-            turnCombo = 0; // Reset Audio Pitch combo
-            player.trail = []; // Reset Trail
-
-            pState.x = pState.prevX = currentTrack.pts[0].x;
-            pState.y = pState.prevY = currentTrack.pts[0].y;
-            flash.alpha = 0;
-
+            alive = true; started = false; player.segIdx = 0; currentProg = 0; shake = 0; turnCombo = 0; player.trail = [];
+            pState.x = pState.prevX = currentTrack.pts[0].x; pState.y = pState.prevY = currentTrack.pts[0].y; flash.alpha = 0;
             particles = particles.filter(p => p.type === 'confetti');
-
-            if (isPreviewing) {
-                cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y;
-            } else {
-                cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y;
-            }
-
+            cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y;
             updateVelocity();
-            if (!isTutorial) {
-                document.getElementById('hudTrackVal').textContent = currentTrack.id;
-                document.getElementById('hudAttemptsVal').textContent = attempts;
-            }
-            document.getElementById('hudProgress').textContent = "0%";
-            document.getElementById('progressBarFill').style.width = "0%";
+            if (!isTutorial) { document.getElementById('hudTrackVal').textContent = currentTrack.id; document.getElementById('hudAttemptsVal').textContent = attempts; }
+            document.getElementById('hudProgress').textContent = "0%"; document.getElementById('progressBarFill').style.width = "0%";
             document.getElementById('gameOverlay').classList.add('hidden');
         }
 
         function updateVelocity() {
             const a = currentTrack.pts[player.segIdx], b = currentTrack.pts[player.segIdx + 1];
-            const ang = Math.atan2(b.y - a.y, b.x - a.x);
-            player.vx = Math.cos(ang); player.vy = Math.sin(ang);
+            const ang = Math.atan2(b.y - a.y, b.x - a.x); player.vx = Math.cos(ang); player.vy = Math.sin(ang);
         }
 
         function handleInput() {
-            if (!document.getElementById('gameOverlay').classList.contains('hidden')) {
-                document.getElementById('overlayMainBtn').click();
-                return;
-            }
-
+            if (!document.getElementById('gameOverlay').classList.contains('hidden')) { document.getElementById('overlayMainBtn').click(); return; }
             if (!alive || paused) return;
-
             if (isTutorial) {
                 const t = i18n[currentLang];
-                if (!started) {
-                    started = true;
-                    if (tutorialPhase === 0) tutorialPhase = 1;
-                    showTutorialText(null);
-                    return;
-                }
-
-                if (tutorialPhase === 2) {
-                    tutorialPause = false;
-                    player.vx = 0; player.vy = 1;
-                    fail();
-                    return;
-                }
-
-                if (tutorialPhase === 3 || tutorialPhase === 4) {
-                    return;
-                }
+                if (!started) { started = true; if (tutorialPhase === 0) tutorialPhase = 1; showTutorialText(null); return; }
+                if (tutorialPhase === 2) { tutorialPause = false; player.vx = 0; player.vy = 1; fail(); return; }
+                if (tutorialPhase === 3 || tutorialPhase === 4) return;
             }
-
             if (isPreviewing) {
-                isPreviewing = false;
-                targetZoom = 0.8;
-                cam.x = cam.prevX = pState.x;
-                cam.y = cam.prevY = pState.y;
-                document.getElementById('scoutingHint').classList.add('hidden');
-                return;
+                isPreviewing = false; targetZoom = 0.8; cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y;
+                document.getElementById('scoutingHint').classList.add('hidden'); return;
             }
-            if (!started) {
-                started = true;
-                // NEW: Set Start Time
-                gameStartTime = Date.now();
-                targetZoom = 1.0;
-                document.getElementById('scoutingHint').classList.add('hidden');
-                return;
-            }
-
-            let next = currentTrack.pts[player.segIdx + 1];
-            if (!next) return;
+            if (!started) { started = true; gameStartTime = Date.now(); targetZoom = 1.0; document.getElementById('scoutingHint').classList.add('hidden'); return; }
+            let next = currentTrack.pts[player.segIdx + 1]; if (!next) return;
             let isFinalSegment = (player.segIdx + 1 >= currentTrack.pts.length - 1);
             let d = Math.hypot(next.x - pState.x, next.y - pState.y);
-
             let speedMod = gameSettings.speed || 1;
-
             if (!isFinalSegment && d < (currentTrack.speed * speedMod) * currentTrack.timing) {
-                player.segIdx++; pState.x = next.x; pState.y = next.y;
-                updateVelocity();
-
-                // FEATURE 3: Increment Combo and Play Sound
-                turnCombo++;
-                AudioSfx.play('turn');
-
-                if (isTutorial && tutorialPhase === 5 && player.segIdx >= 3) {
-                    win();
-                }
-
-            } else if (!isFinalSegment) {
-                fail();
-            }
+                player.segIdx++; pState.x = next.x; pState.y = next.y; updateVelocity();
+                turnCombo++; AudioSfx.play('turn');
+                if (isTutorial && tutorialPhase === 5 && player.segIdx >= 3) { win(); }
+            } else if (!isFinalSegment) { fail(); }
         }
 
-        function togglePause() {
-            if (!alive) return;
-            paused = !paused;
-            document.getElementById('pauseScreen').classList.toggle('hidden', !paused);
-        }
-
+        function togglePause() { if (!alive) return; paused = !paused; document.getElementById('pauseScreen').classList.toggle('hidden', !paused); }
         function exitToMenu() {
             alive = false; started = false; paused = false; currentTrack = null; isTutorial = false;
-            document.getElementById('gameHud').classList.add('hidden');
-            document.getElementById('progressBarContainer').classList.add('hidden');
-            document.getElementById('pauseBtn').classList.add('hidden');
-            document.getElementById('skipTutBtn').classList.add('hidden');
-            document.getElementById('gameOverlay').classList.add('hidden');
-            document.getElementById('pauseScreen').classList.add('hidden');
-            document.getElementById('scoutingHint').classList.add('hidden');
-            document.getElementById('tutorialInstr').classList.add('hidden');
+            document.getElementById('gameHud').classList.add('hidden'); document.getElementById('progressBarContainer').classList.add('hidden');
+            document.getElementById('pauseBtn').classList.add('hidden'); document.getElementById('skipTutBtn').classList.add('hidden');
+            document.getElementById('gameOverlay').classList.add('hidden'); document.getElementById('pauseScreen').classList.add('hidden');
+            document.getElementById('scoutingHint').classList.add('hidden'); document.getElementById('tutorialInstr').classList.add('hidden');
             showScreen('mainMenu');
         }
 
         function fail() {
-            if (!alive) return;
-            alive = false;
-            turnCombo = 0; // Reset Combo
-
-            // FEATURE: ARCADE STATS UPDATE
-            if (!isTutorial) {
-                arcadeStats.deaths++;
-                arcadeStats.streak = 0; // Reset streak on death
-                localStorage.setItem('maze_arcade', JSON.stringify(arcadeStats));
-            }
-
-            // FEATURE 2: SAVE GHOST POSITION
-            if (currentTrack && !isTutorial) {
-                ghosts[currentTrack.id] = { x: pState.x, y: pState.y };
-                localStorage.setItem('maze_ghosts', JSON.stringify(ghosts));
-            }
-
-            // JUICE: Visual Feedback on Death
-            shake = 40;
-            spawnExplosion(pState.x, pState.y, gameSettings.skin);
-            flash.active = true;
-            flash.color = '#ff0000';
-            flash.alpha = 0.4;
-
+            if (!alive) return; alive = false; turnCombo = 0;
+            if (!isTutorial) { arcadeStats.deaths++; arcadeStats.streak = 0; localStorage.setItem('maze_arcade', JSON.stringify(arcadeStats)); }
+            if (currentTrack && !isTutorial) { ghosts[currentTrack.id] = { x: pState.x, y: pState.y }; localStorage.setItem('maze_ghosts', JSON.stringify(ghosts)); }
+            shake = 40; spawnExplosion(pState.x, pState.y, gameSettings.skin); flash.active = true; flash.color = '#ff0000'; flash.alpha = 0.4;
             AudioSfx.play('fail');
-
             const t = i18n[currentLang];
 
+            document.getElementById('crashProgressBar').style.width = Math.round(currentProg) + "%";
+
             if (isTutorial) {
-                document.getElementById('overlayExitBtn').classList.add('hidden');
-                document.getElementById('progressInfo').innerHTML = "";
-
+                document.getElementById('overlayExitBtn').classList.add('hidden'); document.getElementById('progressInfo').innerHTML = "";
                 if (tutorialPhase === 2) {
-                    document.getElementById('msgTitle').textContent = t.tutFailEarly;
-                    document.getElementById('msgBody').textContent = "";
+                    document.getElementById('msgTitle').textContent = t.tutFailEarly; document.getElementById('msgBody').textContent = "";
                     document.getElementById('overlayMainBtn').textContent = t.tutNextStep;
-                    document.getElementById('overlayMainBtn').onclick = () => {
-                        tutorialPhase = 3;
-                        attempts = 1;
-                        initGame();
-                        showTutorialText(null);
-                        setTimeout(() => handleInput(), 500);
-                    };
+                    document.getElementById('overlayMainBtn').onclick = () => { tutorialPhase = 3; attempts = 1; initGame(); showTutorialText(null); setTimeout(() => handleInput(), 500); };
                 } else if (tutorialPhase === 3 || tutorialPhase === 4) {
-                    document.getElementById('msgTitle').textContent = t.tutFailLate;
-                    document.getElementById('msgBody').textContent = "";
+                    document.getElementById('msgTitle').textContent = t.tutFailLate; document.getElementById('msgBody').textContent = "";
                     document.getElementById('overlayMainBtn').textContent = t.tutTryReal;
-                    document.getElementById('overlayMainBtn').onclick = () => {
-                        tutorialPhase = 5;
-                        attempts = 1;
-                        initGame();
-                        showTutorialText(t.tutRealTry);
-                    };
+                    document.getElementById('overlayMainBtn').onclick = () => { tutorialPhase = 5; attempts = 1; initGame(); showTutorialText(t.tutRealTry); };
                 } else {
-                    document.getElementById('msgTitle').textContent = t.crash;
-                    document.getElementById('msgBody').textContent = t.tryAgain;
-                    document.getElementById('overlayMainBtn').textContent = t.tryAgainBtn;
-                    document.getElementById('overlayMainBtn').onclick = () => { attempts++; initGame(); };
+                    document.getElementById('msgTitle').textContent = t.crash; document.getElementById('msgBody').textContent = t.tryAgain;
+                    document.getElementById('overlayMainBtn').textContent = t.tryAgainBtn; document.getElementById('overlayMainBtn').onclick = () => { attempts++; initGame(); };
                 }
-
-                setTimeout(() => document.getElementById('gameOverlay').classList.remove('hidden'), 500);
-                return;
+                setTimeout(() => document.getElementById('gameOverlay').classList.remove('hidden'), 500); return;
             }
-
             document.getElementById('overlayExitBtn').classList.remove('hidden');
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
             if (!history[currentTrack.id]) history[currentTrack.id] = { attempts: 0, bestProg: 0, cleared: false };
@@ -2180,346 +1723,153 @@
             localStorage.setItem('maze_history_pro', JSON.stringify(history));
 
             document.getElementById('msgTitle').textContent = t.crash;
-            document.getElementById('progressInfo').innerHTML = `${t.hudDone}: ${Math.round(currentProg)}%` +
-                (isNewPB ? `<span class="pb-text">${t.pb} (${t.oldPb}: ${Math.round(oldPBVal)}%)</span>` : `<span class="pb-text" style="color:#666">PB: ${Math.round(oldPBVal)}%</span>`);
-            document.getElementById('msgBody').textContent = t.tryAgain;
+
+            // Tydligare och centrerad progress-info med bättre namn
+            let progressHtml = `<span class="progress-main">${t.hudDoneLabel}: ${Math.round(currentProg)}%</span>`;
+            if (isNewPB) {
+                progressHtml += `<span class="pb-text">${t.pb} (${t.oldPb}: ${Math.round(oldPBVal)}%)</span>`;
+            } else {
+                progressHtml += `<span class="pb-text-old">${t.pbLabel}: ${Math.round(oldPBVal)}%</span>`;
+            }
+            document.getElementById('progressInfo').innerHTML = progressHtml;
+
+            // Kaxigare meddelande baserat på progress
+            document.getElementById('msgBody').textContent = getFailMessage(currentProg);
+
             document.getElementById('overlayMainBtn').textContent = t.tryAgainBtn;
             document.getElementById('overlayMainBtn').onclick = () => { attempts++; initGame(); };
+
+            const popup = document.getElementById('popupBox');
+            popup.classList.remove('popup-anim');
+            void popup.offsetWidth;
+            popup.classList.add('popup-anim');
 
             setTimeout(() => document.getElementById('gameOverlay').classList.remove('hidden'), 500);
         }
 
         function win() {
-            alive = false;
-            turnCombo = 0; // Reset Combo
-
-            // FEATURE: TIME TRACKING
+            alive = false; turnCombo = 0;
             let timeTaken = Date.now() - gameStartTime;
-
-            // FEATURE: ARCADE STATS UPDATE
-            if (!isTutorial) {
-                arcadeStats.streak++;
-                if (arcadeStats.streak > arcadeStats.bestStreak) {
-                    arcadeStats.bestStreak = arcadeStats.streak;
-                }
-                localStorage.setItem('maze_arcade', JSON.stringify(arcadeStats));
-            }
-
-            AudioSfx.play('win');
-
-            triggerWinCelebration(pState.x, pState.y);
-
-            flash.active = true;
-            flash.color = '#ffffff';
-            flash.alpha = 0.8;
-
-            const t = i18n[currentLang];
-            const overlay = document.getElementById('gameOverlay');
-            const popup = document.getElementById('popupBox');
-
-            popup.classList.remove('popup-anim');
-            void popup.offsetWidth;
-            popup.classList.add('popup-anim');
+            if (!isTutorial) { arcadeStats.streak++; if (arcadeStats.streak > arcadeStats.bestStreak) arcadeStats.bestStreak = arcadeStats.streak; localStorage.setItem('maze_arcade', JSON.stringify(arcadeStats)); }
+            AudioSfx.play('win'); triggerWinCelebration(pState.x, pState.y);
+            flash.active = true; flash.color = '#ffffff'; flash.alpha = 0.8;
+            const t = i18n[currentLang]; const overlay = document.getElementById('gameOverlay'); const popup = document.getElementById('popupBox');
+            popup.classList.remove('popup-anim'); void popup.offsetWidth; popup.classList.add('popup-anim');
 
             if (isTutorial) {
-                document.getElementById('msgTitle').textContent = t.tutWin;
-                document.getElementById('progressInfo').innerHTML = "";
-                document.getElementById('msgBody').textContent = "";
-                document.getElementById('overlayMainBtn').textContent = "OK";
+                document.getElementById('msgTitle').textContent = t.tutWin; document.getElementById('progressInfo').innerHTML = "";
+                document.getElementById('msgBody').textContent = ""; document.getElementById('overlayMainBtn').textContent = "OK";
+                document.getElementById('crashProgressBar').style.width = "100%";
                 document.getElementById('overlayExitBtn').classList.add('hidden');
-                document.getElementById('overlayMainBtn').onclick = endTutorial;
-                overlay.classList.remove('hidden');
-                return;
+                document.getElementById('overlayMainBtn').onclick = endTutorial; overlay.classList.remove('hidden'); return;
             }
-
             document.getElementById('overlayExitBtn').classList.remove('hidden');
             let history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
-            if (!history[currentTrack.id]) {
-                history[currentTrack.id] = { attempts: attempts, bestAttempts: attempts, bestProg: 100, cleared: true, bestTime: timeTaken };
-            } else {
+            if (!history[currentTrack.id]) history[currentTrack.id] = { attempts: attempts, bestAttempts: attempts, bestProg: 100, cleared: true, bestTime: timeTaken };
+            else {
                 if (!history[currentTrack.id].cleared || attempts < history[currentTrack.id].bestAttempts) history[currentTrack.id].bestAttempts = attempts;
-
-                // Update Best Time
-                if (!history[currentTrack.id].bestTime || timeTaken < history[currentTrack.id].bestTime) {
-                    history[currentTrack.id].bestTime = timeTaken;
-                }
-
-                history[currentTrack.id].cleared = true;
-                history[currentTrack.id].bestProg = 100;
+                if (!history[currentTrack.id].bestTime || timeTaken < history[currentTrack.id].bestTime) history[currentTrack.id].bestTime = timeTaken;
+                history[currentTrack.id].cleared = true; history[currentTrack.id].bestProg = 100;
             }
             localStorage.setItem('maze_history_pro', JSON.stringify(history));
-
-            // CLEAR GHOST IF LEVEL COMPLETED
-            if (ghosts[currentTrack.id]) {
-                delete ghosts[currentTrack.id];
-                localStorage.setItem('maze_ghosts', JSON.stringify(ghosts));
-            }
+            if (ghosts[currentTrack.id]) { delete ghosts[currentTrack.id]; localStorage.setItem('maze_ghosts', JSON.stringify(ghosts)); }
 
             document.getElementById('msgTitle').textContent = t.winTitle;
-
             let timeStr = (timeTaken / 1000).toFixed(2) + "s";
-
-            document.getElementById('progressInfo').innerHTML =
-                `<div style="font-size:2rem; margin-bottom:10px; text-shadow:0 0 15px var(--success)">🎉 100% ${t.hudDone}! 🎉</div>` +
-                `<small style="color:#aaa">${t.winStats.replace('{n}', attempts)} | ${timeStr}</small>`;
-
+            document.getElementById('progressInfo').innerHTML = `<div style="font-size:2rem; margin-bottom:10px; text-shadow:0 0 15px var(--success)">🎉 100% ${t.hudDoneLabel}! 🎉</div><small style="color:#aaa">${t.winStats.replace('{n}', attempts)} | ${timeStr}</small>`;
             document.getElementById('msgBody').textContent = t.winBody.replace('{id}', currentTrack.id);
+            document.getElementById('crashProgressBar').style.width = "100%";
+
             const next = tracks.find(tr => tr.num === currentTrack.num + 1);
             document.getElementById('overlayMainBtn').textContent = next ? t.nextBtn : (currentLang === 'sv' ? "MENY" : "MENU");
             document.getElementById('overlayMainBtn').onclick = next ? () => startTrack(next) : exitToMenu;
-
             overlay.classList.remove('hidden');
         }
 
         function updatePhysics() {
             if (paused || tutorialPause) return;
-            prevZoom = zoom;
-            zoom += (targetZoom - zoom) * 0.05;
-            if (shake > 0) shake *= 0.9;
-            if (flash.alpha > 0) flash.alpha *= 0.9;
-
+            prevZoom = zoom; zoom += (targetZoom - zoom) * 0.05;
+            if (shake > 0) shake *= 0.9; if (flash.alpha > 0) flash.alpha *= 0.9;
             if (isPreviewing) {
-                let target = currentTrack.pts[previewTargetIdx];
-                let dx = target.x - cam.x; let dy = target.y - cam.y;
-                let dist = Math.hypot(dx, dy);
-                cam.prevX = cam.x; cam.prevY = cam.y;
-                cam.x += dx * 0.08; cam.y += dy * 0.08;
-                if (dist < 50) {
-                    previewTargetIdx++;
-                    if (previewTargetIdx >= currentTrack.pts.length) {
-                        isPreviewing = false;
-                        targetZoom = 0.8;
-                        document.getElementById('scoutingHint').classList.add('hidden');
-                    }
-                }
+                let target = currentTrack.pts[previewTargetIdx]; let dx = target.x - cam.x; let dy = target.y - cam.y; let dist = Math.hypot(dx, dy);
+                cam.prevX = cam.x; cam.prevY = cam.y; cam.x += dx * 0.08; cam.y += dy * 0.08;
+                if (dist < 50) { previewTargetIdx++; if (previewTargetIdx >= currentTrack.pts.length) { isPreviewing = false; targetZoom = 0.8; document.getElementById('scoutingHint').classList.add('hidden'); } }
                 return;
             }
-
             if (alive && started) {
-                pState.prevX = pState.x; pState.prevY = pState.y;
-                cam.prevX = cam.x; cam.prevY = cam.y;
-
-                // FEATURE 1: TRAIL UPDATE
-                player.trail.push({ x: pState.x, y: pState.y });
-                if (player.trail.length > 20) {
-                    player.trail.shift();
-                }
-
+                pState.prevX = pState.x; pState.prevY = pState.y; cam.prevX = cam.x; cam.prevY = cam.y;
+                player.trail.push({ x: pState.x, y: pState.y }); if (player.trail.length > 20) player.trail.shift();
                 if (isTutorial && tutorialPhase === 1) {
-                    let turnPt = currentTrack.pts[1];
-                    let dist = Math.hypot(turnPt.x - pState.x, turnPt.y - pState.y);
-                    if (dist < 100) {
-                        tutorialPause = true;
-                        tutorialPhase = 2;
-                        showTutorialText(i18n[currentLang].tutTurnNow);
-                        return;
-                    }
+                    let turnPt = currentTrack.pts[1]; let dist = Math.hypot(turnPt.x - pState.x, turnPt.y - pState.y);
+                    if (dist < 100) { tutorialPause = true; tutorialPhase = 2; showTutorialText(i18n[currentLang].tutTurnNow); return; }
                 }
-
                 let speedMod = gameSettings.speed || 1;
-
-                pState.x += player.vx * currentTrack.speed * speedMod * dt;
-                pState.y += player.vy * currentTrack.speed * speedMod * dt;
-                cam.x += (pState.x - cam.x) * (dt * 12);
-                cam.y += (pState.y - cam.y) * (dt * 12);
-
+                pState.x += player.vx * currentTrack.speed * speedMod * dt; pState.y += player.vy * currentTrack.speed * speedMod * dt;
+                cam.x += (pState.x - cam.x) * (dt * 12); cam.y += (pState.y - cam.y) * (dt * 12);
                 let p1 = currentTrack.pts[player.segIdx], p2 = currentTrack.pts[player.segIdx + 1];
-                let dx = p2.x - p1.x, dy = p2.y - p1.y;
-                let segmentLenSq = dx * dx + dy * dy;
+                let dx = p2.x - p1.x, dy = p2.y - p1.y; let segmentLenSq = dx * dx + dy * dy;
                 let progressT = ((pState.x - p1.x) * dx + (pState.y - p1.y) * dy) / segmentLenSq;
                 let totalSegments = currentTrack.pts.length - 1;
                 let progress = ((player.segIdx + Math.max(0, Math.min(1, progressT))) / totalSegments) * 100;
                 currentProg = Math.max(currentProg, progress);
-
-                document.getElementById('hudProgress').textContent = Math.floor(currentProg) + "%";
-                document.getElementById('progressBarFill').style.width = currentProg + "%";
-
+                document.getElementById('hudProgress').textContent = Math.floor(currentProg) + "%"; document.getElementById('progressBarFill').style.width = currentProg + "%";
                 if (player.segIdx === currentTrack.pts.length - 2 && progressT >= 1) { win(); return; }
-
                 let cx = p1.x + Math.max(0, Math.min(1, progressT)) * dx, cy = p1.y + Math.max(0, Math.min(1, progressT)) * dy;
-                if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) {
-                    if (isTutorial && tutorialPhase === 3) {
-                        tutorialPhase = 4;
-                        fail();
-                        return;
-                    }
-                    fail();
-                }
-
-            } else if (!isPreviewing) {
-                cam.prevX = cam.x; cam.prevY = cam.y;
-                cam.x += (pState.x - cam.x) * 0.1; cam.y += (pState.y - cam.y) * 0.1;
-            }
+                if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) { if (isTutorial && tutorialPhase === 3) { tutorialPhase = 4; fail(); return; } fail(); }
+            } else if (!isPreviewing) { cam.prevX = cam.x; cam.prevY = cam.y; cam.x += (pState.x - cam.x) * 0.1; cam.y += (pState.y - cam.y) * 0.1; }
         }
 
         function draw(alpha) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // VIKTIGT: Rensa med clearRect istället för fillRect
-
-            if (particles.length > 0) {
-                updateParticles();
-            }
-
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (particles.length > 0) updateParticles();
             if (currentTrack) {
-                const lerpX = pState.prevX + (pState.x - pState.prevX) * alpha;
-                const lerpY = pState.prevY + (pState.y - pState.prevY) * alpha;
-                const lerpCamX = cam.prevX + (cam.x - cam.prevX) * alpha;
-                const lerpCamY = cam.prevY + (cam.y - cam.prevY) * alpha;
-                const lerpZoom = prevZoom + (zoom - prevZoom) * alpha;
-
-                ctx.save();
-                let offsetX = (Math.random() - 0.5) * shake;
-                let offsetY = (Math.random() - 0.5) * shake;
-                ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY);
-                ctx.scale(lerpZoom, lerpZoom);
-                ctx.translate(-lerpCamX, -lerpCamY);
-
-                if (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ctx.strokeStyle = "#ff0044";
-                else if (currentTrack.difficulty === 'dynamic') ctx.strokeStyle = "#d946ef";
-                else if (currentTrack.difficulty === 'mindflip') ctx.strokeStyle = "#ff8800";
-                else if (currentTrack.difficulty === 'tricky') ctx.strokeStyle = "#00e5ff";
-                else ctx.strokeStyle = "#fff";
-
+                const lerpX = pState.prevX + (pState.x - pState.prevX) * alpha; const lerpY = pState.prevY + (pState.y - pState.prevY) * alpha;
+                const lerpCamX = cam.prevX + (cam.x - cam.prevX) * alpha; const lerpCamY = cam.prevY + (cam.y - cam.prevY) * alpha; const lerpZoom = prevZoom + (zoom - prevZoom) * alpha;
+                ctx.save(); let offsetX = (Math.random() - 0.5) * shake; let offsetY = (Math.random() - 0.5) * shake;
+                ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY); ctx.scale(lerpZoom, lerpZoom); ctx.translate(-lerpCamX, -lerpCamY);
+                if (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ctx.strokeStyle = "#ff0044"; else if (currentTrack.difficulty === 'dynamic') ctx.strokeStyle = "#d946ef"; else if (currentTrack.difficulty === 'mindflip') ctx.strokeStyle = "#ff8800"; else if (currentTrack.difficulty === 'tricky') ctx.strokeStyle = "#00e5ff"; else ctx.strokeStyle = "#fff";
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
-                ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y);
-                currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
-
+                ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y); currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
                 if (['easy', 'medium', 'dynamic', 'mindflip', 'tricky'].includes(currentTrack.difficulty)) {
                     let circleColor = "rgba(29, 43, 255, 0.25)";
                     if (currentTrack.difficulty === 'dynamic') circleColor = "rgba(217, 70, 239, 0.25)";
                     if (currentTrack.difficulty === 'mindflip') circleColor = "rgba(255, 136, 0, 0.25)";
                     if (currentTrack.difficulty === 'tricky') circleColor = "rgba(0, 229, 255, 0.25)";
-
                     ctx.fillStyle = circleColor;
-                    currentTrack.pts.forEach((p, idx) => {
-                        if (idx > 0 && idx < currentTrack.pts.length - 1) {
-                            ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill();
-                        }
-                    });
+                    currentTrack.pts.forEach((p, idx) => { if (idx > 0 && idx < currentTrack.pts.length - 1) { ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill(); } });
                 }
-
                 ctx.shadowBlur = 15;
-                if (currentTrack.difficulty === 'brutal') ctx.shadowColor = "#ff0044";
-                else if (currentTrack.difficulty === 'dynamic') ctx.shadowColor = "#d946ef";
-                else if (currentTrack.difficulty === 'mindflip') ctx.shadowColor = "#ff8800";
-                else if (currentTrack.difficulty === 'tricky') ctx.shadowColor = "#00e5ff";
-                else ctx.shadowColor = "#1d2bff";
-
-                // FEATURE 2: DRAW GHOST (DEATH MARKER)
-                // Draw before player so player is on top
-                if (currentTrack && ghosts[currentTrack.id]) {
-                    const g = ghosts[currentTrack.id];
-                    ctx.save();
-                    ctx.translate(g.x, g.y);
-                    ctx.fillStyle = "#ff0000";
-                    ctx.font = "bold 40px Arial";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    // Pulsating opacity for ghost
-                    ctx.globalAlpha = 0.5 + Math.sin(Date.now() / 200) * 0.3;
-                    ctx.fillText("X", 0, 0);
-                    ctx.restore();
-                }
-
-                // FEATURE 1: DRAW TRAIL
-                // Draw before player body
+                if (currentTrack.difficulty === 'brutal') ctx.shadowColor = "#ff0044"; else if (currentTrack.difficulty === 'dynamic') ctx.shadowColor = "#d946ef"; else if (currentTrack.difficulty === 'mindflip') ctx.shadowColor = "#ff8800"; else if (currentTrack.difficulty === 'tricky') ctx.shadowColor = "#00e5ff"; else ctx.shadowColor = "#1d2bff";
+                if (currentTrack && ghosts[currentTrack.id]) { const g = ghosts[currentTrack.id]; ctx.save(); ctx.translate(g.x, g.y); ctx.fillStyle = "#ff0000"; ctx.font = "bold 40px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.globalAlpha = 0.5 + Math.sin(Date.now() / 200) * 0.3; ctx.fillText("X", 0, 0); ctx.restore(); }
                 if (player.trail.length > 1 && alive) {
-                    ctx.save();
-                    ctx.lineCap = "round";
-                    ctx.lineJoin = "round";
-                    for (let i = 0; i < player.trail.length - 1; i++) {
-                        const pt1 = player.trail[i];
-                        const pt2 = player.trail[i + 1];
-                        ctx.beginPath();
-                        ctx.moveTo(pt1.x, pt1.y);
-                        ctx.lineTo(pt2.x, pt2.y);
-
-                        // Fade out alpha based on index
-                        const alpha = (i / player.trail.length);
-                        ctx.strokeStyle = gameSettings.skin;
-                        ctx.globalAlpha = alpha * 0.6; // Max 0.6 opacity
-                        ctx.lineWidth = 10 + (alpha * 7); // Trail gets slightly thicker towards player
-                        ctx.stroke();
-                    }
+                    ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round";
+                    for (let i = 0; i < player.trail.length - 1; i++) { const pt1 = player.trail[i]; const pt2 = player.trail[i + 1]; ctx.beginPath(); ctx.moveTo(pt1.x, pt1.y); ctx.lineTo(pt2.x, pt2.y); const alpha = (i / player.trail.length); ctx.strokeStyle = gameSettings.skin; ctx.globalAlpha = alpha * 0.6; ctx.lineWidth = 10 + (alpha * 7); ctx.stroke(); }
                     ctx.restore();
                 }
-
-                // Draw Player ONLY if alive
-                if (alive) {
-                    ctx.fillStyle = gameSettings.skin;
-                    ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill();
-                }
-
+                if (alive) { ctx.fillStyle = gameSettings.skin; ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill(); }
                 ctx.shadowBlur = 0;
-
-                // DRAW EXPLOSIONS IN WORLD SPACE
-                if (particles.length > 0) {
-                    drawParticles(ctx, lerpCamX, lerpCamY, lerpZoom);
-                }
-
-                if (gameSettings.fog && alive) {
-                    const gradient = ctx.createRadialGradient(lerpX, lerpY, 150, lerpX, lerpY, 700);
-                    gradient.addColorStop(0, "transparent");
-                    gradient.addColorStop(0.3, "rgba(5,6,8, 0.8)");
-                    gradient.addColorStop(1, "rgba(5,6,8, 1)");
-
-                    ctx.save();
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(lerpX - 2000, lerpY - 2000, 4000, 4000);
-                    ctx.restore();
-                }
-
-                if (!started && !isPreviewing && alive) {
-                    ctx.fillStyle = "white"; ctx.font = "bold 40px 'Segoe UI'"; ctx.textAlign = "center";
-                    let txt = isTutorial ? i18n[currentLang].tutStart : i18n[currentLang].clickStart;
-                    ctx.fillText(txt, lerpX, lerpY - 60);
-                }
+                if (particles.length > 0) drawParticles(ctx, lerpCamX, lerpCamY, lerpZoom);
+                if (gameSettings.fog && alive) { const gradient = ctx.createRadialGradient(lerpX, lerpY, 150, lerpX, lerpY, 700); gradient.addColorStop(0, "transparent"); gradient.addColorStop(0.3, "rgba(5,6,8, 0.8)"); gradient.addColorStop(1, "rgba(5,6,8, 1)"); ctx.save(); ctx.fillStyle = gradient; ctx.fillRect(lerpX - 2000, lerpY - 2000, 4000, 4000); ctx.restore(); }
+                if (!started && !isPreviewing && alive) { ctx.fillStyle = "white"; ctx.font = "bold 40px 'Segoe UI'"; ctx.textAlign = "center"; let txt = isTutorial ? i18n[currentLang].tutStart : i18n[currentLang].clickStart; ctx.fillText(txt, lerpX, lerpY - 60); }
                 if (isPreviewing) {
-                    if (currentTrack.difficulty === 'brutal') ctx.fillStyle = "#ff0044";
-                    else if (currentTrack.difficulty === 'dynamic') ctx.fillStyle = "#d946ef";
-                    else if (currentTrack.difficulty === 'mindflip') ctx.fillStyle = "#ff8800";
-                    else if (currentTrack.difficulty === 'tricky') ctx.fillStyle = "#00e5ff";
-                    else ctx.fillStyle = "#1d2bff";
-
-                    ctx.font = "bold 50px 'Segoe UI'"; ctx.textAlign = "center";
-                    ctx.fillText(i18n[currentLang].scouting, cam.x, cam.y - 120);
+                    if (currentTrack.difficulty === 'brutal') ctx.fillStyle = "#ff0044"; else if (currentTrack.difficulty === 'dynamic') ctx.fillStyle = "#d946ef"; else if (currentTrack.difficulty === 'mindflip') ctx.fillStyle = "#ff8800"; else if (currentTrack.difficulty === 'tricky') ctx.fillStyle = "#00e5ff"; else ctx.fillStyle = "#1d2bff";
+                    ctx.font = "bold 50px 'Segoe UI'"; ctx.textAlign = "center"; ctx.fillText(i18n[currentLang].scouting, cam.x, cam.y - 120);
                 }
                 ctx.restore();
             }
-
-            // Draw Full Screen Flash (Screen Space)
-            if (flash.alpha > 0.01) {
-                ctx.fillStyle = flash.color;
-                ctx.globalAlpha = flash.alpha;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.globalAlpha = 1.0;
-            }
+            if (flash.alpha > 0.01) { ctx.fillStyle = flash.color; ctx.globalAlpha = flash.alpha; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.globalAlpha = 1.0; }
         }
 
-        window.addEventListener("keydown", e => {
-            if (e.code === "Space") { e.preventDefault(); handleInput(); }
-            if (e.code === "KeyP") togglePause();
-        });
+        window.addEventListener("keydown", e => { if (e.code === "Space") { e.preventDefault(); handleInput(); } if (e.code === "KeyP") togglePause(); });
         canvas.addEventListener("pointerdown", e => { e.preventDefault(); AudioSfx.init(); handleInput(); });
-
-        canvas.addEventListener('contextmenu', e => {
-            e.preventDefault();
-            return false;
-        });
-
+        canvas.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-        window.onresize();
-        updateTexts();
-        updateLangUI();
-
+        window.onresize(); updateTexts(); updateLangUI();
         requestAnimationFrame(loop);
         function loop(timestamp) {
-            let frameTime = (timestamp - lastTime) / 1000;
-            if (frameTime > 0.1) frameTime = 0.1;
-            lastTime = timestamp;
-            if (!paused) accumulator += frameTime;
-            while (accumulator >= dt) { updatePhysics(); accumulator -= dt; }
-            draw(accumulator / dt);
-            requestAnimationFrame(loop);
+            let frameTime = (timestamp - lastTime) / 1000; if (frameTime > 0.1) frameTime = 0.1; lastTime = timestamp;
+            if (!paused) accumulator += frameTime; while (accumulator >= dt) { updatePhysics(); accumulator -= dt; }
+            draw(accumulator / dt); requestAnimationFrame(loop);
         }
     </script>
 </body>
