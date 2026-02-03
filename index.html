@@ -20,7 +20,15 @@
         html, body {
             margin: 0;
             height: 100dvh;
-            background: var(--bg);
+            /* --- UPPDATERAD BAKGRUND (TYDLIGARE RUTNÄT) --- */
+            background-color: var(--bg);
+            /* Ökad synlighet till 0.15 (15%) och lite ljusare blå ton */
+            background-image: linear-gradient(rgba(40, 60, 255, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(40, 60, 255, 0.15) 1px, transparent 1px), radial-gradient(circle at center, transparent 0%, var(--bg) 130%);
+            background-size: 50px 50px, 50px 50px, 100% 100%;
+            background-position: center;
+            background-attachment: fixed;
+            /* ----------------------------------------------- */
+
             overflow: hidden;
             font-family: 'Segoe UI', sans-serif;
             user-select: none;
@@ -33,7 +41,7 @@
             display: block;
             width: 100vw;
             height: 100vh;
-            background: #000;
+            background: transparent; /* Viktigt att canvas är transparent */
         }
 
         .screen {
@@ -43,12 +51,17 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            background: var(--bg);
+            background: transparent;
             color: var(--text);
             z-index: 10;
             padding: 40px 20px;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+        }
+
+        /* Mörk bakgrund bakom specifika menyer för läsbarhet */
+        #settingsScreen, #statsScreen, #aboutScreen {
+            background: rgba(5, 6, 8, 0.95);
         }
 
         .hidden {
@@ -255,6 +268,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.8);
         }
 
         /* MEDAL ICON ANIMATION */
@@ -1224,43 +1238,43 @@
                 pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
                 back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
                 aboutText: `
-                                    <div class="founder-section">
-                                        <div class="founder-title">Grundarna</div>
-                                        <div class="founder-grid">
-                                            <div class="founder-card">
-                                                <span class="founder-name">Bozhidar Ivanov</span>
-                                                <span class="founder-role">Lead Developer</span>
-                                                <div class="social-row">
-                                                    <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                    <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                        <div class="founder-section">
+                                            <div class="founder-title">Grundarna</div>
+                                            <div class="founder-grid">
+                                                <div class="founder-card">
+                                                    <span class="founder-name">Bozhidar Ivanov</span>
+                                                    <span class="founder-role">Lead Developer</span>
+                                                    <div class="social-row">
+                                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                    </div>
+                                                </div>
+                                                <div class="founder-card">
+                                                    <span class="founder-name">Joakim Rehn</span>
+                                                    <span class="founder-role">Lead Designer</span>
+                                                    <div class="social-row">
+                                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="founder-card">
-                                                <span class="founder-name">Joakim Rehn</span>
-                                                <span class="founder-role">Lead Designer</span>
-                                                <div class="social-row">
-                                                    <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                    <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                            <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);">
+                                                <span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span>
+                                                <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
+                                                    Testa de nya <b>Tricky</b>-banorna! Breda vägar men kluriga vägval. Designade för flow och aha-upplevelser. Inte för lätt, inte för svårt.
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);">
-                                            <span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span>
-                                            <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
-                                                Testa de nya <b>Tricky</b>-banorna! Breda vägar men kluriga vägval. Designade för flow och aha-upplevelser. Inte för lätt, inte för svårt.
+                                            <div class="wish-box">
+                                                <span class="wish-label">En önskan från oss:</span>
+                                                <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
                                             </div>
                                         </div>
-                                        <div class="wish-box">
-                                            <span class="wish-label">En önskan från oss:</span>
-                                            <div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div>
-                                        </div>
-                                    </div>
-                                    <div class="instr-list">
-                                        <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
-                                        <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
-                                        <p>På SVÅR och BRUTAL syns inga cirklar.</p>
-                                        <p>Tryck på <b>P</b> för att pausa.</p>
-                                    </div>`,
+                                        <div class="instr-list">
+                                            <p>Använd <b>Space</b> eller <b>Klicka</b> för att svänga vid cirklarna.</p>
+                                            <p>Tips: Klicka/Space under rekognoscering för att hoppa till start.</p>
+                                            <p>På SVÅR och BRUTAL syns inga cirklar.</p>
+                                            <p>Tryck på <b>P</b> för att pausa.</p>
+                                        </div>`,
                 clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...",
                 skipHint: "KLICKA FÖR ATT HOPPA ÖVER",
                 crash: "KRASCH!", tryAgain: "Försök igen.", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
@@ -1286,43 +1300,43 @@
                 pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
                 back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
                 aboutText: `
-                                    <div class="founder-section">
-                                        <div class="founder-title">The Founders</div>
-                                        <div class="founder-grid">
-                                            <div class="founder-card">
-                                                <span class="founder-name">Bozhidar Ivanov</span>
-                                                <span class="founder-role">Lead Developer</span>
-                                                <div class="social-row">
-                                                    <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                    <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                        <div class="founder-section">
+                                            <div class="founder-title">The Founders</div>
+                                            <div class="founder-grid">
+                                                <div class="founder-card">
+                                                    <span class="founder-name">Bozhidar Ivanov</span>
+                                                    <span class="founder-role">Lead Developer</span>
+                                                    <div class="social-row">
+                                                        <a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                        <a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                    </div>
+                                                </div>
+                                                <div class="founder-card">
+                                                    <span class="founder-name">Joakim Rehn</span>
+                                                    <span class="founder-role">Lead Designer</span>
+                                                    <div class="social-row">
+                                                        <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
+                                                        <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="founder-card">
-                                                <span class="founder-name">Joakim Rehn</span>
-                                                <span class="founder-role">Lead Designer</span>
-                                                <div class="social-row">
-                                                    <a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a>
-                                                    <a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a>
+                                             <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);">
+                                                <span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span>
+                                                <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
+                                                    Try the new <b>Tricky</b> levels! Wide paths but complex decisions. Designed for flow. Not too easy, not too hard.
                                                 </div>
                                             </div>
-                                        </div>
-                                         <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);">
-                                            <span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span>
-                                            <div class="wish-text" style="font-style: normal; font-size: 0.9rem;">
-                                                Try the new <b>Tricky</b> levels! Wide paths but complex decisions. Designed for flow. Not too easy, not too hard.
+                                            <div class="wish-box">
+                                                <span class="wish-label">A wish from us:</span>
+                                                <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
                                             </div>
                                         </div>
-                                        <div class="wish-box">
-                                            <span class="wish-label">A wish from us:</span>
-                                            <div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div>
-                                        </div>
-                                    </div>
-                                    <div class="instr-list">
-                                        <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
-                                        <p>Tip: Click/Space during scouting to skip directly to the start.</p>
-                                        <p>On HARD and BRUTAL, no circles are shown.</p>
-                                        <p>Press <b>P</b> to pause.</p>
-                                    </div>`,
+                                        <div class="instr-list">
+                                            <p>Use <b>Space</b> or <b>Click</b> to turn at the circles.</p>
+                                            <p>Tip: Click/Space during scouting to skip directly to the start.</p>
+                                            <p>On HARD and BRUTAL, no circles are shown.</p>
+                                            <p>Press <b>P</b> to pause.</p>
+                                        </div>`,
                 clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...",
                 skipHint: "CLICK TO SKIP",
                 crash: "CRASH!", tryAgain: "Try again.", tryAgainBtn: "TRY AGAIN (SPACE)",
@@ -1875,15 +1889,15 @@
                 const row = document.createElement('div');
                 row.className = 'diff-row';
                 row.innerHTML = `
-                            <div class="diff-name">
-                                <div class="diff-dot" style="background:${color}"></div>
-                                ${diff.toUpperCase()}
-                            </div>
-                            <div class="diff-bar-bg">
-                                <div class="diff-bar-fill" style="width:${percentage}%; background:${color}; box-shadow: 0 0 10px ${color}"></div>
-                            </div>
-                            <div class="diff-perc">${percentage}%</div>
-                        `;
+                                                <div class="diff-name">
+                                                    <div class="diff-dot" style="background:${color}"></div>
+                                                    ${diff.toUpperCase()}
+                                                </div>
+                                                <div class="diff-bar-bg">
+                                                    <div class="diff-bar-fill" style="width:${percentage}%; background:${color}; box-shadow: 0 0 10px ${color}"></div>
+                                                </div>
+                                                <div class="diff-perc">${percentage}%</div>
+                                            `;
                 diffBreakdown.appendChild(row);
             });
 
@@ -2339,7 +2353,7 @@
         }
 
         function draw(alpha) {
-            ctx.fillStyle = "#050608"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // VIKTIGT: Rensa med clearRect istället för fillRect
 
             if (particles.length > 0) {
                 updateParticles();
