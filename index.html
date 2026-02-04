@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-    <title>Labyrint Master: ARCADE EDITION</title>
+    <title>Labyrint Master: OBSTACLE EDITION (AUDIO FIX)</title>
     <style>
         :root {
             --bg: #050608;
@@ -12,6 +12,7 @@
             --dynamic: #d946ef;
             --mindflip: #ff8800;
             --tricky: #00e5ff;
+            --obstacle: #facc15;
             --text: #cfd7ff;
             --panel: #12141d;
             --success: #00c853;
@@ -40,7 +41,6 @@
             background: transparent;
         }
 
-        /* --- START ANIMATION CLASS --- */
         .fade-out {
             opacity: 0;
             transform: scale(0.95);
@@ -64,7 +64,7 @@
             transition: opacity 0.3s;
         }
 
-        #settingsScreen, #statsScreen, #aboutScreen {
+        #settingsScreen, #statsScreen, #aboutScreen, #pauseScreen {
             background: rgba(5, 6, 8, 0.95);
         }
 
@@ -145,18 +145,6 @@
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes popIn {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
         .input-icons {
             display: flex;
             align-items: center;
@@ -175,17 +163,24 @@
             display: inline-block;
         }
 
-        .touch-icon {
-            font-size: 20px;
-            filter: drop-shadow(0 0 5px var(--primary));
-        }
-
         .hint-text {
             font-size: 15px;
             font-weight: 800;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             white-space: nowrap;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         @keyframes pulseHint {
@@ -276,26 +271,6 @@
             text-shadow: 0 2px 5px rgba(0,0,0,0.8);
         }
 
-        .medal-icon {
-            width: 24px;
-            height: 24px;
-            fill: #fecc00;
-            filter: drop-shadow(0 0 8px #fecc00);
-            animation: medalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-        }
-
-        @keyframes medalPop {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
         .btn {
             cursor: pointer;
             background: var(--primary);
@@ -316,11 +291,6 @@
                 box-shadow: 0 10px 20px rgba(29, 43, 255, 0.3);
             }
 
-            .btn:active {
-                transform: translateY(0);
-                box-shadow: 0 2px 0px #151eb3;
-            }
-
         .btn-secondary {
             background: #222;
             box-shadow: 0 4px 0px #000;
@@ -331,19 +301,11 @@
             box-shadow: 0 4px 0px #a3002b;
         }
 
-            .btn-danger:hover {
-                box-shadow: 0 10px 20px rgba(255, 0, 68, 0.3);
-            }
-
         .btn-tut {
             background: #fff;
             color: #000;
             box-shadow: 0 4px 0 #999;
         }
-
-            .btn-tut:hover {
-                background: #eee;
-            }
 
         .lang-switcher {
             position: fixed;
@@ -366,29 +328,21 @@
             opacity: 0.3;
             transition: all 0.3s;
             border-radius: 4px;
-            overflow: hidden;
             border: 2px solid transparent;
             filter: grayscale(80%);
         }
+
+            .lang-option.active {
+                opacity: 1;
+                border-color: var(--primary);
+                transform: scale(1.15);
+                filter: grayscale(0%);
+            }
 
             .lang-option svg {
                 width: 100%;
                 height: 100%;
                 display: block;
-            }
-
-            .lang-option:hover {
-                opacity: 0.8;
-                transform: scale(1.1);
-                filter: grayscale(0%);
-            }
-
-            .lang-option.active {
-                opacity: 1;
-                border-color: var(--primary);
-                box-shadow: 0 0 15px var(--primary);
-                transform: scale(1.15);
-                filter: grayscale(0%);
             }
 
         .menu-grid {
@@ -593,6 +547,11 @@
             color: #000;
         }
 
+        .obstacle {
+            background: var(--obstacle);
+            color: #000;
+        }
+
         .overlay {
             position: fixed;
             inset: 0;
@@ -603,83 +562,32 @@
             z-index: 100;
         }
 
-        /* --- NY POPUP STIL FÖR CRASH --- */
         .popup {
-            /* Mörk bakgrund med blur */
             background: rgba(5, 6, 8, 0.95);
             backdrop-filter: blur(12px);
-            /* Röd neon-border och glow */
             border: 2px solid var(--brutal);
-            box-shadow: 0 0 40px rgba(255, 0, 68, 0.3), inset 0 0 20px rgba(255, 0, 68, 0.1);
+            box-shadow: 0 0 40px rgba(255, 0, 68, 0.3);
             color: #fff;
             padding: 40px;
             border-radius: 20px;
             text-align: center;
             min-width: 400px;
-            /* Scanline effekt */
-            background-image: linear-gradient(rgba(255, 0, 68, 0.03) 1px, transparent 1px);
-            background-size: 100% 4px;
-            /* Centrera innehållet */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
         }
 
-        /* Glitch Animation */
-        @keyframes glitch-skew {
-            0% {
-                transform: skew(0deg);
+            .popup h2 {
+                font-size: 3.5rem;
+                margin-bottom: 15px;
+                color: var(--brutal);
+                border: none;
+                font-style: italic;
+                width: 100%;
+                text-align: center;
+                animation: glitch-color 0.2s infinite;
             }
 
-            20% {
-                transform: skew(-1deg);
-            }
-
-            40% {
-                transform: skew(1deg);
-            }
-
-            60% {
-                transform: skew(-0.5deg);
-            }
-
-            80% {
-                transform: skew(0.5deg);
-            }
-
-            100% {
-                transform: skew(0deg);
-            }
-        }
-
-        @keyframes glitch-color {
-            0% {
-                text-shadow: 2px 2px #00e5ff, -2px -2px #ff0044;
-            }
-
-            50% {
-                text-shadow: -2px 2px #00e5ff, 2px -2px #ff0044;
-            }
-
-            100% {
-                text-shadow: 2px -2px #00e5ff, -2px 2px #ff0044;
-            }
-        }
-
-        .popup h2 {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-            color: var(--brutal);
-            border: none;
-            text-transform: uppercase;
-            font-style: italic;
-            width: 100%;
-            text-align: center;
-            animation: glitch-skew 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite, glitch-color 0.2s infinite;
-        }
-
-        /* --- NY PROGRESS BAR I CRASH-RUTAN --- */
         .crash-progress-container {
             width: 100%;
             height: 12px;
@@ -692,14 +600,22 @@
 
         .crash-progress-fill {
             height: 100%;
-            background: var(--brutal); /* Röd bar vid död */
+            background: var(--brutal);
             width: 0%;
-            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: width 0.5s;
             box-shadow: 0 0 10px var(--brutal);
         }
 
         .popup-anim {
             animation: bounceIn 0.6s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+        }
+
+        .medal-icon {
+            width: 24px;
+            height: 24px;
+            fill: #fecc00;
+            filter: drop-shadow(0 0 8px #fecc00);
+            animation: medalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
         }
 
         @keyframes bounceIn {
@@ -721,17 +637,38 @@
                 transform: scale(1.03);
             }
 
-            80% {
-                transform: scale(0.97);
-            }
-
             100% {
                 opacity: 1;
                 transform: scale(1);
             }
         }
 
-        /* Tydligare Progress Info - Centrerat */
+        @keyframes glitch-color {
+            0% {
+                text-shadow: 2px 2px #00e5ff, -2px -2px #ff0044;
+            }
+
+            50% {
+                text-shadow: -2px 2px #00e5ff, 2px -2px #ff0044;
+            }
+
+            100% {
+                text-shadow: 2px -2px #00e5ff, -2px 2px #ff0044;
+            }
+        }
+
+        @keyframes medalPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         #progressInfo {
             margin: 10px 0;
             width: 100%;
@@ -763,7 +700,7 @@
             text-transform: uppercase;
         }
 
-        /* ABOUT STYLES */
+        /* ABOUT / FOUNDER CSS */
         #aboutContent {
             max-width: 600px;
             text-align: center;
@@ -898,7 +835,6 @@
             margin-bottom: 5px;
         }
 
-        /* NYA STILAR FÖR KONTROLLER */
         .controls-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -949,7 +885,7 @@
             border: 1px solid rgba(255,0,68,0.2);
         }
 
-        /* SETTINGS STYLES */
+        /* SETTINGS CSS */
         .skin-grid {
             display: flex;
             gap: 15px;
@@ -1238,6 +1174,9 @@
         <button class="btn btn-secondary" style="align-self: flex-start; min-width: 120px;" onclick="showScreen('mainMenu')" data-t="backMenu">← MENY</button>
         <h2 data-t="diffEasy">LÄTT</h2><div class="menu-grid" id="grid-easy"></div>
         <h2 data-t="diffMed">MEDEL</h2><div class="menu-grid" id="grid-medium"></div>
+
+        <h2 style="color:var(--obstacle); border-color:var(--obstacle);">OBSTACLE (JUMP!)</h2><div class="menu-grid" id="grid-obstacle"></div>
+
         <h2 style="color:var(--dynamic); border-color:var(--dynamic);" data-t="diffDyn">DYNAMIC</h2><div class="menu-grid" id="grid-dynamic"></div>
         <h2 style="color:var(--mindflip); border-color:var(--mindflip);" data-t="diffMindflip">MINDFLIP</h2><div class="menu-grid" id="grid-mindflip"></div>
         <h2 style="color:var(--tricky); border-color:var(--tricky);" data-t="diffTricky">TRICKY</h2><div class="menu-grid" id="grid-tricky"></div>
@@ -1327,6 +1266,11 @@
                     osc.frequency.exponentialRampToValueAtTime(Math.max(100, freq - 300), now + 0.1);
                     gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.1);
                     osc.start(); osc.stop(now + 0.1);
+                } else if (type === 'jump') { // NYTT HOPP-LJUD
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.linearRampToValueAtTime(600, now + 0.1);
+                    gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.1);
+                    osc.start(); osc.stop(now + 0.1);
                 } else if (type === 'fail') {
                     osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, now);
                     osc.frequency.linearRampToValueAtTime(40, now + 0.3);
@@ -1341,7 +1285,6 @@
             }
         };
 
-        // --- ROLIGA TEXTER FÖR FÖRLUST BASERAT PÅ PROGRESS ---
         const failMessages = {
             sv: {
                 early: ["Var det där ens ett försök?", "Början är svårast...", "Oops!", "Redan slut?", "Seriöst?"],
@@ -1375,7 +1318,7 @@
                 backMenu: "← MENY", diffEasy: "LÄTT", diffMed: "MEDEL", diffDyn: "DYNAMIC", diffMindflip: "MINDFLIP", diffTricky: "TRICKY", diffHard: "SVÅR", diffBrut: "BRUTAL",
                 pause: "PAUS", pausedTitle: "PAUSAD", resumeBtn: "Återuppta", exitBtn: "Avsluta till Meny",
                 back: "Tillbaka", hudTrack: "BANA", hudAttempts: "FÖRSÖK", hudDone: "KLART",
-                aboutText: `...`, // (About text omitted for brevity, same as original)
+                aboutText: `...`,
                 clickStart: "SPACE / KLICK FÖR ATT STARTA", scouting: "REKOGNOSCERAR BANA...", skipHint: "KLICKA FÖR ATT HOPPA ÖVER",
                 crash: "CRASH!", tryAgainBtn: "FÖRSÖK IGEN (SPACE)",
                 pb: "NYTT REKORD!", oldPb: "Gammalt", winTitle: "KLAR!", winBody: "Bana {id} avklarad!",
@@ -1386,7 +1329,7 @@
                 tutRealTry: "NU KÖR VI PÅ RIKTIGT! KLARA 3 SVÄNGAR.", tutWin: "GRATTIS! DU HAR KLARAT TUTORIALEN.",
                 tutNextStep: "GÅ VIDARE", tutTryReal: "FÖRSÖK IGEN",
                 skinTitle: "VÄLJ FÄRG", optionsTitle: "ALTERNATIV", fogLabel: "DIMMA (SVÅRT)", soundLabel: "LJUD PÅ", speedTitle: "SPELHASTIGHET",
-                statStreak: "WIN STREAK", statBestStreak: "BÄSTA STREAK", statDeaths: "TOTALA DÖDSFALL",
+                statStreak: "WIN STREAK", statBestStreak: "BÄSTA STREAK", statDeaths: "TOTAL DEATHS",
                 resetBtn: "RENSA DATA", resetConfirm: "Är du säker? Allt rensas och sidan laddas om.",
                 hudDoneLabel: "AVKLARAT", pbLabel: "REKORD"
             },
@@ -1395,7 +1338,7 @@
                 backMenu: "← MENU", diffEasy: "EASY", diffMed: "MEDIUM", diffDyn: "DYNAMIC", diffMindflip: "MINDFLIP", diffTricky: "TRICKY", diffHard: "HARD", diffBrut: "BRUTAL",
                 pause: "PAUSE", pausedTitle: "PAUSED", resumeBtn: "Resume", exitBtn: "Exit to Menu",
                 back: "Back", hudTrack: "LEVEL", hudAttempts: "ATTEMPTS", hudDone: "DONE",
-                aboutText: `...`, // (About text omitted for brevity)
+                aboutText: `...`,
                 clickStart: "SPACE / CLICK TO START", scouting: "SCOUTING TRACK...", skipHint: "CLICK TO SKIP",
                 crash: "CRASH!", tryAgainBtn: "TRY AGAIN (SPACE)",
                 pb: "NEW RECORD!", oldPb: "Previous", winTitle: "CLEAR!", winBody: "Level {id} cleared!",
@@ -1412,86 +1355,14 @@
             }
         };
 
-        // --- UPPDATERAD ABOUT-TEXT MED SNYGGA KONTROLLER & CITAT ---
+        const commonFounders = `<div class="founder-section"><div class="founder-title">Grundarna / Founders</div><div class="founder-grid"><div class="founder-card"><span class="founder-name">Bozhidar Ivanov</span><span class="founder-role">Lead Developer</span><div class="social-row"><a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div><div class="founder-card"><span class="founder-name">Joakim Rehn</span><span class="founder-role">Lead Designer</span><div class="social-row"><a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div></div>`;
+        const wishBoxTrickySV = `<div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Testa de nya <b>Tricky</b>-banorna! Breda vägar men kluriga vägval. Designade för flow och aha-upplevelser. Inte för lätt, inte för svårt.</div></div>`;
+        const wishBoxTrickyEN = `<div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Try the new <b>Tricky</b> levels! Wide paths but complex decisions. Designed for flow. Not too easy, not too hard.</div></div>`;
+        const wishBoxQuoteSV = `<div class="wish-box"><span class="wish-label">En önskan från oss:</span><div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div></div>`;
+        const wishBoxQuoteEN = `<div class="wish-box"><span class="wish-label">A WISH FROM US:</span><div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div></div>`;
+        const instructionsSV = `<div class="controls-grid"><div class="control-row"><span class="control-label">Svänga</span><div class="control-keys"><div class="key-cap">SPACE</div><span class="control-or">ELLER</span><div class="key-cap">KLICK</div></div></div><div class="control-row"><span class="control-label">Hoppa över scout</span><div class="control-keys"><div class="key-cap">SPACE</div><span class="control-or">/</span><div class="key-cap">KLICK</div></div></div><div class="control-row"><span class="control-label">Pausa</span><div class="key-cap">P</div></div></div><div class="warning-text">OBS: Inga cirklar på SVÅR & BRUTAL!</div>`;
+        const instructionsEN = `<div class="controls-grid"><div class="control-row"><span class="control-label">Turn</span><div class="control-keys"><div class="key-cap">SPACE</div><span class="control-or">OR</span><div class="key-cap">CLICK</div></div></div><div class="control-row"><span class="control-label">Skip Scouting</span><div class="control-keys"><div class="key-cap">SPACE</div><span class="control-or">/</span><div class="key-cap">CLICK</div></div></div><div class="control-row"><span class="control-label">Pause</span><div class="key-cap">P</div></div></div><div class="warning-text">NOTE: No circles on HARD & BRUTAL!</div>`;
 
-        // Gemensam HTML för founders (återanvänds)
-        const commonFounders = `
-                <div class="founder-section"><div class="founder-title">Grundarna / Founders</div><div class="founder-grid"><div class="founder-card"><span class="founder-name">Bozhidar Ivanov</span><span class="founder-role">Lead Developer</span><div class="social-row"><a href="https://github.com/b1-loop" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/bozhidar-ivanov-48158637b/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div><div class="founder-card"><span class="founder-name">Joakim Rehn</span><span class="founder-role">Lead Designer</span><div class="social-row"><a href="https://github.com/Jocke-1994" target="_blank" class="social-btn gh">${iconGithub}</a><a href="https://www.linkedin.com/in/joakimr94/" target="_blank" class="social-btn li">${iconLinkedin}</a></div></div></div>
-            `;
-
-        // Tricky Box (Svenska)
-        const wishBoxTrickySV = `
-                <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Testa de nya <b>Tricky</b>-banorna! Breda vägar men kluriga vägval. Designade för flow och aha-upplevelser. Inte för lätt, inte för svårt.</div></div>
-            `;
-        // Tricky Box (Engelska)
-        const wishBoxTrickyEN = `
-                <div class="wish-box" style="border-left-color: var(--tricky); background: rgba(0, 229, 255, 0.05);"><span class="wish-label" style="color: var(--tricky)">NEW: TRICKY "THE SWEET SPOT"</span><div class="wish-text" style="font-style: normal; font-size: 0.9rem;">Try the new <b>Tricky</b> levels! Wide paths but complex decisions. Designed for flow. Not too easy, not too hard.</div></div>
-            `;
-
-        // Quote Box (Svenska) - DEN SOM FÖRSVANN
-        const wishBoxQuoteSV = `
-                <div class="wish-box"><span class="wish-label">En önskan från oss:</span><div class="wish-text">"Må era reflexer vara blixtsnabba och ert tålamod oändligt."</div></div>
-            `;
-        // Quote Box (Engelska) - DEN SOM FÖRSVANN
-        const wishBoxQuoteEN = `
-                <div class="wish-box"><span class="wish-label">A WISH FROM US:</span><div class="wish-text">"May your reflexes be lightning fast and your patience infinite."</div></div>
-            `;
-
-        // Svenska Instruktioner (NY LAYOUT)
-        const instructionsSV = `
-                <div class="controls-grid">
-                    <div class="control-row">
-                        <span class="control-label">Svänga</span>
-                        <div class="control-keys">
-                            <div class="key-cap">SPACE</div>
-                            <span class="control-or">ELLER</span>
-                            <div class="key-cap">KLICK</div>
-                        </div>
-                    </div>
-                    <div class="control-row">
-                        <span class="control-label">Hoppa över scout</span>
-                        <div class="control-keys">
-                            <div class="key-cap">SPACE</div>
-                            <span class="control-or">/</span>
-                            <div class="key-cap">KLICK</div>
-                        </div>
-                    </div>
-                    <div class="control-row">
-                        <span class="control-label">Pausa</span>
-                        <div class="key-cap">P</div>
-                    </div>
-                </div>
-                <div class="warning-text">OBS: Inga cirklar på SVÅR & BRUTAL!</div>
-            `;
-
-        // Engelska Instruktioner (NY LAYOUT)
-        const instructionsEN = `
-                <div class="controls-grid">
-                    <div class="control-row">
-                        <span class="control-label">Turn</span>
-                        <div class="control-keys">
-                            <div class="key-cap">SPACE</div>
-                            <span class="control-or">OR</span>
-                            <div class="key-cap">CLICK</div>
-                        </div>
-                    </div>
-                    <div class="control-row">
-                        <span class="control-label">Skip Scouting</span>
-                        <div class="control-keys">
-                            <div class="key-cap">SPACE</div>
-                            <span class="control-or">/</span>
-                            <div class="key-cap">CLICK</div>
-                        </div>
-                    </div>
-                    <div class="control-row">
-                        <span class="control-label">Pause</span>
-                        <div class="key-cap">P</div>
-                    </div>
-                </div>
-                <div class="warning-text">NOTE: No circles on HARD & BRUTAL!</div>
-            `;
-
-        // Sätt ihop allt korrekt
         i18n.sv.aboutText = commonFounders + wishBoxTrickySV + wishBoxQuoteSV + instructionsSV;
         i18n.en.aboutText = commonFounders + wishBoxTrickyEN + wishBoxQuoteEN + instructionsEN;
 
@@ -1591,16 +1462,70 @@
             } return pts;
         }
 
+        // --- NY GENERATOR FÖR OBSTACLE BANOR (MED KORREKT Y-PLACERING) ---
+        function generateObstaclePath(levelIndex) {
+            const pts = [{ x: 0, y: 0 }];
+            const obstacles = [];
+            let curX = 0;
+            let curY = 0;
+            let segments = 25;
+
+            // 5 olika "biomes" för variation
+            let type = Math.floor(levelIndex / 3);
+
+            for (let i = 0; i < segments; i++) {
+                let step = 400 + (levelIndex * 10);
+
+                // Form på banan
+                if (type === 1) { // Wave (Sinus)
+                    curX += step;
+                    curY = Math.sin(i * 0.6) * 180; // Mjukare våg
+                }
+                else if (type === 3) { // Stairway
+                    curX += step;
+                    curY += (i % 2 === 0) ? 150 : -150;
+                }
+                else if (type === 4) { // Chaos
+                    curX += step;
+                    curY += (Math.random() - 0.5) * 300;
+                }
+                else { // Basic & Double (Rak)
+                    curX += step;
+                }
+
+                pts.push({ x: curX, y: curY });
+
+                // --- HINDER PLACERING (ENBART X-koordinat nu) ---
+                if (i > 0 && i < segments - 1) {
+                    if (type === 2 && i % 3 === 0) {
+                        // Double Trouble: Två hinder tätt ihop
+                        obstacles.push({ x: curX - step * 0.6 });
+                        obstacles.push({ x: curX - step * 0.3 });
+                    }
+                    else if (i % 2 === 0) {
+                        // Standard hinder
+                        obstacles.push({ x: curX - step / 2 });
+                    }
+                }
+            }
+            // Målpunkt
+            pts.push({ x: curX + 1000, y: curY });
+            return { pts, obstacles };
+        }
+
         const tracks = [];
         const diffSettings = [
             { id: 'easy', count: 15, baseSpeed: 180, speedInc: 15, baseWidth: 55, widthDec: 1.5, timing: 0.52 },
             { id: 'medium', count: 15, baseSpeed: 400, speedInc: 12, baseWidth: 32, widthDec: 1.0, timing: 0.40 },
+            // OBSTACLE NYA INSTÄLLNINGAR
+            { id: 'obstacle', count: 15, baseSpeed: 420, speedInc: 15, baseWidth: 40, widthDec: 0, timing: 0.45 },
             { id: 'dynamic', count: 10, baseSpeed: 450, speedInc: 15, baseWidth: 28, widthDec: 0.8, timing: 0.35 },
             { id: 'mindflip', count: 10, baseSpeed: 500, speedInc: 15, baseWidth: 25, widthDec: 0.5, timing: 0.30 },
             { id: 'tricky', count: 10, baseSpeed: 420, speedInc: 15, baseWidth: 40, widthDec: 0.5, timing: 0.45 },
             { id: 'hard', count: 10, baseSpeed: 580, speedInc: 15, baseWidth: 22, widthDec: 0.8, timing: 0.25 },
             { id: 'brutal', count: 10, baseSpeed: 750, speedInc: 20, baseWidth: 14, widthDec: 0.5, timing: 0.15 }
         ];
+
         let globalIndex = 1;
         diffSettings.forEach(setting => {
             for (let i = 0; i < setting.count; i++) {
@@ -1608,11 +1533,28 @@
                 let width = Math.max(5, setting.baseWidth - (i * setting.widthDec));
                 let timing = setting.timing - (i * 0.005);
                 let pathPoints;
+                let obstacles = [];
+
                 if (setting.id === 'dynamic') pathPoints = generateDynamicPath(globalIndex);
                 else if (setting.id === 'mindflip') pathPoints = generateMindflipPath(globalIndex);
                 else if (setting.id === 'tricky') pathPoints = generateTrickyPath(i + 1);
+                else if (setting.id === 'obstacle') {
+                    const data = generateObstaclePath(i);
+                    pathPoints = data.pts;
+                    obstacles = data.obstacles;
+                }
                 else pathPoints = generateComplexPath(globalIndex, setting.id);
-                tracks.push({ id: globalIndex.toString().padStart(3, '0'), num: globalIndex, difficulty: setting.id, speed: speed, width: width, timing: timing, pts: pathPoints });
+
+                tracks.push({
+                    id: globalIndex.toString().padStart(3, '0'),
+                    num: globalIndex,
+                    difficulty: setting.id,
+                    speed: speed,
+                    width: width,
+                    timing: timing,
+                    pts: pathPoints,
+                    obstacles: obstacles
+                });
                 globalIndex++;
             }
         });
@@ -1674,6 +1616,10 @@
         let isTutorial = false;
         let tutorialPhase = 0;
         let tutorialPause = false;
+
+        let isJumping = false;
+        let jumpTime = 0;
+
         const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
 
         function showScreen(id) {
@@ -1687,7 +1633,7 @@
 
         function renderGrids() {
             const history = JSON.parse(localStorage.getItem('maze_history_pro') || "{}");
-            const difficulties = ['easy', 'medium', 'dynamic', 'mindflip', 'tricky', 'hard', 'brutal'];
+            const difficulties = ['easy', 'medium', 'obstacle', 'dynamic', 'mindflip', 'tricky', 'hard', 'brutal'];
             difficulties.forEach(diff => {
                 const grid = document.getElementById('grid-' + diff); if (!grid) return;
                 const header = grid.previousElementSibling;
@@ -1711,8 +1657,8 @@
             document.getElementById('stBestStreak').textContent = arcadeStats.bestStreak;
             document.getElementById('stDeaths').textContent = arcadeStats.deaths;
             const diffBreakdown = document.getElementById('diffBreakdown'); diffBreakdown.innerHTML = '';
-            const difficulties = ['easy', 'medium', 'dynamic', 'mindflip', 'tricky', 'hard', 'brutal'];
-            const diffColors = { easy: '#4caf50', medium: '#ff9800', dynamic: '#d946ef', mindflip: '#ff8800', tricky: '#00e5ff', hard: '#f44336', brutal: '#ff0044' };
+            const difficulties = ['easy', 'medium', 'obstacle', 'dynamic', 'mindflip', 'tricky', 'hard', 'brutal'];
+            const diffColors = { easy: '#4caf50', medium: '#ff9800', obstacle: '#facc15', dynamic: '#d946ef', mindflip: '#ff8800', tricky: '#00e5ff', hard: '#f44336', brutal: '#ff0044' };
             difficulties.forEach(diff => {
                 const totalTracks = tracks.filter(t => t.difficulty === diff).length; if (totalTracks === 0) return;
                 const clearedTracks = tracks.filter(t => t.difficulty === diff && history[t.id]?.cleared).length;
@@ -1777,6 +1723,11 @@
             pState.x = pState.prevX = currentTrack.pts[0].x; pState.y = pState.prevY = currentTrack.pts[0].y; flash.alpha = 0;
             particles = particles.filter(p => p.type === 'confetti');
             cam.x = cam.prevX = pState.x; cam.y = cam.prevY = pState.y;
+
+            // ÅTERSTÄLL HOPP
+            isJumping = false;
+            jumpTime = 0;
+
             updateVelocity();
             if (!isTutorial) { document.getElementById('hudTrackVal').textContent = currentTrack.id; document.getElementById('hudAttemptsVal').textContent = attempts; }
             document.getElementById('hudProgress').textContent = "0%"; document.getElementById('progressBarFill').style.width = "0%";
@@ -1802,15 +1753,24 @@
                 document.getElementById('scoutingHint').classList.add('hidden'); return;
             }
             if (!started) { started = true; gameStartTime = Date.now(); targetZoom = 1.0; document.getElementById('scoutingHint').classList.add('hidden'); return; }
-            let next = currentTrack.pts[player.segIdx + 1]; if (!next) return;
-            let isFinalSegment = (player.segIdx + 1 >= currentTrack.pts.length - 1);
-            let d = Math.hypot(next.x - pState.x, next.y - pState.y);
-            let speedMod = gameSettings.speed || 1;
-            if (!isFinalSegment && d < (currentTrack.speed * speedMod) * currentTrack.timing) {
-                player.segIdx++; pState.x = next.x; pState.y = next.y; updateVelocity();
-                turnCombo++; AudioSfx.play('turn');
-                if (isTutorial && tutorialPhase === 5 && player.segIdx >= 3) { win(); }
-            } else if (!isFinalSegment) { fail(); }
+
+            if (currentTrack.difficulty === 'obstacle') {
+                if (!isJumping) {
+                    isJumping = true;
+                    jumpTime = 0;
+                    AudioSfx.play('jump'); // LJUD TILLAGT HÄR
+                }
+            } else {
+                let next = currentTrack.pts[player.segIdx + 1]; if (!next) return;
+                let isFinalSegment = (player.segIdx + 1 >= currentTrack.pts.length - 1);
+                let d = Math.hypot(next.x - pState.x, next.y - pState.y);
+                let speedMod = gameSettings.speed || 1;
+                if (!isFinalSegment && d < (currentTrack.speed * speedMod) * currentTrack.timing) {
+                    player.segIdx++; pState.x = next.x; pState.y = next.y; updateVelocity();
+                    turnCombo++; AudioSfx.play('turn');
+                    if (isTutorial && tutorialPhase === 5 && player.segIdx >= 3) { win(); }
+                } else if (!isFinalSegment) { fail(); }
+            }
         }
 
         function togglePause() { if (!alive) return; paused = !paused; document.getElementById('pauseScreen').classList.toggle('hidden', !paused); }
@@ -1860,7 +1820,6 @@
 
             document.getElementById('msgTitle').textContent = t.crash;
 
-            // Tydligare och centrerad progress-info med bättre namn
             let progressHtml = `<span class="progress-main">${t.hudDoneLabel}: ${Math.round(currentProg)}%</span>`;
             if (isNewPB) {
                 progressHtml += `<span class="pb-text">${t.pb} (${t.oldPb}: ${Math.round(oldPBVal)}%)</span>`;
@@ -1868,10 +1827,7 @@
                 progressHtml += `<span class="pb-text-old">${t.pbLabel}: ${Math.round(oldPBVal)}%</span>`;
             }
             document.getElementById('progressInfo').innerHTML = progressHtml;
-
-            // Kaxigare meddelande baserat på progress
             document.getElementById('msgBody').textContent = getFailMessage(currentProg);
-
             document.getElementById('overlayMainBtn').textContent = t.tryAgainBtn;
             document.getElementById('overlayMainBtn').onclick = () => { attempts++; initGame(); };
 
@@ -1922,6 +1878,20 @@
             overlay.classList.remove('hidden');
         }
 
+        // --- VIKTIG: HÄMTA EXAKT Y-POSITION PÅ BANAN ---
+        // Används för att låsa spelare och hinder till banans linje
+        function getTrackYatX(track, targetX) {
+            for (let i = 0; i < track.pts.length - 1; i++) {
+                let p1 = track.pts[i];
+                let p2 = track.pts[i + 1];
+                if (targetX >= p1.x && targetX <= p2.x) {
+                    let t = (targetX - p1.x) / (p2.x - p1.x);
+                    return p1.y + t * (p2.y - p1.y);
+                }
+            }
+            return track.pts[0].y;
+        }
+
         function updatePhysics() {
             if (paused || tutorialPause) return;
             prevZoom = zoom; zoom += (targetZoom - zoom) * 0.05;
@@ -1940,18 +1910,53 @@
                     if (dist < 100) { tutorialPause = true; tutorialPhase = 2; showTutorialText(i18n[currentLang].tutTurnNow); return; }
                 }
                 let speedMod = gameSettings.speed || 1;
-                pState.x += player.vx * currentTrack.speed * speedMod * dt; pState.y += player.vy * currentTrack.speed * speedMod * dt;
-                cam.x += (pState.x - cam.x) * (dt * 12); cam.y += (pState.y - cam.y) * (dt * 12);
-                let p1 = currentTrack.pts[player.segIdx], p2 = currentTrack.pts[player.segIdx + 1];
-                let dx = p2.x - p1.x, dy = p2.y - p1.y; let segmentLenSq = dx * dx + dy * dy;
-                let progressT = ((pState.x - p1.x) * dx + (pState.y - p1.y) * dy) / segmentLenSq;
-                let totalSegments = currentTrack.pts.length - 1;
-                let progress = ((player.segIdx + Math.max(0, Math.min(1, progressT))) / totalSegments) * 100;
-                currentProg = Math.max(currentProg, progress);
-                document.getElementById('hudProgress').textContent = Math.floor(currentProg) + "%"; document.getElementById('progressBarFill').style.width = currentProg + "%";
-                if (player.segIdx === currentTrack.pts.length - 2 && progressT >= 1) { win(); return; }
-                let cx = p1.x + Math.max(0, Math.min(1, progressT)) * dx, cy = p1.y + Math.max(0, Math.min(1, progressT)) * dy;
-                if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) { if (isTutorial && tutorialPhase === 3) { tutorialPhase = 4; fail(); return; } fail(); }
+
+                // --- SNAP-TO-RAIL FÖR OBSTACLE ---
+                if (currentTrack.difficulty === 'obstacle') {
+                    pState.x += currentTrack.speed * speedMod * dt;
+                    pState.y = getTrackYatX(currentTrack, pState.x);
+
+                    cam.x += (pState.x - cam.x) * (dt * 12);
+                    cam.y += (pState.y - cam.y) * (dt * 12);
+
+                    if (isJumping) {
+                        jumpTime += dt;
+                        if (jumpTime > 0.6) isJumping = false;
+                    }
+
+                    if (currentTrack.obstacles) {
+                        currentTrack.obstacles.forEach(o => {
+                            if (Math.abs(pState.x - o.x) < 20 && !isJumping) {
+                                fail();
+                            }
+                        });
+                    }
+
+                    let totalDist = currentTrack.pts[currentTrack.pts.length - 1].x;
+                    currentProg = Math.min(100, (pState.x / totalDist) * 100);
+                    document.getElementById('hudProgress').textContent = Math.floor(currentProg) + "%";
+                    document.getElementById('progressBarFill').style.width = currentProg + "%";
+                    if (pState.x >= currentTrack.pts[currentTrack.pts.length - 2].x) win();
+
+                } else {
+                    pState.x += player.vx * currentTrack.speed * speedMod * dt;
+                    pState.y += player.vy * currentTrack.speed * speedMod * dt;
+
+                    cam.x += (pState.x - cam.x) * (dt * 12);
+                    cam.y += (pState.y - cam.y) * (dt * 12);
+
+                    let p1 = currentTrack.pts[player.segIdx], p2 = currentTrack.pts[player.segIdx + 1];
+                    let dx = p2.x - p1.x, dy = p2.y - p1.y; let segmentLenSq = dx * dx + dy * dy;
+                    let progressT = ((pState.x - p1.x) * dx + (pState.y - p1.y) * dy) / segmentLenSq;
+                    let totalSegments = currentTrack.pts.length - 1;
+                    let progress = ((player.segIdx + Math.max(0, Math.min(1, progressT))) / totalSegments) * 100;
+                    currentProg = Math.max(currentProg, progress);
+                    document.getElementById('hudProgress').textContent = Math.floor(currentProg) + "%"; document.getElementById('progressBarFill').style.width = currentProg + "%";
+                    if (player.segIdx === currentTrack.pts.length - 2 && progressT >= 1) { win(); return; }
+                    let cx = p1.x + Math.max(0, Math.min(1, progressT)) * dx, cy = p1.y + Math.max(0, Math.min(1, progressT)) * dy;
+                    if (Math.hypot(pState.x - cx, pState.y - cy) > currentTrack.width) { if (isTutorial && tutorialPhase === 3) { tutorialPhase = 4; fail(); return; } fail(); }
+                }
+
             } else if (!isPreviewing) { cam.prevX = cam.x; cam.prevY = cam.y; cam.x += (pState.x - cam.x) * 0.1; cam.y += (pState.y - cam.y) * 0.1; }
         }
 
@@ -1963,10 +1968,35 @@
                 const lerpCamX = cam.prevX + (cam.x - cam.prevX) * alpha; const lerpCamY = cam.prevY + (cam.y - cam.prevY) * alpha; const lerpZoom = prevZoom + (zoom - prevZoom) * alpha;
                 ctx.save(); let offsetX = (Math.random() - 0.5) * shake; let offsetY = (Math.random() - 0.5) * shake;
                 ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY); ctx.scale(lerpZoom, lerpZoom); ctx.translate(-lerpCamX, -lerpCamY);
-                if (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ctx.strokeStyle = "#ff0044"; else if (currentTrack.difficulty === 'dynamic') ctx.strokeStyle = "#d946ef"; else if (currentTrack.difficulty === 'mindflip') ctx.strokeStyle = "#ff8800"; else if (currentTrack.difficulty === 'tricky') ctx.strokeStyle = "#00e5ff"; else ctx.strokeStyle = "#fff";
+                if (currentTrack.difficulty === 'brutal' || currentTrack.difficulty === 'hard') ctx.strokeStyle = "#ff0044";
+                else if (currentTrack.difficulty === 'dynamic') ctx.strokeStyle = "#d946ef";
+                else if (currentTrack.difficulty === 'mindflip') ctx.strokeStyle = "#ff8800";
+                else if (currentTrack.difficulty === 'tricky') ctx.strokeStyle = "#00e5ff";
+                else ctx.strokeStyle = "#fff";
+
                 ctx.lineWidth = currentTrack.width * 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath(); ctx.moveTo(currentTrack.pts[0].x, currentTrack.pts[0].y); currentTrack.pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.stroke();
-                if (['easy', 'medium', 'dynamic', 'mindflip', 'tricky'].includes(currentTrack.difficulty)) {
+
+                // --- RITA CYBER-BLOCK HINDER ---
+                if (currentTrack.difficulty === 'obstacle' && currentTrack.obstacles) {
+                    currentTrack.obstacles.forEach(o => {
+                        let obsY = getTrackYatX(currentTrack, o.x);
+                        ctx.save();
+                        ctx.translate(o.x, obsY);
+                        // Skugga
+                        ctx.fillStyle = "rgba(0,0,0,0.7)";
+                        ctx.beginPath(); ctx.ellipse(0, 0, 20, 8, 0, 0, Math.PI * 2); ctx.fill();
+                        // Block
+                        const w = 30; const h = 70;
+                        ctx.fillStyle = "#111"; ctx.fillRect(-w / 2, -h, w, h);
+                        // Kant
+                        ctx.strokeStyle = "#facc15"; ctx.lineWidth = 2; ctx.shadowColor = "#facc15"; ctx.shadowBlur = 10;
+                        ctx.strokeRect(-w / 2, -h, w, h);
+                        // Topp
+                        ctx.fillStyle = "#facc15"; ctx.shadowBlur = 20; ctx.fillRect(-w / 2, -h, w, 5);
+                        ctx.restore();
+                    });
+                } else if (['easy', 'medium', 'dynamic', 'mindflip', 'tricky'].includes(currentTrack.difficulty)) {
                     let circleColor = "rgba(29, 43, 255, 0.25)";
                     if (currentTrack.difficulty === 'dynamic') circleColor = "rgba(217, 70, 239, 0.25)";
                     if (currentTrack.difficulty === 'mindflip') circleColor = "rgba(255, 136, 0, 0.25)";
@@ -1974,6 +2004,7 @@
                     ctx.fillStyle = circleColor;
                     currentTrack.pts.forEach((p, idx) => { if (idx > 0 && idx < currentTrack.pts.length - 1) { ctx.beginPath(); ctx.arc(p.x, p.y, currentTrack.speed * currentTrack.timing, 0, Math.PI * 2); ctx.fill(); } });
                 }
+
                 ctx.shadowBlur = 15;
                 if (currentTrack.difficulty === 'brutal') ctx.shadowColor = "#ff0044"; else if (currentTrack.difficulty === 'dynamic') ctx.shadowColor = "#d946ef"; else if (currentTrack.difficulty === 'mindflip') ctx.shadowColor = "#ff8800"; else if (currentTrack.difficulty === 'tricky') ctx.shadowColor = "#00e5ff"; else ctx.shadowColor = "#1d2bff";
                 if (currentTrack && ghosts[currentTrack.id]) { const g = ghosts[currentTrack.id]; ctx.save(); ctx.translate(g.x, g.y); ctx.fillStyle = "#ff0000"; ctx.font = "bold 40px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.globalAlpha = 0.5 + Math.sin(Date.now() / 200) * 0.3; ctx.fillText("X", 0, 0); ctx.restore(); }
@@ -1982,11 +2013,27 @@
                     for (let i = 0; i < player.trail.length - 1; i++) { const pt1 = player.trail[i]; const pt2 = player.trail[i + 1]; ctx.beginPath(); ctx.moveTo(pt1.x, pt1.y); ctx.lineTo(pt2.x, pt2.y); const alpha = (i / player.trail.length); ctx.strokeStyle = gameSettings.skin; ctx.globalAlpha = alpha * 0.6; ctx.lineWidth = 10 + (alpha * 7); ctx.stroke(); }
                     ctx.restore();
                 }
-                if (alive) { ctx.fillStyle = gameSettings.skin; ctx.beginPath(); ctx.arc(lerpX, lerpY, 8.5, 0, Math.PI * 2); ctx.fill(); }
+                if (alive) {
+                    let drawSize = 8.5;
+                    let drawY = lerpY;
+                    if (isJumping) {
+                        let jumpHeight = Math.sin((jumpTime / 0.6) * Math.PI) * 100;
+                        drawSize = 8.5 + (jumpHeight * 0.2);
+                        // Skugga
+                        ctx.save(); ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.beginPath(); ctx.ellipse(lerpX, lerpY, 8.5, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+                        // Flytta bollen uppåt
+                        drawY -= jumpHeight;
+                    }
+                    ctx.fillStyle = gameSettings.skin; ctx.beginPath(); ctx.arc(lerpX, drawY, drawSize, 0, Math.PI * 2); ctx.fill();
+                }
                 ctx.shadowBlur = 0;
                 if (particles.length > 0) drawParticles(ctx, lerpCamX, lerpCamY, lerpZoom);
                 if (gameSettings.fog && alive) { const gradient = ctx.createRadialGradient(lerpX, lerpY, 150, lerpX, lerpY, 700); gradient.addColorStop(0, "transparent"); gradient.addColorStop(0.3, "rgba(5,6,8, 0.8)"); gradient.addColorStop(1, "rgba(5,6,8, 1)"); ctx.save(); ctx.fillStyle = gradient; ctx.fillRect(lerpX - 2000, lerpY - 2000, 4000, 4000); ctx.restore(); }
-                if (!started && !isPreviewing && alive) { ctx.fillStyle = "white"; ctx.font = "bold 40px 'Segoe UI'"; ctx.textAlign = "center"; let txt = isTutorial ? i18n[currentLang].tutStart : i18n[currentLang].clickStart; ctx.fillText(txt, lerpX, lerpY - 60); }
+                if (!started && !isPreviewing && alive) {
+                    ctx.fillStyle = "white"; ctx.font = "bold 30px 'Segoe UI'"; ctx.textAlign = "center";
+                    let txt = (currentTrack.difficulty === 'obstacle') ? "SPACE / KLICK FÖR ATT HOPPA" : (isTutorial ? i18n[currentLang].tutStart : i18n[currentLang].clickStart);
+                    ctx.fillText(txt, lerpX, lerpY - 80);
+                }
                 if (isPreviewing) {
                     if (currentTrack.difficulty === 'brutal') ctx.fillStyle = "#ff0044"; else if (currentTrack.difficulty === 'dynamic') ctx.fillStyle = "#d946ef"; else if (currentTrack.difficulty === 'mindflip') ctx.fillStyle = "#ff8800"; else if (currentTrack.difficulty === 'tricky') ctx.fillStyle = "#00e5ff"; else ctx.fillStyle = "#1d2bff";
                     ctx.font = "bold 50px 'Segoe UI'"; ctx.textAlign = "center"; ctx.fillText(i18n[currentLang].scouting, cam.x, cam.y - 120);
