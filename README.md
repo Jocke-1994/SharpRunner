@@ -1,5 +1,5 @@
 LabyrinthGame
-- Ett interaktivt labyrintspel utvecklat i C# och .NET. Projektet fokuserar på logik för spelarrörelser, hantering av spelplaner och grundläggande objektorienterad programmering.
+- Ett interaktivt labyrintspel utvecklat i C# och .NET, där ett responsivt gränssnitt i HTML, CSS och JavaScript samt skalbar SVG-grafik används för att visualisera logik för spelarrörelser, hantering av spelplaner och grundläggande objektorienterad programmering
 - Om du inte vill klona ner spelet för att spela det, besök https://jocke-1994.github.io/LabyrinthGame/
 -----------------
 🎮 Om projektet
@@ -39,7 +39,7 @@ dotnet run
 ENGLISH
 
 LabyrinthGame
-- An interactive labyrinth game developed using C# and .NET. This project focuses on player movement logic, grid rendering, and core Object-Oriented Programming (OOP) principles.
+- An interactive maze game developed in C# and .NET, featuring a responsive interface built with HTML, CSS, and JavaScript, alongside scalable SVG graphics to visualize player movement logic, level management, and fundamental object-oriented programming
 - If you dont want to clone it down to play, just visit https://jocke-1994.github.io/LabyrinthGame/
 ---------------------------
 🎮 About the Project
