@@ -1,4 +1,4 @@
-LabyrinthGame
+SharpRunner
 - Ett interaktivt labyrintspel utvecklat i C# och .NET, där ett responsivt gränssnitt i HTML, CSS och JavaScript samt skalbar SVG-grafik används för att visualisera logik för spelarrörelser, hantering av spelplaner och grundläggande objektorienterad programmering
 - Om du inte vill klona ner spelet för att spela det, besök https://jocke-1994.github.io/LabyrinthGame/
 -----------------
