@@ -1,6 +1,6 @@
 SharpRunner
 - Ett interaktivt labyrintspel utvecklat i C# och .NET, där ett responsivt gränssnitt i HTML, CSS och JavaScript samt skalbar SVG-grafik används för att visualisera logik för spelarrörelser, hantering av spelplaner och grundläggande objektorienterad programmering
-- Om du inte vill klona ner spelet för att spela det, besök https://github.com/Jocke-1994/SharpRunner
+- Om du inte vill klona ner spelet för att spela det, besök [https://github.com/Jocke-1994/SharpRunner](https://jocke-1994.github.io/SharpRunner/)
 -----------------
 🎮 Om projektet
 - Spelet går ut på att navigera en karaktär genom en labyrint från start till mål, samtidigt som man hanterar eventuella hinder längs vägen.
