@@ -1250,7 +1250,7 @@
         }
     </style>
 
-    <div id="supportModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+    <div id="supportModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: flex-start; padding-top: 20px; overflow-y: auto; backdrop-filter: blur(4px);">
         <div class="no-scrollbar" style="background: #0f172a; border: 1px solid #334155; padding: 30px; border-radius: 16px; width: 90%; max-width: 450px; color: white; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); max-height: 90vh; overflow-y: auto;">
 
             <h2 style="text-align: center; margin-bottom: 10px; font-size: 1.5rem; letter-spacing: 1px;">SHARPRUNNER SUPPORT</h2>
@@ -2116,7 +2116,13 @@
             if (flash.alpha > 0.01) { ctx.fillStyle = flash.color; ctx.globalAlpha = flash.alpha; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.globalAlpha = 1.0; }
         }
 
-        window.addEventListener("keydown", e => { if (e.code === "Space") { e.preventDefault(); handleInput(); } if (e.code === "KeyP") togglePause(); });
+        window.addEventListener("keydown", e => {
+            // NYTT: Om support-rutan syns, låt tangentbordet fungera som vanligt!
+            if (document.getElementById('supportModal').style.display !== 'none') return;
+
+            if (e.code === "Space") { e.preventDefault(); handleInput(); }
+            if (e.code === "KeyP") togglePause();
+        });
         canvas.addEventListener("pointerdown", e => { e.preventDefault(); AudioSfx.init(); handleInput(); });
         canvas.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
@@ -2152,10 +2158,20 @@
                 submitBtn.innerText = "SKICKAR...";
                 submitBtn.disabled = true;
 
+                // --- HÄR ÄR FIXEN ---
+                // Vi skapar datan och lägger till kategorin i ämnesraden manuellt
+                const data = new FormData(form);
+                const category = data.get('category'); // T.ex. "[BUGG]"
+                const subject = data.get('subject');   // T.ex. "Spelet kraschar"
+
+                // Ändra ämnet till: "[BUGG] Spelet kraschar" så Gmail hittar det
+                data.set('subject', `${category} ${subject}`);
+                // --------------------
+
                 try {
                     const response = await fetch(form.action, {
                         method: 'POST',
-                        body: new FormData(form),
+                        body: data, // Vi skickar vår uppdaterade data här
                         headers: { 'Accept': 'application/json' }
                     });
 
