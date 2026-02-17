@@ -24,7 +24,7 @@ Installation
 Klona repot:
 
 Bash
-git clone https://github.com/Jocke-1994/LabyrinthGame.git
+git clone https://github.com/Jocke-1994/SharpRunner.git
 Gå in i projektmappen:
 cd LabyrinthGame
 Bygg och kör projektet:
@@ -40,7 +40,7 @@ ENGLISH
 
 LabyrinthGame
 - An interactive maze game developed in C# and .NET, featuring a responsive interface built with HTML, CSS, and JavaScript, alongside scalable SVG graphics to visualize player movement logic, level management, and fundamental object-oriented programming
-- If you dont want to clone it down to play, just visit https://jocke-1994.github.io/LabyrinthGame/
+- If you dont want to clone it down to play, just visit https://jocke-1994.github.io/SharpRunner/
 ---------------------------
 🎮 About the Project
 - The goal of the game is to navigate a character through a maze from start to finish while managing collisions and game states.
@@ -65,7 +65,7 @@ Installation & Execution
 Clone the repository:
 
 Bash 
-- git clone https://github.com/Jocke-1994/LabyrinthGame.git
+- git clone https://github.com/Jocke-1994/SharpRunner.git
 - Navigate to the project directory:
 - cd LabyrinthGame
 Build and run the application:
