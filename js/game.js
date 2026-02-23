@@ -153,7 +153,7 @@ function win() {
 
     if (isTutorial) {
         document.getElementById('msgTitle').textContent = t.tutWin; document.getElementById('progressInfo').innerHTML = "";
-        document.getElementById('msgBody').textContent = ""; document.getElementById('overlayMainBtn').textContent = "OK";
+        document.getElementById('msgBody').textContent = ""; document.getElementById('overlayMainBtn').textContent = t.okBtn;
         document.getElementById('crashProgressBar').style.width = "100%";
         document.getElementById('overlayExitBtn').classList.add('hidden');
         document.getElementById('overlayMainBtn').onclick = endTutorial; overlay.classList.remove('hidden'); return;
@@ -176,7 +176,7 @@ function win() {
     document.getElementById('crashProgressBar').style.width = "100%";
 
     const next = tracks.find(tr => tr.num === currentTrack.num + 1);
-    document.getElementById('overlayMainBtn').textContent = next ? t.nextBtn : (currentLang === 'sv' ? "MENY" : "MENU");
+    document.getElementById('overlayMainBtn').textContent = next ? t.nextBtn : t.menuBtn;
     document.getElementById('overlayMainBtn').onclick = next ? () => startTrack(next) : exitToMenu;
     overlay.classList.remove('hidden');
 }
