@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'PÅMINNELSE: Uppdatera CLAUDE.md med ny information från denna session innan du avslutar.'"
+          }
+        ]
+      }
+    ]
+  }
+}
