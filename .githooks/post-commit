@@ -1,0 +1,10 @@
+#!/bin/sh
+# SharpRunner – automatisk screenshot efter varje visuell commit
+
+SCRIPT_DIR="$(git rev-parse --show-toplevel)/scripts"
+
+export COMMIT_MSG="$(git log -1 --pretty=%s)"
+export COMMIT_HASH="$(git log -1 --pretty=%H)"
+export CHANGED_FILES="$(git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only HEAD 2>/dev/null)"
+
+node "$SCRIPT_DIR/screenshot.js"
