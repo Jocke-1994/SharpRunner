@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# SharpRunner screenshots (lokal tidslinje, gitignorerad)
+screenshots/
+
+# Puppeteer/Node dependencies för screenshot-verktyget
+scripts/node_modules/

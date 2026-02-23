@@ -285,14 +285,26 @@ Boardet använder kolumnerna: **Brainstorming → Backlog → Ready → In progr
 
 Fält per uppgift: Priority (P0–P2), Size (XS–XL), Estimate, Start date, Target date
 
-### Brainstorming (3)
+### Brainstorming (12)
 
-| Issue | Titel | Detaljer |
-|-------|-------|----------|
-| #33 | Discord | Lägg till Discord-länk i projektet |
-| #34 | Innan lansering | Checklista för pre-launch-uppgifter |
-| #35 | Idéer att testa | Boosters-visning på skärmen, experimentflik för beta-banor med feedbackformulär, Apex-bonus (3 s speedboost vid perfekt sväng i kurva) |
-| #36 | Dashboard / Admin-panel | .NET Web API + databas som serverar konfiguration till frontend i realtid. Feature flags (event, underhåll), Game balancing (hastighet, apex-marginal), Level management, Feedback-hubb |
+| Issue | Titel | Beskrivning |
+|-------|-------|-------------|
+| #33 | Discord | Lägg till Discord-länk |
+| #34 | Innan lansering | Domän, hosting, PWA, Play Store, SEO, GDPR, crosstester |
+| #35 | Idéer att testa | Boosters-visning, experimentflik för beta-banor, Apex-bonus |
+| #36 | Dashboard / Admin-panel | .NET Web API + databas. Feature flags, game balancing, level management, feedback-hubb |
+| #37 | Weekly Track | Ny bana varje måndag, seed-baserad, alla spelar samma |
+| #38 | Daglig utmaning | Ny bana varje dag, seed baserat på datum |
+| #39 | Ghost Replay | Halvtransparent spöke av spelarens bästa körning |
+| #40 | Delningsfunktion | Dela poäng/tid via länk eller bild på sociala medier |
+| #41 | Achievements / Badges | Milstolpar: klara svårighetsgrader, streak, dödsfall, first try |
+| #42 | Streak-kalender | Visuell kalender (likt GitHub contributions) för speldagar |
+| #43 | Profilnamn | Visningsnamn för leaderboard och statistik |
+| #44 | Volymreglage | Slider (0–100%) istället för av/på-knapp |
+| #45 | Färgblindläge | Alternativt tillgängligt färgschema |
+| #46 | Track-miniatyr | Liten förhandsbild av banans form i level select |
+| #47 | Leaderboard | Global topplista per bana – kräver backend |
+| #48 | Community-banor | Track editor + dela banor – kräver backend |
 
 ### Backlog / Ready / In progress / In review
 Inga uppgifter just nu.
