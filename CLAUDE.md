@@ -339,3 +339,29 @@ dotnet run
 - SVG används för all spelgrafik (skalbar, resolution-oberoende)
 - Commits och kommentarer skrivs på svenska
 - Branches per feature, mergeas via Pull Requests
+
+---
+
+## Git-workflow
+
+### Branch protection på `main`
+`main` är skyddad på GitHub – gäller **alla bidragsgivare inklusive ägaren**:
+
+- Direct push till `main` är blockerat
+- Force push är blockerat
+- `main`-branchen kan inte raderas
+
+### Arbetsflöde
+```
+git checkout -b namn-på-feature   # skapa branch
+# ... gör ändringar och commits ...
+git push origin namn-på-feature
+gh pr create                      # skapa PR mot main
+gh pr merge --merge               # merge när klar
+```
+
+### Namngivning av branches
+Använd beskrivande kebab-case, t.ex.:
+- `add-leaderboard`
+- `fix-jump-bug`
+- `update-css-colors`
