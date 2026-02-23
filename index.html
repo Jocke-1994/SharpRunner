@@ -168,11 +168,11 @@
     <div id="supportModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: flex-start; padding-top: 20px; overflow-y: auto; backdrop-filter: blur(4px);">
         <div class="no-scrollbar" style="background: #0f172a; border: 1px solid #334155; padding: 30px; border-radius: 16px; width: 90%; max-width: 450px; color: white; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); max-height: 90vh; overflow-y: auto;">
 
-            <h2 style="text-align: center; margin-bottom: 10px; font-size: 1.5rem; letter-spacing: 1px;">SHARPRUNNER SUPPORT</h2>
+            <h2 data-t="supportTitle" style="text-align: center; margin-bottom: 10px; font-size: 1.5rem; letter-spacing: 1px;">SHARPRUNNER SUPPORT</h2>
 
             <div style="background: #1e293b; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; color: #cbd5e1; border-left: 4px solid #4f46e5;">
-                <p style="margin-bottom: 8px;">Använd detta formulär för att rapportera buggar, skicka feedback eller övriga frågor som rör spelet.</p>
-                <p style="color: #fbbf24; font-weight: bold; margin: 0;">⚠️ OBS: Ange aldrig lösenord eller känslig personlig information i beskrivningen.</p>
+                <p data-t="supportInfo" style="margin-bottom: 8px;">Använd detta formulär för att rapportera buggar, skicka feedback eller övriga frågor som rör spelet.</p>
+                <p data-t="supportWarning" style="color: #fbbf24; font-weight: bold; margin: 0;">⚠️ OBS: Ange aldrig lösenord eller känslig personlig information i beskrivningen.</p>
             </div>
 
             <p id="statusMessage" style="display: none; text-align: center; font-weight: bold; padding: 10px; border-radius: 8px; margin-bottom: 15px;"></p>
@@ -183,40 +183,40 @@
                 <input type="hidden" name="Ticket_ID" id="ticketIdField">
 
                 <div>
-                    <label style="font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 4px;">Titel *</label>
-                    <input type="text" name="subject" placeholder="Ange vad det gäller" required style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 12px; border-radius: 6px; font-size: 14px;">
+                    <label data-t="supportLabelTitle" style="font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 4px;">Titel *</label>
+                    <input type="text" name="subject" data-t-placeholder="supportPlaceholderTitle" placeholder="Ange vad det gäller" required style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 12px; border-radius: 6px; font-size: 14px;">
                 </div>
 
                 <div>
-                    <label style="font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 4px;">Ärende *</label>
+                    <label data-t="supportLabelCategory" style="font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 4px;">Ärende *</label>
                     <select name="category" style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 12px; border-radius: 6px; font-size: 14px;">
-                        <option value="[BUGG]">Rapportera Bugg</option>
-                        <option value="[FEEDBACK]">Feedback / Förslag</option>
-                        <option value="[ÖVRIGT]">Övrigt</option>
+                        <option value="[BUGG]" data-t="supportOptBug">Rapportera Bugg</option>
+                        <option value="[FEEDBACK]" data-t="supportOptFeedback">Feedback / Förslag</option>
+                        <option value="[ÖVRIGT]" data-t="supportOptOther">Övrigt</option>
                     </select>
                 </div>
 
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
-                        <label style="font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px;">Namn (Valfritt)</label>
-                        <input type="text" name="name" placeholder="Ditt namn" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: #cbd5e1; padding: 12px; border-radius: 6px; font-size: 14px;">
+                        <label data-t="supportLabelName" style="font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px;">Namn (Valfritt)</label>
+                        <input type="text" name="name" data-t-placeholder="supportPlaceholderName" placeholder="Ditt namn" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: #cbd5e1; padding: 12px; border-radius: 6px; font-size: 14px;">
                     </div>
                 </div>
 
                 <div>
-                    <label style="font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px;">E-post (Valfritt)</label>
-                    <input type="email" name="email" placeholder="namn@exempel.se" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: #cbd5e1; padding: 12px; border-radius: 6px; font-size: 14px;">
-                    <p style="font-size: 10px; color: #64748b; margin-top: 4px; font-style: italic;">Fyll i om du vill ha möjlighet till återkoppling. Svar kan ej garanteras.</p>
+                    <label data-t="supportLabelEmail" style="font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px;">E-post (Valfritt)</label>
+                    <input type="email" name="email" data-t-placeholder="supportPlaceholderEmail" placeholder="namn@exempel.se" style="width: 100%; background: #0f172a; border: 1px solid #334155; color: #cbd5e1; padding: 12px; border-radius: 6px; font-size: 14px;">
+                    <p data-t="supportEmailHint" style="font-size: 10px; color: #64748b; margin-top: 4px; font-style: italic;">Fyll i om du vill ha möjlighet till återkoppling. Svar kan ej garanteras.</p>
                 </div>
 
                 <div>
-                    <label style="font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 4px;">Beskrivning *</label>
-                    <textarea name="message" rows="4" placeholder="Beskriv ditt ärende så detaljerat som möjligt..." required style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 12px; border-radius: 6px; resize: none; font-size: 14px; font-family: sans-serif;"></textarea>
+                    <label data-t="supportLabelDesc" style="font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 4px;">Beskrivning *</label>
+                    <textarea name="message" data-t-placeholder="supportPlaceholderDesc" rows="4" placeholder="Beskriv ditt ärende så detaljerat som möjligt..." required style="width: 100%; background: #1e293b; border: 1px solid #334155; color: white; padding: 12px; border-radius: 6px; resize: none; font-size: 14px; font-family: sans-serif;"></textarea>
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button type="submit" id="submitBtn" style="flex: 2; background: #4f46e5; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; letter-spacing: 0.5px; transition: background 0.2s;">SKICKA RAPPORT</button>
-                    <button type="button" id="closeSupportBtn" style="flex: 1; background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">AVBRYT</button>
+                    <button type="submit" id="submitBtn" data-t="supportSubmitBtn" style="flex: 2; background: #4f46e5; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; letter-spacing: 0.5px; transition: background 0.2s;">SKICKA RAPPORT</button>
+                    <button type="button" id="closeSupportBtn" data-t="supportCancelBtn" style="flex: 1; background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">AVBRYT</button>
                 </div>
             </form>
         </div>

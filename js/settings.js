@@ -49,6 +49,10 @@ function updateTexts() {
         const key = el.getAttribute('data-t');
         if (t[key]) el.textContent = t[key];
     });
+    document.querySelectorAll('[data-t-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-t-placeholder');
+        if (t[key]) el.placeholder = t[key];
+    });
     document.getElementById('aboutContent').innerHTML = t.aboutText;
 }
 

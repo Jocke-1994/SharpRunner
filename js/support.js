@@ -18,7 +18,7 @@
 
     form.onsubmit = async (e) => {
         e.preventDefault();
-        submitBtn.innerText = "SKICKAR...";
+        submitBtn.innerText = i18n[currentLang].supportSending;
         submitBtn.disabled = true;
 
         const data = new FormData(form);
@@ -36,16 +36,16 @@
             if (response.ok) {
                 form.reset();
                 form.style.display = 'none';
-                statusMsg.innerText = "✅ SKICKAT! VI ÅTERKOMMER.";
+                statusMsg.innerText = i18n[currentLang].supportSuccess;
                 statusMsg.style.display = 'block';
                 statusMsg.style.background = "#064e3b";
-                setTimeout(() => { modal.style.display = 'none'; submitBtn.innerText = "SKICKA"; submitBtn.disabled = false; }, 2500);
+                setTimeout(() => { modal.style.display = 'none'; submitBtn.innerText = i18n[currentLang].supportSubmitBtn; submitBtn.disabled = false; }, 2500);
             } else { throw new Error(); }
         } catch {
-            statusMsg.innerText = "❌ FEL! FÖRSÖK IGEN.";
+            statusMsg.innerText = i18n[currentLang].supportError;
             statusMsg.style.display = 'block';
             statusMsg.style.background = "#7f1d1d";
-            submitBtn.innerText = "SKICKA";
+            submitBtn.innerText = i18n[currentLang].supportSubmitBtn;
             submitBtn.disabled = false;
         }
     };
