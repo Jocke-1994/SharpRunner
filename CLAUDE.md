@@ -185,7 +185,21 @@ Stödda språk: Svenska (`sv`, standard), Engelska (`en`)
 
 ```
 SharpRunner/
-├── index.html              # Hela spelet: spelmotor, UI, ljud, rendering (~99.8% av koden)
+├── index.html              # HTML-struktur + <link>/<script>-taggar
+├── css/
+│   └── style.css           # All CSS (~1100 rader)
+├── js/
+│   ├── constants.js        # SVG-ikoner, i18n, failMessages, skins, currentLang
+│   ├── audio.js            # AudioSfx-objektet (Web Audio API)
+│   ├── settings.js         # gameSettings, localStorage-variabler, settings-funktioner
+│   ├── levels.js           # Path-generatorer, diffSettings, tracks-array
+│   ├── particles.js        # Partikelsystem (konfetti, explosion, shockwave)
+│   ├── ui.js               # showScreen, renderGrids, renderStats, tutorial-UI
+│   ├── game.js             # startTrack, initGame, fail, win, handleInput, togglePause
+│   ├── physics.js          # getTrackYatX, updatePhysics
+│   ├── render.js           # draw()
+│   ├── main.js             # Spelstate-variabler, canvas/ctx, event listeners, game loop
+│   └── support.js          # Support-modal IIFE (Formspree)
 ├── Program.cs              # C# entry point (namespace LabyrinthGame)
 ├── LabyrinthGame.csproj    # .NET-projektfil
 ├── LabyrinthGame.slnx      # .NET-lösningsfil
@@ -193,12 +207,8 @@ SharpRunner/
 └── CLAUDE.md               # Denna fil
 ```
 
-### Logisk kodstruktur (enligt dokumentation)
-```
-Models/   – Datastrukturer: spelare, väggar, mål
-Logic/    – Spelregler, rörelsemönster, state-hantering
-UI/       – Presentationslager
-```
+### JS-laddningsordning (kritisk – global scope)
+constants → audio → settings → levels → particles → ui → game → physics → render → main → support
 
 ---
 
