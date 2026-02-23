@@ -1,78 +1,153 @@
-SharpRunner
-- Ett interaktivt labyrintspel utvecklat i C# och .NET, där ett responsivt gränssnitt i HTML, CSS och JavaScript samt skalbar SVG-grafik används för att visualisera logik för spelarrörelser, hantering av spelplaner och grundläggande objektorienterad programmering
-- Om du inte vill klona ner spelet för att spela det, besök [https://github.com/Jocke-1994/SharpRunner](https://jocke-1994.github.io/SharpRunner/)
------------------
-🎮 Om projektet
-- Spelet går ut på att navigera en karaktär genom en labyrint från start till mål, samtidigt som man hanterar eventuella hinder längs vägen.
-------------------
-Huvudfunktioner
-- Dynamisk spelplan: Inläsning och rendering av labyrinter.
-- Navigering: Responsiv styrning av spelaren via tangentbordet.
-- Spellogik: Kollisionshantering och vinstvillkor.
-- Ren kod: Utvecklat med fokus på OOP (Objektorienterad programmering) och tydlig separation av logik.
-------------------
-🛠 Teknikstack
-Språk: C#
-Plattform: .NET
-Paradigm: Objektorienterad programmering (OOP)
--------------------
-🚀 Kom igång
-Förutsättningar
-.NET SDK (version 6.0 eller senare rekommenderas).
+# SharpRunner
 
-Installation
-Klona repot:
+Ett webbläsarbaserat arkadspel där du navigerar en karaktär längs dynamiskt genererade banor genom att tajma svängar i rätt ögonblick. För tidigt eller för sent – och du kraschar.
 
-Bash
+🎮 **Spela direkt:** https://jocke-1994.github.io/SharpRunner/
+
+---
+
+## Om spelet
+
+SharpRunner innehåller ~95 nivåer fördelade på 8 svårighetsgrader, från nybörjarvänliga lätta banor till extremt krävande Brutal-banor. Varje svårighetsgrad har sin egen spelmekanik, visuella stil och färg.
+
+| Svårighetsgrad | Banor | Hastighet | Särskilt |
+|---|---|---|---|
+| Easy | 15 | 180 px/s | Nybörjarvänlig |
+| Medium | 15 | 400 px/s | |
+| Obstacle | 15 | 420 px/s | Hoppmekanik – undvik hinder |
+| Dynamic | 10 | 450 px/s | Mjuka kurvade banor |
+| Mindflip | 10 | 500 px/s | Plötsliga 180°-svängar |
+| Tricky | 10 | 420 px/s | Handgjorda mönster |
+| Hard | 10 | 580 px/s | Inga guidecirklar |
+| Brutal | 10 | 750 px/s | Extremsvår |
+
+---
+
+## Funktioner
+
+- **Tutorial** – steg-för-steg-guide för nya spelare
+- **Statistik** – win streak, bästa streak, dödsfall, per-nivå-historik
+- **Anpassning** – 9 skinfärger, hastighetsglidare (50–150%), dimma (fog of war)
+- **Ljud** – syntetiserade effekter via Web Audio API
+- **Mobilstöd** – fungerar på pekskärmar
+- **Tvåspråkigt** – svenska och engelska
+- **Support** – inbyggt formulär för buggrapporter och feedback
+
+---
+
+## Teknikstack
+
+| Teknik | Användning |
+|---|---|
+| JavaScript (Vanilla) | Spelmotor, fysik, rendering, ljud, statistik |
+| HTML / CSS | Struktur och layout |
+| Web Audio API | Syntetiserade ljudeffekter |
+| Canvas API | Spelrendering med interpolation |
+| localStorage | Spelardata, inställningar, statistik |
+| C# / .NET | Projektinfrastruktur |
+
+---
+
+## Projektstruktur
+
+```
+SharpRunner/
+├── index.html          # HTML-struktur
+├── css/
+│   └── style.css       # All CSS
+├── js/
+│   ├── constants.js    # Ikoner, texter, skins
+│   ├── audio.js        # Ljud (Web Audio API)
+│   ├── settings.js     # Inställningar och localStorage
+│   ├── levels.js       # Bangenerering och nivåer
+│   ├── particles.js    # Partikelsystem
+│   ├── ui.js           # Menyer och skärmar
+│   ├── game.js         # Spelflöde (start, fail, win)
+│   ├── physics.js      # Fysik och kollision
+│   ├── render.js       # Canvas-rendering
+│   ├── main.js         # Game loop och event listeners
+│   └── support.js      # Support-formulär
+└── scripts/
+    └── screenshot.js   # Automatiskt screenshot-verktyg
+```
+
+---
+
+## Kom igång lokalt
+
+```bash
 git clone https://github.com/Jocke-1994/SharpRunner.git
-Gå in i projektmappen:
 cd SharpRunner
-Bygg och kör projektet:
-dotnet run
+```
 
-🏗 Struktur
-- Projektet är uppdelat i logiska moduler för att följa god sed inom systemutveckling:
-- Models/ - Innehåller klasser för spelare, väggar och mål.
-- Logic/ - Hanterar spelregler och rörelsemönster.
-- UI/ - Hanterar presentationen i konsolen/fönstret.
+Öppna `index.html` i en modern webbläsare – inget byggsystem behövs.
 
-ENGLISH
+---
 
-SharpRunner
-- An interactive maze game developed in C# and .NET, featuring a responsive interface built with HTML, CSS, and JavaScript, alongside scalable SVG graphics to visualize player movement logic, level management, and fundamental object-oriented programming
-- If you dont want to clone it down to play, just visit https://jocke-1994.github.io/SharpRunner/
----------------------------
-🎮 About the Project
-- The goal of the game is to navigate a character through a maze from start to finish while managing collisions and game states.
----------------------------
-Key Features
--	Dynamic Grid: Efficient rendering and handling of the labyrinth layout.
--	Smooth Navigation: Responsive keyboard input for player movement.
--	Game Logic: Robust collision detection and win-condition handling.
--	Clean Code: Developed with a focus on OOP, maintainability, and clear separation of concerns.
----------------------------
-🛠 Tech Stack
-Language: C#
-Framework: .NET
-Paradigm: Object-Oriented Programming (OOP)
---------------------------
+## Bidra
 
-🚀 Getting Started
-Prerequisites
-.NET SDK (Version 6.0 or later recommended).
+1. Skapa en branch: `git checkout -b namn-på-feature`
+2. Gör dina ändringar och committa
+3. Pusha och skapa en Pull Request mot `main`
 
-Installation & Execution
-Clone the repository:
+> `main` är skyddad – all kod måste gå via Pull Request.
 
-Bash 
-- git clone https://github.com/Jocke-1994/SharpRunner.git
-- Navigate to the project directory:
-- cd SharpRunner
-Build and run the application:
-- dotnet run
+---
 
-🏗 Project Structure
-- The project is organized to follow industry standards for software development:
-- Models/ – Data structures for players, obstacles, and objectives.
-- Logic/ – Core mechanics, movement rules, and game state management.
-- UI/ – Console or graphical interface handling.
+---
+
+# SharpRunner (English)
+
+A browser-based arcade game where you navigate a character along dynamically generated tracks by timing your turns at the right moment. Too early or too late – and you crash.
+
+🎮 **Play now:** https://jocke-1994.github.io/SharpRunner/
+
+---
+
+## About the Game
+
+SharpRunner features ~95 levels across 8 difficulty tiers, from beginner-friendly Easy tracks to the extreme challenge of Brutal. Each difficulty has its own mechanics, visual style, and color.
+
+| Difficulty | Levels | Speed | Special |
+|---|---|---|---|
+| Easy | 15 | 180 px/s | Beginner friendly |
+| Medium | 15 | 400 px/s | |
+| Obstacle | 15 | 420 px/s | Jump mechanic – avoid obstacles |
+| Dynamic | 10 | 450 px/s | Smooth curved tracks |
+| Mindflip | 10 | 500 px/s | Sudden 180° turns |
+| Tricky | 10 | 420 px/s | Handcrafted patterns |
+| Hard | 10 | 580 px/s | No guide circles |
+| Brutal | 10 | 750 px/s | Extremely hard |
+
+---
+
+## Features
+
+- **Tutorial** – step-by-step guide for new players
+- **Statistics** – win streak, best streak, deaths, per-level history
+- **Customization** – 9 skin colors, speed slider (50–150%), fog of war
+- **Sound** – synthesized effects via Web Audio API
+- **Mobile support** – works on touchscreens
+- **Bilingual** – Swedish and English
+- **Support** – built-in form for bug reports and feedback
+
+---
+
+## Getting Started
+
+```bash
+git clone https://github.com/Jocke-1994/SharpRunner.git
+cd SharpRunner
+```
+
+Open `index.html` in a modern browser – no build system required.
+
+---
+
+## Contributing
+
+1. Create a branch: `git checkout -b feature-name`
+2. Make your changes and commit
+3. Push and open a Pull Request against `main`
+
+> `main` is protected – all code must go through a Pull Request.

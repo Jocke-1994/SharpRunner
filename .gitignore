@@ -370,3 +370,4 @@ scripts/node_modules/
 
 # Claude Code projektdokumentation (lokal, delas ej)
 CLAUDE.md
+.claude/settings.local.json
