@@ -367,3 +367,6 @@ screenshots/
 
 # Puppeteer/Node dependencies för screenshot-verktyget
 scripts/node_modules/
+
+# Claude Code projektdokumentation (lokal, delas ej)
+CLAUDE.md
