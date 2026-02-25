@@ -5,6 +5,44 @@ Uppdateras i slutet av varje arbetspass av den som jobbat.
 
 ---
 
+## 2026-02-25 – Joakim (+ Claude Code)
+
+### Vad gjordes
+**Planering – användarkontosystem:**
+- Genomgång och design av ett komplett kontosystem för SharpRunner
+- Beslut: konton är alltid frivilliga – man kan spela utan konto, men vissa features kräver inloggning
+- Valt backend: **Supabase** (auth + databas)
+- Auth-metoder bestämda: email/lösenord, Google, Discord
+- Beslutat att auth-UI ska vara en modal overlay inbyggd i spelet – ingen omladdning eller extern sida
+- Skapat en fasindelad roadmap för kontosystemet (se nedan)
+- Skapat GitHub issue #61 för Fas 1 – Auth-grund
+
+**Fasplan – kontosystem:**
+| Fas | Innehåll |
+|-----|----------|
+| 1 – Auth-grund | Konton, inloggning, cloud save |
+| 2 – Konkurrens | Leaderboard, säsongsrankningar, achievements + skins |
+| 3 – Profilsida | Samlad vy: stats, achievements, köphistorik |
+| 4 – Social | Ghost replay, vänner, dela runs |
+| 5 – Monetisering | Betalbanor, Stripe, köphistorik |
+| 6 – Volume-beroende | Daily challenge (vid 50+ spelare) |
+
+### Viktiga beslut
+- Supabase är vald som backend – stödjer auth, databas och passar statisk hosting på GitHub Pages
+- Auth-modal följer samma mönster som `supportModal` (position fixed overlay)
+- Cloud save ingår i Fas 1 – data synkas till Supabase, localStorage används fortfarande som lokal cache
+- `maze_ghosts` synkas *inte* i Fas 1 – ghost replay hanteras i Fas 4
+- Daily challenge skjuts upp till minst 50 aktiva spelare
+- Monetisering planeras separat, stängs inte ute
+- Kontoprincip: "free to play, account to compete"
+
+### Nästa steg
+- Bozhidar läser issue #61 och ger feedback / godkänner
+- Starta implementation av Fas 1 (Supabase-projekt, auth-modal, cloud save)
+- Fas 2–6 planeras som separata issues när Fas 1 är klar
+
+---
+
 ## 2026-02-23 – Joakim (+ Claude Code)
 
 ### Vad gjordes
