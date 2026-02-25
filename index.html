@@ -250,6 +250,7 @@
                         <input id="loginPassword" type="password" data-t-placeholder="authPlaceholderPassword" placeholder="Ditt lösenord" style="width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:12px; border-radius:6px; font-size:14px;" onkeydown="if(event.key==='Enter') handleLogin()">
                     </div>
                     <button id="loginSubmitBtn" class="btn" style="width:100%; margin-top:4px;" onclick="handleLogin()" data-t="authLoginSubmit">LOGGA IN</button>
+                    <button class="btn btn-secondary" style="width:100%; font-size:0.8rem; padding:8px;" onclick="showAuthView('forgot')" data-t="authForgotLink">Glömt lösenord?</button>
                     <div style="text-align:center; color:#475569; font-size:0.8rem; font-weight:bold; margin:4px 0;" data-t="authOr">ELLER</div>
                     <button class="btn btn-secondary" style="width:100%;" onclick="authSignInWithProvider('google')">Google</button>
                     <button class="btn btn-secondary" style="width:100%;" onclick="authSignInWithProvider('discord')">Discord</button>
@@ -277,6 +278,31 @@
                     <button class="btn btn-secondary" style="width:100%;" onclick="authSignInWithProvider('google')">Google</button>
                     <button class="btn btn-secondary" style="width:100%;" onclick="authSignInWithProvider('discord')">Discord</button>
                     <button class="btn btn-secondary" style="width:100%; margin-top:4px;" onclick="closeAuthModal()" data-t="authCancel">AVBRYT</button>
+                </div>
+            </div>
+
+            <!-- VY: Glömt lösenord -->
+            <div id="authView-forgot" class="hidden">
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                    <h3 data-t="authForgotTitle" style="text-align:center; margin:0 0 6px; font-size:1rem; letter-spacing:1px;">ÅTERSTÄLL LÖSENORD</h3>
+                    <div>
+                        <label data-t="authEmailLabel" style="font-size:11px; font-weight:bold; color:#94a3b8; text-transform:uppercase; display:block; margin-bottom:4px;">E-POST</label>
+                        <input id="forgotEmail" type="email" data-t-placeholder="authPlaceholderEmail" placeholder="din@email.se" style="width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:12px; border-radius:6px; font-size:14px;" onkeydown="if(event.key==='Enter') handleForgotPassword()">
+                    </div>
+                    <button id="forgotSubmitBtn" class="btn" style="width:100%;" onclick="handleForgotPassword()" data-t="authForgotSubmit">SKICKA LÄNK</button>
+                    <button class="btn btn-secondary" style="width:100%;" onclick="showAuthView('login')" data-t="authBackToLogin">← Tillbaka</button>
+                </div>
+            </div>
+
+            <!-- VY: Sätt nytt lösenord (efter reset-länk) -->
+            <div id="authView-reset" class="hidden">
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                    <h3 data-t="authNewPasswordTitle" style="text-align:center; margin:0 0 6px; font-size:1rem; letter-spacing:1px;">NYTT LÖSENORD</h3>
+                    <div>
+                        <label data-t="authNewPasswordLabel" style="font-size:11px; font-weight:bold; color:#94a3b8; text-transform:uppercase; display:block; margin-bottom:4px;">NYTT LÖSENORD</label>
+                        <input id="resetPassword" type="password" data-t-placeholder="authPlaceholderNewPassword" placeholder="Välj ett nytt lösenord" style="width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:12px; border-radius:6px; font-size:14px;" onkeydown="if(event.key==='Enter') handleUpdatePassword()">
+                    </div>
+                    <button id="resetSubmitBtn" class="btn" style="width:100%;" onclick="handleUpdatePassword()" data-t="authNewPasswordSubmit">SPARA LÖSENORD</button>
                 </div>
             </div>
 

@@ -88,7 +88,17 @@ const i18n = {
         authConfirmEmail: "✅ Konto skapat! Kolla din e-post för att bekräfta kontot.",
         authErrUsernameTaken: "Användarnamnet är redan taget.",
         authErrInvalid: "Felaktig e-post eller lösenord.",
-        authErrGeneric: "Något gick fel. Försök igen."
+        authErrGeneric: "Något gick fel. Försök igen.",
+        authForgotLink: "Glömt lösenord?",
+        authForgotTitle: "ÅTERSTÄLL LÖSENORD",
+        authForgotSubmit: "SKICKA LÄNK",
+        authForgotSuccess: "Länk skickad! Kolla din inbox – kan hamna i skräpposten.",
+        authNewPasswordTitle: "NYTT LÖSENORD",
+        authNewPasswordLabel: "NYTT LÖSENORD",
+        authPlaceholderNewPassword: "Välj ett nytt lösenord",
+        authNewPasswordSubmit: "SPARA LÖSENORD",
+        authNewPasswordSuccess: "Lösenord uppdaterat! Du är nu inloggad.",
+        authBackToLogin: "← Tillbaka"
     },
     en: {
         title: "SharpRunner", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us", settingsBtn: "Settings",
@@ -147,7 +157,17 @@ const i18n = {
         authConfirmEmail: "✅ Account created! Check your email to confirm.",
         authErrUsernameTaken: "Username is already taken.",
         authErrInvalid: "Invalid email or password.",
-        authErrGeneric: "Something went wrong. Please try again."
+        authErrGeneric: "Something went wrong. Please try again.",
+        authForgotLink: "Forgot password?",
+        authForgotTitle: "RESET PASSWORD",
+        authForgotSubmit: "SEND LINK",
+        authForgotSuccess: "Link sent! Check your inbox – it may end up in spam.",
+        authNewPasswordTitle: "NEW PASSWORD",
+        authNewPasswordLabel: "NEW PASSWORD",
+        authPlaceholderNewPassword: "Choose a new password",
+        authNewPasswordSubmit: "SAVE PASSWORD",
+        authNewPasswordSuccess: "Password updated! You are now logged in.",
+        authBackToLogin: "← Back"
     }
 };
 

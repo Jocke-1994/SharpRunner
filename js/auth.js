@@ -19,7 +19,9 @@ async function initAuth() {
     updateAuthUI();
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
+        if (event === 'PASSWORD_RECOVERY') {
+            openAuthModal('reset');
+        } else if (event === 'SIGNED_IN' && session?.user) {
             currentUser = session.user;
             await onSignedIn();
             updateAuthUI();
@@ -73,6 +75,18 @@ async function authSignInWithProvider(provider) {
 
 async function authSignOut() {
     await supabaseClient.auth.signOut();
+}
+
+async function authResetPassword(email) {
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.href
+    });
+    if (error) throw error;
+}
+
+async function authUpdatePassword(newPassword) {
+    const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+    if (error) throw error;
 }
 
 // --- PROFIL ---
@@ -150,9 +164,11 @@ function closeAuthModal() {
 }
 
 function showAuthView(view) {
-    ['login', 'register', 'account'].forEach(v => {
+    ['login', 'register', 'account', 'forgot', 'reset'].forEach(v => {
         document.getElementById('authView-' + v).classList.toggle('hidden', v !== view);
     });
+    const tabViews = ['login', 'register'];
+    document.getElementById('authTabs').classList.toggle('hidden', !tabViews.includes(view));
     document.getElementById('authTabLogin').classList.toggle('active', view === 'login');
     document.getElementById('authTabRegister').classList.toggle('active', view === 'register');
     showAuthMessage('');
@@ -223,4 +239,37 @@ async function handleRegister() {
 async function handleSignOut() {
     await authSignOut();
     closeAuthModal();
+}
+
+async function handleForgotPassword() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const btn = document.getElementById('forgotSubmitBtn');
+    if (!email) return;
+
+    btn.disabled = true;
+    showAuthMessage('');
+    try {
+        await authResetPassword(email);
+        showAuthMessage(i18n[currentLang].authForgotSuccess, false);
+    } catch (e) {
+        showAuthMessage(i18n[currentLang].authErrGeneric);
+        btn.disabled = false;
+    }
+}
+
+async function handleUpdatePassword() {
+    const password = document.getElementById('resetPassword').value;
+    const btn = document.getElementById('resetSubmitBtn');
+    if (!password) return;
+
+    btn.disabled = true;
+    showAuthMessage('');
+    try {
+        await authUpdatePassword(password);
+        showAuthMessage(i18n[currentLang].authNewPasswordSuccess, false);
+        setTimeout(() => closeAuthModal(), 2000);
+    } catch (e) {
+        showAuthMessage(i18n[currentLang].authErrGeneric);
+        btn.disabled = false;
+    }
 }
