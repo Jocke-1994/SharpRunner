@@ -36,6 +36,10 @@ Uppdateras i slutet av varje arbetspass av den som jobbat.
 - Monetisering planeras separat, stängs inte ute
 - Kontoprincip: "free to play, account to compete"
 
+**Övrigt:**
+- Döpte om `LabyrinthGame.csproj` → `SharpRunner.csproj` och `LabyrinthGame.slnx` → `SharpRunner.slnx` (PR #63)
+  - Intern projektreferens i `.slnx` uppdaterad
+
 ### Nästa steg
 - Bozhidar läser issue #61 och ger feedback / godkänner
 - Starta implementation av Fas 1 (Supabase-projekt, auth-modal, cloud save)
