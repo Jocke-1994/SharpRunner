@@ -48,15 +48,12 @@ async function authSignUp(email, password, username) {
 
     if (existing) throw new Error(i18n[currentLang].authErrUsernameTaken);
 
-    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+    const { error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { data: { username } }
+    });
     if (error) throw error;
-
-    if (data.user) {
-        const { error: profileError } = await supabaseClient
-            .from('profiles')
-            .insert({ id: data.user.id, username, display_name: username });
-        if (profileError) throw profileError;
-    }
 }
 
 async function authSignIn(email, password) {
@@ -69,7 +66,9 @@ async function authSignInWithProvider(provider) {
         provider,
         options: { redirectTo: window.location.href }
     });
-    if (error) throw error;
+    if (error) {
+        showAuthMessage(i18n[currentLang].authErrGeneric);
+    }
 }
 
 async function authSignOut() {
