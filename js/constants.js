@@ -70,7 +70,25 @@ const i18n = {
         supportCancelBtn: "AVBRYT",
         supportSending: "SKICKAR...",
         supportSuccess: "✅ SKICKAT! VI ÅTERKOMMER.",
-        supportError: "❌ FEL! FÖRSÖK IGEN."
+        supportError: "❌ FEL! FÖRSÖK IGEN.",
+        loginBtn: "LOGGA IN",
+        authLoginTab: "LOGGA IN",
+        authRegisterTab: "REGISTRERA",
+        authEmailLabel: "E-POST",
+        authPasswordLabel: "LÖSENORD",
+        authUsernameLabel: "ANVÄNDARNAMN",
+        authPlaceholderEmail: "din@email.se",
+        authPlaceholderPassword: "Ditt lösenord",
+        authPlaceholderUsername: "Välj ett användarnamn",
+        authLoginSubmit: "LOGGA IN",
+        authRegisterSubmit: "SKAPA KONTO",
+        authOr: "ELLER",
+        authCancel: "AVBRYT",
+        authLogout: "LOGGA UT",
+        authConfirmEmail: "✅ Konto skapat! Kolla din e-post för att bekräfta kontot.",
+        authErrUsernameTaken: "Användarnamnet är redan taget.",
+        authErrInvalid: "Felaktig e-post eller lösenord.",
+        authErrGeneric: "Något gick fel. Försök igen."
     },
     en: {
         title: "SharpRunner", startBtn: "Start Game", statsBtn: "Statistics", aboutBtn: "About Us", settingsBtn: "Settings",
@@ -111,7 +129,25 @@ const i18n = {
         supportCancelBtn: "CANCEL",
         supportSending: "SENDING...",
         supportSuccess: "✅ SENT! WE'LL GET BACK TO YOU.",
-        supportError: "❌ ERROR! PLEASE TRY AGAIN."
+        supportError: "❌ ERROR! PLEASE TRY AGAIN.",
+        loginBtn: "LOG IN",
+        authLoginTab: "LOG IN",
+        authRegisterTab: "REGISTER",
+        authEmailLabel: "EMAIL",
+        authPasswordLabel: "PASSWORD",
+        authUsernameLabel: "USERNAME",
+        authPlaceholderEmail: "your@email.com",
+        authPlaceholderPassword: "Your password",
+        authPlaceholderUsername: "Choose a username",
+        authLoginSubmit: "LOG IN",
+        authRegisterSubmit: "CREATE ACCOUNT",
+        authOr: "OR",
+        authCancel: "CANCEL",
+        authLogout: "LOG OUT",
+        authConfirmEmail: "✅ Account created! Check your email to confirm.",
+        authErrUsernameTaken: "Username is already taken.",
+        authErrInvalid: "Invalid email or password.",
+        authErrGeneric: "Something went wrong. Please try again."
     }
 };
 

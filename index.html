@@ -15,6 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <title>SharpRunner</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -70,6 +71,7 @@
         <button class="btn btn-secondary" onclick="showScreen('settingsScreen')" data-t="settingsBtn">Inställningar</button>
         <button class="btn btn-secondary" onclick="showScreen('aboutScreen')" data-t="aboutBtn">Om Oss</button>
         <button id="openSupportBtn" class="btn btn-secondary">Support</button>
+        <button id="authMenuBtn" class="btn btn-secondary" onclick="openAuthModal()" data-t="loginBtn">LOGGA IN</button>
     </div>
 
     <div id="settingsScreen" class="screen hidden">
@@ -222,9 +224,78 @@
         </div>
     </div>
 
+    <div id="authModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:10000; justify-content:center; align-items:flex-start; padding-top:20px; overflow-y:auto; backdrop-filter:blur(4px);">
+        <div class="no-scrollbar" style="background:#0f172a; border:1px solid #334155; padding:30px; border-radius:16px; width:90%; max-width:420px; color:white; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); max-height:90vh; overflow-y:auto;">
+
+            <h2 style="text-align:center; margin-bottom:20px; font-size:1.5rem; letter-spacing:1px;">SHARPRUNNER</h2>
+
+            <!-- Flikar (login / register) -->
+            <div id="authTabs" style="display:flex; gap:8px; margin-bottom:20px;">
+                <button id="authTabLogin" class="btn btn-secondary active" style="flex:1; padding:10px;" onclick="showAuthView('login')" data-t="authLoginTab">LOGGA IN</button>
+                <button id="authTabRegister" class="btn btn-secondary" style="flex:1; padding:10px;" onclick="showAuthView('register')" data-t="authRegisterTab">REGISTRERA</button>
+            </div>
+
+            <!-- Felmeddelande / bekräftelse -->
+            <p id="authMessage" style="display:none; text-align:center; font-weight:bold; padding:10px; border-radius:8px; margin-bottom:15px; font-size:0.85rem;"></p>
+
+            <!-- VY: Logga in -->
+            <div id="authView-login">
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                    <div>
+                        <label data-t="authEmailLabel" style="font-size:11px; font-weight:bold; color:#94a3b8; text-transform:uppercase; display:block; margin-bottom:4px;">E-POST</label>
+                        <input id="loginEmail" type="email" data-t-placeholder="authPlaceholderEmail" placeholder="din@email.se" style="width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:12px; border-radius:6px; font-size:14px;">
+                    </div>
+                    <div>
+                        <label data-t="authPasswordLabel" style="font-size:11px; font-weight:bold; color:#94a3b8; text-transform:uppercase; display:block; margin-bottom:4px;">LÖSENORD</label>
+                        <input id="loginPassword" type="password" data-t-placeholder="authPlaceholderPassword" placeholder="Ditt lösenord" style="width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:12px; border-radius:6px; font-size:14px;" onkeydown="if(event.key==='Enter') handleLogin()">
+                    </div>
+                    <button id="loginSubmitBtn" class="btn" style="width:100%; margin-top:4px;" onclick="handleLogin()" data-t="authLoginSubmit">LOGGA IN</button>
+                    <div style="text-align:center; color:#475569; font-size:0.8rem; font-weight:bold; margin:4px 0;" data-t="authOr">ELLER</div>
+                    <button class="btn btn-secondary" style="width:100%;" onclick="authSignInWithProvider('google')">Google</button>
+                    <button class="btn btn-secondary" style="width:100%;" onclick="authSignInWithProvider('discord')">Discord</button>
+                    <button class="btn btn-secondary" style="width:100%; margin-top:4px;" onclick="closeAuthModal()" data-t="authCancel">AVBRYT</button>
+                </div>
+            </div>
+
+            <!-- VY: Registrera -->
+            <div id="authView-register" class="hidden">
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                    <div>
+                        <label data-t="authUsernameLabel" style="font-size:11px; font-weight:bold; color:#94a3b8; text-transform:uppercase; display:block; margin-bottom:4px;">ANVÄNDARNAMN</label>
+                        <input id="registerUsername" type="text" data-t-placeholder="authPlaceholderUsername" placeholder="Välj ett användarnamn" style="width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:12px; border-radius:6px; font-size:14px;">
+                    </div>
+                    <div>
+                        <label data-t="authEmailLabel" style="font-size:11px; font-weight:bold; color:#94a3b8; text-transform:uppercase; display:block; margin-bottom:4px;">E-POST</label>
+                        <input id="registerEmail" type="email" data-t-placeholder="authPlaceholderEmail" placeholder="din@email.se" style="width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:12px; border-radius:6px; font-size:14px;">
+                    </div>
+                    <div>
+                        <label data-t="authPasswordLabel" style="font-size:11px; font-weight:bold; color:#94a3b8; text-transform:uppercase; display:block; margin-bottom:4px;">LÖSENORD</label>
+                        <input id="registerPassword" type="password" data-t-placeholder="authPlaceholderPassword" placeholder="Ditt lösenord" style="width:100%; background:#1e293b; border:1px solid #334155; color:white; padding:12px; border-radius:6px; font-size:14px;" onkeydown="if(event.key==='Enter') handleRegister()">
+                    </div>
+                    <button id="registerSubmitBtn" class="btn" style="width:100%; margin-top:4px;" onclick="handleRegister()" data-t="authRegisterSubmit">SKAPA KONTO</button>
+                    <div style="text-align:center; color:#475569; font-size:0.8rem; font-weight:bold; margin:4px 0;" data-t="authOr">ELLER</div>
+                    <button class="btn btn-secondary" style="width:100%;" onclick="authSignInWithProvider('google')">Google</button>
+                    <button class="btn btn-secondary" style="width:100%;" onclick="authSignInWithProvider('discord')">Discord</button>
+                    <button class="btn btn-secondary" style="width:100%; margin-top:4px;" onclick="closeAuthModal()" data-t="authCancel">AVBRYT</button>
+                </div>
+            </div>
+
+            <!-- VY: Inloggad / konto -->
+            <div id="authView-account" class="hidden">
+                <div style="display:flex; flex-direction:column; gap:14px; align-items:center;">
+                    <p id="authAccountName" style="font-size:1.3rem; font-weight:bold; letter-spacing:1px; margin:10px 0;"></p>
+                    <button class="btn btn-danger" style="width:100%;" onclick="handleSignOut()" data-t="authLogout">LOGGA UT</button>
+                    <button class="btn btn-secondary" style="width:100%;" onclick="closeAuthModal()" data-t="authCancel">AVBRYT</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <script src="js/constants.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/settings.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/levels.js"></script>
     <script src="js/particles.js"></script>
     <script src="js/ui.js"></script>

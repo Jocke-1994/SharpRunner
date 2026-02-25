@@ -19,6 +19,7 @@ const canvas = document.getElementById("c"), ctx = canvas.getContext("2d");
 // --- EVENT LISTENERS ---
 window.addEventListener("keydown", e => {
     if (document.getElementById('supportModal').style.display !== 'none') return;
+    if (document.getElementById('authModal').style.display !== 'none') return;
     if (e.code === "Space") { e.preventDefault(); handleInput(); }
     if (e.code === "KeyP") togglePause();
 });
@@ -26,6 +27,7 @@ canvas.addEventListener("pointerdown", e => { e.preventDefault(); AudioSfx.init(
 canvas.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
 window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
 window.onresize(); updateTexts(); updateLangUI();
+initAuth();
 
 // --- GAME LOOP ---
 requestAnimationFrame(loop);
