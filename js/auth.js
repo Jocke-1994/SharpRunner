@@ -1,7 +1,7 @@
 // Supabase-konfiguration
 // Den publika anon-nyckeln är avsedd att exponeras i klientkod – säkerheten hanteras av Row Level Security (RLS).
-const SUPABASE_URL = 'DIN_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'DIN_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://urpnehzlqeqvwpwrmkse.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVycG5laHpscWVxdndwd3Jta3NlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMzAwOTQsImV4cCI6MjA4NzYwNjA5NH0.6SKr9kKvZsa35a61HXw5BUE2dtFbb2L3wn6BFS9VKto';
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
