@@ -5,6 +5,34 @@ Uppdateras i slutet av varje arbetspass av den som jobbat.
 
 ---
 
+## 2026-02-25 (kväll) – Joakim (+ Claude Code)
+
+### Vad gjordes
+**Supabase auth – Fas 1 implementation:**
+- Implementerade auth-systemet (PR #65): `js/auth.js`, auth-modal i `index.html`, login-knapp i huvudmenyn, i18n-nycklar, cloud save
+- Fixade RLS-fel på `profiles`-tabellen – löstes med databas-trigger (`security definer set search_path = public`) som skapar profil automatiskt vid registrering (PR #66)
+- Förbättrade OAuth-felhantering – visar vänligt meddelande vid okonfigurerad provider (PR #66)
+- Lade till "Glömt lösenord"-flöde (PR #67): ny vy i auth-modalen, `resetPasswordForEmail()`, skräppost-varning i UI
+- Fixade timing-bugg i `PASSWORD_RECOVERY` – lyssnaren registreras nu innan `getSession()` (PR #68)
+- Döpte om `LabyrinthGame.csproj/.slnx` → `SharpRunner.csproj/.slnx` (PR #63)
+
+**Supabase-konfiguration gjord:**
+- Tabeller `profiles` och `player_saves` skapade med RLS
+- Databas-trigger `on_auth_user_created` skapad
+- Site URL och Redirect URL konfigurerade
+- Email-bekräftelse avstängd
+
+### Viktiga beslut
+- Profiler skapas via trigger, inte klientkod – kringgår RLS-begränsningar
+- `onAuthStateChange` måste registreras innan `getSession()` för att fånga `PASSWORD_RECOVERY`
+
+### Nästa steg
+- **Prio:** Felsök password reset-länken – redirect fungerar men modal öppnas inte (trots timing-fix i PR #68). Misstänkt orsak: GitHub Pages cachelagring eller ytterligare timing-problem
+- Konfigurera Google och Discord OAuth i Supabase
+- Testa cloud save fullt ut
+
+---
+
 ## 2026-02-25 – Joakim (+ Claude Code)
 
 ### Vad gjordes
