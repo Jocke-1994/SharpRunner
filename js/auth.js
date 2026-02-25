@@ -11,13 +11,6 @@ let currentProfile = null;
 // --- INIT ---
 
 async function initAuth() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session?.user) {
-        currentUser = session.user;
-        await onSignedIn();
-    }
-    updateAuthUI();
-
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (event === 'PASSWORD_RECOVERY') {
             openAuthModal('reset');
@@ -32,6 +25,13 @@ async function initAuth() {
             updateAuthUI();
         }
     });
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session?.user) {
+        currentUser = session.user;
+        await onSignedIn();
+    }
+    updateAuthUI();
 }
 
 async function onSignedIn() {
@@ -79,7 +79,7 @@ async function authSignOut() {
 
 async function authResetPassword(email) {
     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.href
+        redirectTo: window.location.origin + window.location.pathname
     });
     if (error) throw error;
 }
