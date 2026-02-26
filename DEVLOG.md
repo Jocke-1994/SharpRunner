@@ -5,6 +5,31 @@ Uppdateras i slutet av varje arbetspass av den som jobbat.
 
 ---
 
+## 2026-02-26 – Joakim (+ Claude Code)
+
+### Vad gjordes
+
+**Projektstruktur och verktyg:**
+- Skapade `Development errors.md` – fellogg som Claude automatiskt uppdaterar när problem identifieras eller löses under utvecklingens gång
+- Skapade GitHub issue #70 – plan för dev/prod-separering med lokal server och separat Supabase-projekt
+
+**GitHub project board:**
+- Lade till labels `FE` och `BE` på alla issues istället för separata projekt
+- Skapade 16 nya labels: `bug`, `blocked`, `needs-discussion`, `feature`, `improvement`, `documentation`, `auth`, `gameplay`, `ui`, `mobile`, `social`, `performance`, `prio`, `easy`, `medium`, `hard`
+- Applicerade relevanta labels på alla 18 öppna issues
+
+### Viktiga beslut
+- BE/FE-separation hanteras via labels, inte separata project boards – enklare att underhålla
+- `needs-discussion` kräver godkännande av båda (Joakim + Bozhidar) innan implementation
+- `blocked` ska alltid specificera vad issuen väntar på i issuens beskrivning
+
+### Nästa steg
+- Joakim skapar Supabase dev-projekt (`SharpRunner-dev`) manuellt – se issue #70
+- Felsök password reset – redirect fungerar men modal öppnas inte
+- Konfigurera Google och Discord OAuth i Supabase
+
+---
+
 ## 2026-02-25 (kväll) – Joakim (+ Claude Code)
 
 ### Vad gjordes
